@@ -1,0 +1,13 @@
+# Angular frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.vscode/
+
+# Backend
+backend/node_modules/
+backend/.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
