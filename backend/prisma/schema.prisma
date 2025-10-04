@@ -8,42 +8,407 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model consultorio {
-  id_consultorio Int      @id
-  nombre         String   @db.VarChar(100)
-  descripcion    String?
-  fecha_registro DateTime @db.Date
-  telefono       String   @db.VarChar(10)
-  correo         String   @db.VarChar(60)
-  d_calle        String?  @db.VarChar(30)
-  d_num_exterior String?  @db.VarChar(5)
-  d_colonia      String?  @db.VarChar(30)
-  d_cp           String?  @db.VarChar(5)
-  d_entidadfed   String?  @db.VarChar(30)
-  d_municipio    String?  @db.VarChar(30)
-  d_localidad    String?  @db.VarChar(30)
-  titular_ap1    String   @db.VarChar(30)
-  titular_ap2    String   @db.VarChar(30)
-  titular_nombre String   @db.VarChar(50)
-  status         status   @default(activo)
+model alergia {
+  id_alergia      Int            @id @default(autoincrement())
+  id_paciente     Int
+  id_tipo_alergia Int
+  nombre          String         @db.VarChar(50)
+  severidad       severidad
+  notas           String?
+  status          status_alergia
+  paciente        paciente       @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
+  tipo_alergia    tipo_alergia   @relation(fields: [id_tipo_alergia], references: [id_tipo_alergia], onDelete: Cascade, map: "id_tipo_alergia")
 }
 
-enum status { 
+model archivo {
+  id_archivo   Int            @id @default(autoincrement())
+  id_paciente  Int
+  nombre       String         @db.VarChar(100)
+  descripcion  String?
+  url_imagen   String         @db.VarChar(500)
+  fecha_subida DateTime       @default(now()) @db.Timestamptz(6)
+  status       status_archivo
+  paciente     paciente       @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
+}
+
+model cita {
+  id_cita             Int                   @id @default(autoincrement())
+  id_paciente         Int
+  id_motivo           Int
+  fecha               DateTime              @db.Date
+  hora_inicio         DateTime              @db.Timetz(6)
+  frecuencia          frecuencia_servicio?  @default(unica)
+  notas               String?
+  id_consultorio      Int
+  status              status_citas
+  consultorio         consultorio           @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
+  motivo_consulta     motivo_consulta       @relation(fields: [id_motivo], references: [id_motivo], onDelete: Cascade, map: "id_motivo")
+  paciente            paciente              @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
+  reprogramacion_cita reprogramacion_cita[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model condicion_medica {
+  id_condicion_medica   Int                  @id @default(autoincrement())
+  id_paciente           Int
+  id_tipo_condicion     Int
+  nombre                String               @db.VarChar(60)
+  a_o_diagnostico       Int                  @map("año_diagnostico")
+  medicamentos_actuales String
+  condicion_controlada  si_o_no
+  status                status_condicion_med
+  paciente              paciente             @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
+  tipo_condicion_med    tipo_condicion_med   @relation(fields: [id_tipo_condicion], references: [id_tipo_condicion], onDelete: Cascade, map: "id_tipo_condicion")
+}
+
+model consultorio {
+  id_consultorio      Int                   @id @default(autoincrement())
+  nombre              String                @db.VarChar(100)
+  descripcion         String?
+  fecha_registro      DateTime              @db.Date
+  telefono            String                @db.VarChar(10)
+  correo              String                @db.VarChar(60)
+  d_calle             String?               @db.VarChar(30)
+  d_num_exterior      String?               @db.VarChar(5)
+  d_colonia           String?               @db.VarChar(30)
+  d_cp                String?               @db.VarChar(5)
+  d_entidadfed        String?               @db.VarChar(30)
+  d_municipio         String?               @db.VarChar(30)
+  d_localidad         String?               @db.VarChar(30)
+  titular_ap1         String                @db.VarChar(30)
+  titular_ap2         String                @db.VarChar(30)
+  titular_nombre      String                @db.VarChar(50)
+  status              status                @default(activo)
+  cita                cita[]
+  egreso              egreso[]
+  evento              evento[]
+  formulario          formulario[]
+  horario             horario[]
+  ingreso             ingreso[]
+  motivo_consulta     motivo_consulta[]
+  paciente            paciente[]
+  reprogramacion_cita reprogramacion_cita[]
+  servicio            servicio[]
+  tipo_evento         tipo_evento[]
+  usuario             usuario[]
+}
+
+model detalle_ingreso {
+  id_detalle_ingreso Int                @id @default(autoincrement())
+  id_ingreso         Int
+  id_servicio        Int
+  cantidad           Int                @default(1)
+  precio_unitario    Decimal            @db.Decimal(10, 2)
+  status             status_det_ingreso
+  subtotal           Decimal?           @default(dbgenerated("((cantidad)::numeric * precio_unitario)")) @db.Decimal(10, 2)
+  ingreso            ingreso            @relation(fields: [id_ingreso], references: [id_ingreso], onDelete: Cascade, map: "id_ingreso")
+  servicio           servicio           @relation(fields: [id_servicio], references: [id_servicio], onDelete: Cascade, map: "id_servicio")
+}
+
+model egreso {
+  id_egreso      Int           @id @default(autoincrement())
+  id_tipo_egreso Int
+  monto          Decimal       @db.Decimal(10, 2)
+  fecha          DateTime      @db.Date
+  descripcion    String
+  id_consultorio Int
+  status         status_egreso
+  consultorio    consultorio   @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: NoAction, onUpdate: NoAction, map: "id_consultorio")
+  tipo_egreso    tipo_egreso   @relation(fields: [id_tipo_egreso], references: [id_tipo_egreso], onDelete: NoAction, onUpdate: NoAction, map: "id_tipo_egreso")
+}
+
+model evento {
+  id_evento          Int           @id @default(autoincrement())
+  titulo             String        @db.VarChar(100)
+  id_tipo_evento     Int
+  fecha_inicio       DateTime      @db.Date
+  fecha_fin          DateTime      @db.Date
+  evento_todo_el_dia si_o_no
+  hora_inicio        DateTime?     @db.Timetz(6)
+  hora_fin           DateTime?     @db.Timetz(6)
+  id_consultorio     Int
+  notas              String?
+  status             status_evento
+  consultorio        consultorio   @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: NoAction, onUpdate: NoAction, map: "id_consultorio")
+  tipo_evento        tipo_evento   @relation(fields: [id_tipo_evento], references: [id_tipo_evento], onDelete: NoAction, onUpdate: NoAction, map: "id_tipo_evento")
+}
+
+model formulario {
+  id_formulario  Int         @id @default(autoincrement())
+  nombre         String      @db.VarChar(100)
+  descripcion    String?
+  creado_en      DateTime    @default(now()) @db.Timestamptz(6)
+  id_consultorio Int
+  status         status      @default(activo)
+  consultorio    consultorio @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
+  pregunta       pregunta[]
+}
+
+model fotografia_historial {
+  id_foto           Int               @id @default(autoincrement())
+  id_historial      Int
+  url_fotografia    String            @db.VarChar(500)
+  fecha_subida      DateTime          @default(now()) @db.Timestamptz(6)
+  historial_clinico historial_clinico @relation(fields: [id_historial], references: [id_historial], onDelete: Cascade, map: "id_historial")
+}
+
+model historial_clinico {
+  id_historial         Int                    @id @default(autoincrement())
+  id_paciente          Int
+  id_servicio          Int
+  fecha                DateTime               @db.Date
+  descripcion          String
+  status               status                 @default(activo)
+  fotografia_historial fotografia_historial[]
+  paciente             paciente               @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
+  servicio             servicio               @relation(fields: [id_servicio], references: [id_servicio], onDelete: Cascade, map: "id_servicio")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model horario {
+  id_horario     Int         @id @default(autoincrement())
+  id_consultorio Int
+  dia            Int         @db.SmallInt
+  hora_inicio    DateTime    @db.Timetz(6)
+  hora_fin       DateTime    @db.Timetz(6)
+  status         status      @default(activo)
+  consultorio    consultorio @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: NoAction, onUpdate: NoAction, map: "id_consultorio")
+}
+
+model ingreso {
+  id_ingreso      Int               @id @default(autoincrement())
+  id_paciente     Int
+  id_consultorio  Int
+  monto_total     Decimal           @db.Decimal(10, 2)
+  fecha           DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Date
+  notas           String
+  status          status_ingreso
+  detalle_ingreso detalle_ingreso[]
+  consultorio     consultorio       @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
+  paciente        paciente          @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
+  pago_ingreso    pago_ingreso[]
+}
+
+model metodo_pago {
+  id_metodo_pago Int            @id
+  nombre         String         @db.VarChar(30)
+  status         status         @default(activo)
+  pago_ingreso   pago_ingreso[]
+}
+
+model motivo_consulta {
+  id_motivo      Int         @id
+  id_consultorio Int
+  nombre         String      @db.VarChar(60)
+  status         status      @default(activo)
+  id_servicio    Int?
+  cita           cita[]
+  consultorio    consultorio @relation(fields: [id_consultorio], references: [id_consultorio])
+}
+
+model paciente {
+  id_paciente       Int                 @id @default(autoincrement())
+  nombre            String              @db.VarChar(60)
+  apellido1         String              @db.VarChar(40)
+  apellido2         String              @db.VarChar(40)
+  telefono          String              @db.VarChar(10)
+  fecha_nacimiento  DateTime            @db.Date
+  sexo              sexo
+  d_calle           String?             @db.VarChar(30)
+  d_num_exterior    String?             @db.VarChar(5)
+  d_colonia         String?             @db.VarChar(30)
+  d_cp              String?             @db.VarChar(5)
+  d_entidadfed      String?             @db.VarChar(30)
+  d_municipio       String?             @db.VarChar(30)
+  d_localidad       String?             @db.VarChar(30)
+  id_usuario        Int
+  id_consultorio    Int
+  tiene_tutor       si_o_no
+  tutor_nombre      String?             @db.VarChar(60)
+  tutor_apellido1   String?             @db.VarChar(40)
+  tutor_apellido2   String?             @db.VarChar(40)
+  tutor_telefono    String?             @db.VarChar(10)
+  tutor_correo      String?             @db.VarChar(60)
+  tutor_relacion    String?             @db.VarChar(20)
+  status            status              @default(activo)
+  alergia           alergia[]
+  archivo           archivo[]
+  cita              cita[]
+  condicion_medica  condicion_medica[]
+  historial_clinico historial_clinico[]
+  ingreso           ingreso[]
+  consultorio       consultorio         @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: NoAction, onUpdate: NoAction, map: "id_consultorio")
+  usuario           usuario             @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "id_usuario")
+  respuesta         respuesta[]
+}
+
+model pago_ingreso {
+  id_pago_ingreso Int                @id @default(autoincrement())
+  id_ingreso      Int
+  id_metodo_pago  Int
+  monto           Decimal            @db.Decimal(10, 2)
+  fecha_pago      DateTime           @default(now()) @db.Timestamptz(6)
+  referencia      String             @db.VarChar(200)
+  status          status_pag_ingreso
+  ingreso         ingreso            @relation(fields: [id_ingreso], references: [id_ingreso], onDelete: Cascade, map: "id_ingreso")
+  metodo_pago     metodo_pago        @relation(fields: [id_metodo_pago], references: [id_metodo_pago], onDelete: Cascade, map: "id_metodo_pago")
+}
+
+model pregunta {
+  id_pregunta           Int                 @id @default(autoincrement())
+  id_formulario         Int
+  texto                 String              @db.VarChar
+  obligatorio           si_o_no
+  id_tipo_clasificacion Int?
+  tipo                  tipo_pregunta
+  id_tipo_alergia       Int?
+  id_tipo_condicion_med Int?
+  formulario            formulario          @relation(fields: [id_formulario], references: [id_formulario], onDelete: Cascade, map: "id_formulario")
+  tipo_alergia          tipo_alergia?       @relation(fields: [id_tipo_alergia], references: [id_tipo_alergia], onDelete: Cascade, map: "id_tipo_alergia")
+  tipo_condicion_med    tipo_condicion_med? @relation(fields: [id_tipo_condicion_med], references: [id_tipo_condicion], onDelete: Cascade, map: "id_tipo_condicion_med")
+  respuesta             respuesta[]
+}
+
+model reprogramacion_cita {
+  id_reprogramacion Int                   @id @default(autoincrement())
+  id_cita           Int
+  solicitada_por    reprog_solicitada_por
+  fecha_original    DateTime              @db.Date
+  hora_original     DateTime              @db.Timetz(6)
+  nueva_fecha       DateTime              @db.Date
+  nueva_hora        DateTime              @db.Timetz(6)
+  fecha_solicitud   DateTime              @default(now()) @db.Timestamptz(6)
+  id_consultorio    Int
+  status            status_cita_reprog
+  cita              cita                  @relation(fields: [id_cita], references: [id_cita], onDelete: Cascade, map: "id_cita")
+  consultorio       consultorio           @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
+}
+
+model respuesta {
+  id_respuesta    Int      @id @default(autoincrement())
+  id_paciente     Int
+  id_pregunta     Int
+  respuesta       String
+  fecha_respuesta DateTime @default(now()) @db.Timestamptz(6)
+  paciente        paciente @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
+  pregunta        pregunta @relation(fields: [id_pregunta], references: [id_pregunta], onDelete: Cascade, map: "id_pregunta")
+}
+
+model servicio {
+  id_servicio       Int                 @id @default(autoincrement())
+  nombre            String              @db.VarChar(100)
+  descripcion       String
+  tipo_cobro        tipo_cobro
+  precio_base       Decimal             @db.Decimal(10, 2)
+  duracion_base     Int
+  url_imagen_       String              @map("url_imagen ") @db.VarChar(255)
+  id_consultorio    Int
+  status            status              @default(activo)
+  detalle_ingreso   detalle_ingreso[]
+  historial_clinico historial_clinico[]
+  consultorio       consultorio         @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
+}
+
+model tipo_alergia {
+  id_tipo_alergia Int        @id
+  nombre          String     @db.VarChar(40)
+  status          status     @default(activo)
+  alergia         alergia[]
+  pregunta        pregunta[]
+}
+
+model tipo_condicion_med {
+  id_tipo_condicion Int                @id
+  nombre            String             @db.VarChar(40)
+  status            status             @default(activo)
+  condicion_medica  condicion_medica[]
+  pregunta          pregunta[]
+}
+
+model tipo_egreso {
+  id_tipo_egreso Int      @id
+  nombre         String   @db.VarChar(30)
+  status         status   @default(activo)
+  egreso         egreso[]
+}
+
+model tipo_evento {
+  id_tipo_evento Int         @id
+  id_consultorio Int
+  nombre         String      @db.VarChar(50)
+  status         status      @default(activo)
+  evento         evento[]
+  consultorio    consultorio @relation(fields: [id_consultorio], references: [id_consultorio])
+}
+
+model usuario {
+  id_usuario         Int             @id @default(autoincrement())
+  correo             String          @db.VarChar(60)
+  contrase_a         String          @map("contraseña")
+  proveedor_login    proveedor_login @default(local)
+  rol                rol
+  fecha_registro     DateTime        @db.Timestamptz(6)
+  token_recuperacion String?         @db.VarChar(255)
+  expira_token       DateTime?       @db.Timestamptz(6)
+  id_consultorio     Int
+  status             status          @default(activo)
+  paciente           paciente[]
+  consultorio        consultorio     @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
+}
+
+enum clasificacion_a_cm {
+  ninguna
+  alergia
+  condicion_medica
+}
+
+enum frecuencia_servicio {
+  unica
+  diaria
+  semanal
+  quincenal
+  mensual
+  bimestral
+  trimestral
+  semestral
+  anual
+}
+
+enum proveedor_login {
+  local
+  google
+}
+
+enum reprog_solicitada_por {
+  paciente
+  dentista
+}
+
+enum rol {
+  paciente
+  dentista
+}
+
+enum severidad {
+  alta
+  media
+  baja
+}
+
+enum sexo {
+  femenino
+  masculino
+  otro
+}
+
+enum si_o_no {
+  si
+  no
+}
+
+enum status {
   activo
   inactivo
-}
-
-enum status_citas {
-  pendiente
-  confirmada
-  cancelada
-  completada
-  reprogramada
-}
-
-enum status_cita_reprog {
-  confirmada
-  cancelada
 }
 
 enum status_alergia {
@@ -52,18 +417,28 @@ enum status_alergia {
   descartada
 }
 
+enum status_archivo {
+  activo
+  oculto
+}
+
+enum status_cita_reprog {
+  programada
+  cancelada
+}
+
+enum status_citas {
+  pendiente
+  programada
+  cancelada
+  completada
+  reprogramada
+}
+
 enum status_condicion_med {
   activa
   resuelta
   cronica
-}
-
-enum status_ingreso {
-  pendiente
-  parcial
-  pagado
-  cancelado
-  reembolsado
 }
 
 enum status_det_ingreso {
@@ -71,14 +446,6 @@ enum status_det_ingreso {
   modificado
   eliminado
   reembolsado
-}
-
-enum status_pag_ingreso {
-  confirmado
-  pendiente
-  cancelado
-  reembolsado
-  rechazado
 }
 
 enum status_egreso {
@@ -95,26 +462,20 @@ enum status_evento {
   oculto
 }
 
-enum status_archivo {
-  activo
-  oculto
+enum status_ingreso {
+  pendiente
+  parcial
+  pagado
+  cancelado
+  reembolsado
 }
 
-// ENUMS DE CATEGORIAS PARA CIERTAS TABLAS
-enum proveedor_login {
-  local
-  google
-}
-
-enum rol {
-  paciente
-  dentista
-}
-
-enum sexo {
-  femenino
-  masculino
-  otro
+enum status_pag_ingreso {
+  confirmado
+  pendiente
+  cancelado
+  reembolsado
+  rechazado
 }
 
 enum tipo_cobro {
@@ -122,33 +483,11 @@ enum tipo_cobro {
   plan_terapeutico
 }
 
-enum reprog_solicitada_por {
-  paciente
-  dentista
+enum tipo_pregunta {
+  texto
+  numero
+  fecha
+  seleccion_unica
+  seleccion_multiple
+  si_no
 }
-
-enum severidad {
-  alta
-  media
-  baja
-}
-
-// tiene_tutor, evento_todo_el_dia, condicion_controlada, 
-enum si_o_no {
-  si
-  no
-}
-
-enum dia_semana {
-  domingo
-  lunes
-  martes
-  miercoles
-  jueves
-  viernes
-  sabado
-}
-
-// TABLAS
-
-
