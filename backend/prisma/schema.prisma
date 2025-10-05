@@ -99,7 +99,7 @@ model detalle_ingreso {
   cantidad           Int                @default(1)
   precio_unitario    Decimal            @db.Decimal(10, 2)
   status             status_det_ingreso
-  subtotal           Decimal?           @default(dbgenerated("((cantidad)::numeric * precio_unitario)")) @db.Decimal(10, 2)
+  subtotal           Decimal           @db.Decimal(10, 2)
   ingreso            ingreso            @relation(fields: [id_ingreso], references: [id_ingreso], onDelete: Cascade, map: "id_ingreso")
   servicio           servicio           @relation(fields: [id_servicio], references: [id_servicio], onDelete: Cascade, map: "id_servicio")
 }
@@ -346,7 +346,7 @@ model usuario {
   contrase_a         String          @map("contraseña")
   proveedor_login    proveedor_login @default(local)
   rol                rol
-  fecha_registro     DateTime        @db.Timestamptz(6)
+  fecha_registro     DateTime        @default(now()) @db.Timestamptz(6)
   token_recuperacion String?         @db.VarChar(255)
   expira_token       DateTime?       @db.Timestamptz(6)
   id_consultorio     Int
