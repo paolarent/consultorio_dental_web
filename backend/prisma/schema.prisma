@@ -200,7 +200,8 @@ model motivo_consulta {
   id_consultorio Int
   nombre         String      @db.VarChar(60)
   status         status      @default(activo)
-  id_servicio    Int?
+  id_servicio    Int? 
+  servicio       servicio?    @relation(fields: [id_servicio], references: [id_servicio], onDelete: Cascade)           
   cita           cita[]
   consultorio    consultorio @relation(fields: [id_consultorio], references: [id_consultorio])
 }
@@ -300,11 +301,12 @@ model servicio {
   tipo_cobro        tipo_cobro
   precio_base       Decimal             @db.Decimal(10, 2)
   duracion_base     Int
-  url_imagen_       String              @map("url_imagen ") @db.VarChar(255)
+  url_imagen        String              @map("url_imagen") @db.VarChar(500)
   id_consultorio    Int
   status            status              @default(activo)
   detalle_ingreso   detalle_ingreso[]
   historial_clinico historial_clinico[]
+  motivo_consulta   motivo_consulta[]
   consultorio       consultorio         @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
 }
 
