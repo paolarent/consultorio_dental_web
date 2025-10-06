@@ -344,18 +344,31 @@ model tipo_evento {
 
 model usuario {
   id_usuario         Int             @id @default(autoincrement())
-  correo             String          @db.VarChar(60)
+  correo             String          @unique @db.VarChar(60)
   contrase_a         String          @map("contraseña")
   proveedor_login    proveedor_login @default(local)
   rol                rol
   fecha_registro     DateTime        @default(now()) @db.Timestamptz(6)
+  correo_verificado  Boolean         @default(false)
   token_recuperacion String?         @db.VarChar(255)
   expira_token       DateTime?       @db.Timestamptz(6)
   id_consultorio     Int
   status             status          @default(activo)
   paciente           paciente[]
+  verificacion_correo verificacion_correo[]
   consultorio        consultorio     @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
 }
+
+model verificacion_correo {
+  id_token      Int       @id @default(autoincrement())
+  id_usuario    Int
+  nuevo_correo  String?   @db.VarChar(255) // si es cambio de correo; null para registro-verificación
+  token         String    @unique
+  fecha_expira  DateTime
+  usado Boolean @default(false)
+  usuario       usuario   @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+}
+
 
 enum clasificacion_a_cm {
   ninguna
