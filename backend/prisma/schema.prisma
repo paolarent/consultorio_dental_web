@@ -350,12 +350,12 @@ model usuario {
   rol                rol
   fecha_registro     DateTime        @default(now()) @db.Timestamptz(6)
   correo_verificado  Boolean         @default(false)
-  token_recuperacion String?         @db.VarChar(255)
-  expira_token       DateTime?       @db.Timestamptz(6)
   id_consultorio     Int
   status             status          @default(activo)
+
   paciente           paciente[]
   verificacion_correo verificacion_correo[]
+  recuperacion_contraseña recuperacion_contraseña[]
   consultorio        consultorio     @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
 }
 
@@ -369,6 +369,14 @@ model verificacion_correo {
   usuario       usuario   @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
 }
 
+model recuperacion_contraseña {
+  id_recuperacion Int       @id @default(autoincrement())
+  id_usuario      Int
+  fecha_solicitud DateTime  @default(now())
+  fecha_uso       DateTime?
+  usado           Boolean   @default(false)
+  usuario         usuario   @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+}
 
 enum clasificacion_a_cm {
   ninguna
