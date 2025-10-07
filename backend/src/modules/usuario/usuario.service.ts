@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { MailerService } from 'src/common/mail/mail.service';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
+import { UpdateContrasenaDto } from './dto/update-contrasena.dto';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsuarioService {
     constructor(
         private prisma: PrismaService,
-        private mailerService: MailerService,  // injecta el servicio mail
+        private mailerService: MailerService,  //el servicio de mail
+        private jwtService: JwtService, //inyectar JwtService para lo de contraseña
     ) {}
 
     findAll() {
@@ -42,7 +45,7 @@ export class UsuarioService {
 
         //Generar el token de verificación
         const token = randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutos de validez
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos de validez
 
         //Guardar el token en verificacion_correo
         await this.prisma.verificacion_correo.create({
@@ -67,7 +70,7 @@ export class UsuarioService {
         });
     }
 
-    // Confirmación de registro inicial
+    //Confirmación de registro inicial
     async confirmRegistro(token: string) {
         const record = await this.prisma.verificacion_correo.findFirst({
             where: { token, usado: false, fecha_expira: { gt: new Date() } },
@@ -87,7 +90,7 @@ export class UsuarioService {
         return { message: 'Registro confirmado correctamente.' };
     }
 
-    //Generar token y enviar correo de verificación
+    //ACTUALIZAR EL CORREO DEL USUARIO
     async requestCorreoUpdate(id: number, newCorreo: string) {
         // Validamos que no exista otro usuario con ese correo
         const existingUser = await this.prisma.usuario.findFirst({
@@ -97,7 +100,7 @@ export class UsuarioService {
 
         // Generar token temporal
         const token = randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 min de validez
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min de validez
 
         // Guardamos token en tabla temporal (puede ser otra tabla llamada VerificacionCorreo)
         await this.prisma.verificacion_correo.create({
@@ -135,9 +138,91 @@ export class UsuarioService {
 
         return { message: 'Correo actualizado correctamente.' };
     }
+
+    async solicitarRecuperacion(correo: string) {
+        const usuario = await this.prisma.usuario.findUnique({ where: { correo } });
+        if (!usuario) {
+            // Por seguridad, no revelamos si el correo existe o no
+            return { message: 'Si el correo está registrado, se enviará un enlace de recuperación.' };
+        }
+
+        // Generar token JWT válido por 10 minutos
+        const payload = { id_usuario: usuario.id_usuario };
+        const token = this.jwtService.sign(payload);
+
+
+        // Registrar el intento de recuperación
+        await this.prisma.recuperacion_contraseña.create({
+            data: { id_usuario: usuario.id_usuario },
+        });
+
+        // Enviar el correo con enlace
+        const enlace = `${process.env.APP_URL}/usuario/recuperar/${token}`;
+        await this.mailerService.enviarCorreoRecuperacion(usuario.correo, enlace);
+
+        return { message: 'Si el correo está registrado, se ha enviado un enlace de recuperación.' };
+    }
+
+    async restablecerContrasena(token: string, nuevaContrasena: string) {
+        try {
+            const payload = this.jwtService.verify(token) as { id_usuario: number };
+
+
+            const usuario = await this.prisma.usuario.findUnique({
+            where: { id_usuario: payload.id_usuario },
+            });
+            if (!usuario) throw new Error('Usuario no encontrado');
+
+            const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
+
+            await this.prisma.usuario.update({
+            where: { id_usuario: usuario.id_usuario },
+            data: { contrase_a: hashedPassword },
+            });
+
+            await this.prisma.recuperacion_contraseña.updateMany({
+            where: { id_usuario: usuario.id_usuario, usado: false },
+            data: { usado: true, fecha_uso: new Date() },
+            });
+
+            return { message: 'Contraseña actualizada correctamente.' };
+        } catch (error) {
+            throw new UnauthorizedException('Token inválido o expirado.');
+        }
+    }
+
+    //ACTUALIZACION DE CONTRASEÑA INTERNA(USUARIO YA LOGGEADO)
+    async cambiarContrasena(id_usuario: number, dto: UpdateContrasenaDto) {
+        const { actual, nueva, confirmar } = dto;
+
+        const usuario = await this.prisma.usuario.findUnique({
+            where: { id_usuario }
+        });
+
+        if (!usuario) throw new UnauthorizedException('Usuario no encontrado');
+
+        //Verificar contraseña actual
+        const coincide = await bcrypt.compare(actual, usuario.contrase_a);
+        if (!coincide) throw new UnauthorizedException('Contraseña actual incorrecta');
+
+        //Verificar que nueva y confirmación coincidan
+        if (nueva !== confirmar) throw new BadRequestException('La nueva contraseña no coincide con la confirmación');
+
+        //Hash de la nueva contraseña
+        const hashedPassword = await bcrypt.hash(nueva, 10);
+
+        //Actualizar la BD
+        await this.prisma.usuario.update({
+            where: { id_usuario },
+            data: { contrase_a: hashedPassword },
+        });
+
+        return { message: 'Contraseña actualizada correctamente' };
+    }
+
 }
 
-/* USO FUTURO EN CONDICIONES
+/* USO FUTURO EN CONDICIONES AHORITA NO ANDAMOS EN ESO
 const isMatch = await bcrypt.compare(inputPassword, usuario.contrase_a);
 if (!isMatch) throw new Error('Contraseña incorrecta');
  */

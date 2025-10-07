@@ -1,7 +1,9 @@
-import { Body, Controller, Get, ParseIntPipe, Post, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, ParseIntPipe, Post, Param, Patch, UseGuards, Req } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateCorreoDto } from './dto/update-correo.dto';
+import { UpdateContrasenaDto } from './dto/update-contrasena.dto';
+//import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // pienso usar JWT tmb para login
 
 @Controller('usuario')
 export class UsuarioController {
@@ -53,4 +55,29 @@ export class UsuarioController {
     confirmCorreoUpdate(@Param('token') token: string) {
         return this.usuarioService.confirmCorreoUpdate(token);
     }*/
+
+    //ACTUALIZACION DE CONTRASEÑA (CORREO VERSION)
+    // Solicitar recuperación (envía enlace por correo)
+    @Post('recuperacion')
+    solicitarRecuperacion(@Body('correo') correo: string) {
+    return this.usuarioService.solicitarRecuperacion(correo);
+    }
+
+    // Restablecer la contraseña usando el token JWT
+    @Patch('restablecer')
+    restablecerContrasena(
+    @Body('token') token: string,
+    @Body('nuevaContrasena') nuevaContrasena: string,
+    ) {
+    return this.usuarioService.restablecerContrasena(token, nuevaContrasena);
+    }
+
+    //@UseGuards(JwtAuthGuard) // asegurarse que solo usuarios loggeados accedan
+    @Patch('contrasena')
+    cambiarContrasena(@Body() body: { id_usuario: number } & UpdateContrasenaDto) { //@Req() req, @Body() dto: UpdateContrasenaDto
+        const { id_usuario, ...dto } = body;
+        return this.usuarioService.cambiarContrasena(id_usuario, dto);
+        //req.user.id_usuario viene del payload del JWT
+        //return this.usuarioService.cambiarContrasena(req.user.id_usuario, dto);
+    }
 }

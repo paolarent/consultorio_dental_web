@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsEnum, IsOptional, IsInt } from 'class-validator';
+import { IsString, IsEmail, IsEnum, IsOptional, IsInt, MinLength } from 'class-validator';
 import { Rol, ProveedorLogin, Status } from '../../../common/enums';
 
 export class CreateUsuarioDto {
@@ -6,6 +6,7 @@ export class CreateUsuarioDto {
     correo: string;
 
     @IsString()
+    @MinLength(8)
     contrase_a: string;
 
     @IsEnum(Rol)
