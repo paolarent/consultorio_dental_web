@@ -55,4 +55,22 @@ export class MailerService {
             html,
         });
     } 
+
+    //METODO PARA RESTABLECER CONTRASEÑA
+    async enviarCorreoRecuperacion(to: string, enlace: string) {
+        const html = `
+            <p>Has solicitado restablecer tu contraseña.</p>
+            <p>Haz clic en el siguiente enlace para establecer una nueva:</p>
+            <p><a href="${enlace}">${enlace}</a></p>
+            <br>
+            <p>Este enlace expirará en 10 minutos.</p>
+        `;
+
+        await this.transporter.sendMail({
+            from: process.env.EMAIL_FROM,
+            to,
+            subject: 'Recuperación de contraseña',
+            html,
+        });
+    }
 }
