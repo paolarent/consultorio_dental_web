@@ -210,7 +210,7 @@ model paciente {
   id_paciente       Int                 @id @default(autoincrement())
   nombre            String              @db.VarChar(60)
   apellido1         String              @db.VarChar(40)
-  apellido2         String              @db.VarChar(40)
+  apellido2         String?              @db.VarChar(40)
   telefono          String              @db.VarChar(10)
   fecha_nacimiento  DateTime            @db.Date
   sexo              sexo
