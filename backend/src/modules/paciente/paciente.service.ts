@@ -1,13 +1,13 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreatePacienteDto } from './create-paciente.dto';
+import { CreatePacienteDto } from '../paciente/dto/create-paciente.dto';
 
 @Injectable()
 export class PacienteService {
     constructor( private prisma: PrismaService, ) {}
 
     findAllActive() {
-        return this.prisma.usuario.findMany({
+        return this.prisma.paciente.findMany({
             where: { status: 'activo'},         //listar solo los pacientes activos
         });
     }

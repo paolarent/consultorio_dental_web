@@ -6,6 +6,7 @@ import { PacienteController } from './paciente.controller';
 @Module({
   
   controllers: [PacienteController],
-  providers: [PacienteService]
+  providers: [PacienteService],
+  exports: [PacienteService],  //así otros módulos pueden usarlo
 })
 export class PacienteModule {}

@@ -60,7 +60,12 @@ export class UsuarioService {
         //Enviar el correo con enlace de confirmación usando MailerService
         await this.mailerService.sendVerificationEmail(newUser.correo, token, 'registro');
 
-        return { message: 'Usuario creado, correo de verificación enviado' };
+        //return { message: 'Usuario creado, correo de verificación enviado' };
+        // Devuelve tanto el usuario como un mensaje
+        return {
+            usuario: newUser,
+            message: 'Usuario creado, correo de verificación enviado'
+        };
     }
 
     async deleteLogical(id: number) {

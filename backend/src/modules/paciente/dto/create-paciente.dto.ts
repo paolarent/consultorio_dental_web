@@ -1,5 +1,5 @@
 import { IsString, IsInt, IsOptional, IsDateString, IsEnum } from 'class-validator';
-import { Sexo, SiONo, Status } from '../../common/enums';
+import { Sexo, SiONo, Status } from '../../../common/enums';
 
 export class CreatePacienteDto {
     @IsString() nombre: string;
