@@ -75,7 +75,7 @@ model consultorio {
   d_municipio         String?               @db.VarChar(30)
   d_localidad         String?               @db.VarChar(30)
   titular_ap1         String                @db.VarChar(30)
-  titular_ap2         String                @db.VarChar(30)
+  titular_ap2         String?                @db.VarChar(30)
   titular_nombre      String                @db.VarChar(50)
   logo_url            String?               @db.VarChar(500)  // URL de Cloudinary
   logo_public_id      String?               // para eliminar o reemplazar el logo
