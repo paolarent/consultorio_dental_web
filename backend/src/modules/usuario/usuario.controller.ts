@@ -3,6 +3,8 @@ import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateCorreoDto } from './dto/update-correo.dto';
 import { UpdateContrasenaDto } from './dto/update-contrasena.dto';
+import { Rol } from 'src/common/enums';
+import { CreateDentistaDto } from './dto/create-dentista.dto';
 //import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // pienso usar JWT tmb para login
 
 @Controller('usuario')
@@ -14,14 +16,19 @@ export class UsuarioController {
         return this.usuarioService.findAll();
     }
 
-    @Get('activo') 
-    findAllActive() {
-        return this.usuarioService.findAllActive();
+    @Get('rol/:rol')
+    findAllByRol(@Param('rol') rol: Rol) {
+        return this.usuarioService.findAllByRol(rol);
     }
 
     @Post()
     create(@Body() data: CreateUsuarioDto) {
         return this.usuarioService.create(data);
+    }
+
+    @Post('dentista')
+    createDentista(@Body() data: CreateDentistaDto) {
+        return this.usuarioService.createDentista(data);
     }
 
     @Patch(':id/delete')

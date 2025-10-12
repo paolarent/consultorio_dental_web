@@ -31,6 +31,7 @@ export enum ReprogSolicitadaPor {
 export enum Rol {
   PACIENTE = "paciente",
   DENTISTA = "dentista",
+  ADMINISTRADOR = "admin",
 }
 
 export enum Severidad {

@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreatePacienteDto } from '../paciente/dto/create-paciente.dto';
+import { UpdatePacienteDto } from './dto/update-paciente.dto';
 
 @Injectable()
 export class PacienteService {
@@ -66,4 +67,45 @@ export class PacienteService {
 
         return newPaciente;
     }
+
+    async deleteLogical(id: number) {
+        return this.prisma.paciente.update({
+            where: {id_paciente: id},
+            data: {status: 'inactivo'},
+        });
+    }
+
+    async updatePaciente(id: number, data: UpdatePacienteDto) {
+        // Validar que si tiene tutor, se llenen los campos requeridos
+        if (data.tiene_tutor === 'si') {
+            const camposTutor = [
+            'tutor_nombre',
+            'tutor_apellido1',
+            'tutor_telefono',
+            'tutor_correo',
+            'tutor_relacion',
+            ];
+
+            const faltantes = camposTutor.filter(
+            (campo) => !(data as any)[campo],
+            );
+
+            if (faltantes.length > 0) {
+            throw new BadRequestException(
+                `Debe llenar todos los campos del tutor: ${faltantes.join(', ')}`,
+            );
+            }
+        }
+
+        // Convertir fecha a Date si viene
+        if (data.fecha_nacimiento) {
+            (data as any).fecha_nacimiento = new Date(data.fecha_nacimiento);
+        }
+
+        return this.prisma.paciente.update({
+            where: { id_paciente: id },
+            data: { ...data },
+        });
+    }
+
 }

@@ -6,6 +6,8 @@ import { UpdateContrasenaDto } from './dto/update-contrasena.dto';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
+import { Rol, Status, ProveedorLogin } from 'src/common/enums';
+import { CreateDentistaDto } from './dto/create-dentista.dto';
 
 @Injectable()
 export class UsuarioService {
@@ -19,9 +21,12 @@ export class UsuarioService {
         return this.prisma.usuario.findMany();
     }
 
-    findAllActive() {
+    async findAllByRol(rol: Rol) {
         return this.prisma.usuario.findMany({
-            where: { status: 'activo'},         //listar solo usuarios activos
+            where: {
+            status: 'activo',
+            rol,
+            },
         });
     }
 
@@ -225,6 +230,27 @@ export class UsuarioService {
         return { message: 'Contraseña actualizada correctamente' };
     }
 
+    async createDentista(data: CreateDentistaDto) {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(data.contrase_a, saltRounds);
+
+        const newDentista = await this.prisma.usuario.create({
+        data: {
+            correo: data.correo,
+            contrase_a: hashedPassword,
+            rol: Rol.DENTISTA, //asignamos automáticamente
+            proveedor_login: data.proveedor_login || ProveedorLogin.LOCAL,
+            status: data.status || Status.ACTIVO,
+            id_consultorio: data.id_consultorio,
+            correo_verificado: true, // omitimos verificación por token
+        },
+        });
+
+        return {
+            message: 'Dentista creado correctamente',
+            usuario: newDentista,
+        };
+    }
 }
 
 /* USO FUTURO EN CONDICIONES AHORITA NO ANDAMOS EN ESO

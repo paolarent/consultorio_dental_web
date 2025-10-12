@@ -356,13 +356,13 @@ model usuario {
   rol                rol
   fecha_registro     DateTime        @default(now()) @db.Timestamptz(6)
   correo_verificado  Boolean         @default(false)
-  id_consultorio     Int
+  id_consultorio     Int?
   status             status          @default(activo)
 
   paciente           paciente[]
   verificacion_correo verificacion_correo[]
   recuperacion_contraseña recuperacion_contraseña[]
-  consultorio        consultorio     @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
+  consultorio        consultorio?     @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
 }
 
 model verificacion_correo {
@@ -415,6 +415,7 @@ enum reprog_solicitada_por {
 enum rol {
   paciente
   dentista
+  admin
 }
 
 enum severidad {
