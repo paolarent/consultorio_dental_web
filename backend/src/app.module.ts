@@ -10,9 +10,11 @@ import { ConsultorioModule } from './modules/consultorio/consultorio.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { TipoEventoModule } from './modules/tipo-evento/tipo-evento.module';
 import { EventoModule } from './modules/evento/evento.module';
+import { EgresoModule } from './modules/egreso/egreso.module';
 
 @Module({
-  imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule],
+  imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule, 
+            EgresoModule],
   controllers: [AppController],
   providers: [AppService, MailerService],
 })

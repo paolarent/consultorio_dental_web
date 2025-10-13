@@ -11,7 +11,7 @@ export class EventoController {
     async findAllActive(@Query('id_consultorio') id_consultorio?: string) {
         try {
             return await this.eventoService.findAllActive(
-            id_consultorio ? Number(id_consultorio) : undefined
+                id_consultorio ? Number(id_consultorio) : undefined
             );
         } catch (error) {
             throw new BadRequestException(error.message);

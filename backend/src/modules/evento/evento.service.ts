@@ -6,7 +6,7 @@ import { status_evento } from '@prisma/client';
 
 @Injectable()
 export class EventoService {
-    constructor( private readonly prisma: PrismaService, ) {}
+    constructor( private readonly prisma: PrismaService ) {}
 
     async findAllActive(id_consultorio?: number) {
         if (id_consultorio) {
@@ -42,16 +42,15 @@ export class EventoService {
         return this.prisma.evento.create({
             data: {
                 ...data,
-                status: data.status || 'activo',
+                status: StatusEvento.ACTIVO,
             },
         });
     }
 
-    async updateEvento(id_evento: number, nuevoEstado: status_evento) {
+    async updateEvento(id_evento: number, nuevoStatus: status_evento) {
         return this.prisma.evento.update({
             where: { id_evento },
-            data: { status: nuevoEstado }
+            data: { status: nuevoStatus }
         });
     }
-
 }

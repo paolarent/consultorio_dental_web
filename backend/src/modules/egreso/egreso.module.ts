@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { EgresoService } from './egreso.service';
+import { EgresoController } from './egreso.controller';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Module({
-  providers: [EgresoService]
+  controllers: [EgresoController],
+  providers: [EgresoService, PrismaService],
 })
 export class EgresoModule {}
