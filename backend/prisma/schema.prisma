@@ -126,11 +126,11 @@ model evento {
   id_evento          Int           @id @default(autoincrement())
   titulo             String        @db.VarChar(100)
   id_tipo_evento     Int
-  fecha_inicio       DateTime      @db.Date
-  fecha_fin          DateTime      @db.Date
+  fecha_inicio       DateTime      @db.Date      // solo fecha
+  fecha_fin          DateTime      @db.Date      // solo fecha
   evento_todo_el_dia si_o_no
-  hora_inicio        DateTime?     @db.Timetz(6)
-  hora_fin           DateTime?     @db.Timetz(6)
+  hora_inicio        String?       // "HH:mm"
+  hora_fin           String?       // "HH:mm"
   id_consultorio     Int
   notas              String?
   status             status_evento
@@ -340,7 +340,7 @@ model tipo_egreso {
 }
 
 model tipo_evento {
-  id_tipo_evento Int         @id
+  id_tipo_evento Int         @id @default(autoincrement())
   id_consultorio Int
   nombre         String      @db.VarChar(50)
   status         status      @default(activo)

@@ -8,9 +8,11 @@ import { MailerService } from './common/mail/mail.service';
 import { RegistroModule } from './modules/registro/registro.module';
 import { ConsultorioModule } from './modules/consultorio/consultorio.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { TipoEventoModule } from './modules/tipo-evento/tipo-evento.module';
+import { EventoModule } from './modules/evento/evento.module';
 
 @Module({
-  imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule],
+  imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule],
   controllers: [AppController],
   providers: [AppService, MailerService],
 })

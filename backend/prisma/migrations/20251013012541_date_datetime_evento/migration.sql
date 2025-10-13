@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "evento" ALTER COLUMN "hora_inicio" SET DATA TYPE TIME,
+ALTER COLUMN "hora_fin" SET DATA TYPE TIME;
