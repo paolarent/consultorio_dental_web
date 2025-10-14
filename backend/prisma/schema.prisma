@@ -25,6 +25,7 @@ model archivo {
   nombre       String         @db.VarChar(100)
   descripcion  String?
   url_imagen   String         @db.VarChar(500)
+  imagen_public_id    String?               // para eliminar o reemplazar la imagen
   fecha_subida DateTime       @default(now()) @db.Timestamptz(6)
   status       status_archivo
   paciente     paciente       @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
@@ -153,6 +154,7 @@ model fotografia_historial {
   id_foto           Int               @id @default(autoincrement())
   id_historial      Int
   url_fotografia    String            @db.VarChar(500)
+  foto_public_id    String?               // para eliminar o reemplazar la imagen
   fecha_subida      DateTime          @default(now()) @db.Timestamptz(6)
   historial_clinico historial_clinico @relation(fields: [id_historial], references: [id_historial], onDelete: Cascade, map: "id_historial")
 }
@@ -307,7 +309,8 @@ model servicio {
   tipo_cobro        tipo_cobro
   precio_base       Decimal             @db.Decimal(10, 2)
   duracion_base     Int
-  url_imagen        String              @map("url_imagen") @db.VarChar(500)
+  url_imagen        String?              @map("url_imagen") @db.VarChar(500)
+  imagen_public_id    String?               // para eliminar o reemplazar la imagen
   id_consultorio    Int
   status            status              @default(activo)
   detalle_ingreso   detalle_ingreso[]
