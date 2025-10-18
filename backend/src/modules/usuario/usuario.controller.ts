@@ -57,12 +57,6 @@ export class UsuarioController {
         return this.usuarioService.requestCorreoUpdate(id, body.correo);
     }
 
-    /*/Confirmar token y actualizar correo
-    @Patch('correo/confirm/:token')
-    confirmCorreoUpdate(@Param('token') token: string) {
-        return this.usuarioService.confirmCorreoUpdate(token);
-    }*/
-
     //ACTUALIZACION DE CONTRASEÑA (CORREO VERSION)
     // Solicitar recuperación (envía enlace por correo)
     @Post('recuperacion')

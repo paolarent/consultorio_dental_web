@@ -12,10 +12,11 @@ import { TipoEventoModule } from './modules/tipo-evento/tipo-evento.module';
 import { EventoModule } from './modules/evento/evento.module';
 import { EgresoModule } from './modules/egreso/egreso.module';
 import { ServicioModule } from './modules/servicio/servicio.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule, 
-            EgresoModule, ServicioModule],
+            EgresoModule, ServicioModule, AuthModule],
   controllers: [AppController],
   providers: [AppService, MailerService],
 })

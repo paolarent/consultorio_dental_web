@@ -33,13 +33,13 @@ export class UsuarioService {
     async create(data: CreateUsuarioDto) {
         // Generar hash de la contraseña
         const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(data.contrase_a, saltRounds);
+        const hashedPassword = await bcrypt.hash(data.contrasena, saltRounds);
 
         // Crear usuario con correo_verificado = false
         const newUser = await this.prisma.usuario.create({
             data: {
                 correo: data.correo,
-                contrase_a: hashedPassword,
+                contrasena: hashedPassword,
                 rol: data.rol,
                 proveedor_login: data.proveedor_login,
                 status: data.status,
@@ -187,7 +187,7 @@ export class UsuarioService {
 
             await this.prisma.usuario.update({
             where: { id_usuario: usuario.id_usuario },
-            data: { contrase_a: hashedPassword },
+            data: { contrasena: hashedPassword },
             });
 
             await this.prisma.recuperacion_contraseña.updateMany({
@@ -212,7 +212,7 @@ export class UsuarioService {
         if (!usuario) throw new UnauthorizedException('Usuario no encontrado');
 
         //Verificar contraseña actual
-        const coincide = await bcrypt.compare(actual, usuario.contrase_a);
+        const coincide = await bcrypt.compare(actual, usuario.contrasena);
         if (!coincide) throw new UnauthorizedException('Contraseña actual incorrecta');
 
         //Verificar que nueva y confirmación coincidan
@@ -224,7 +224,7 @@ export class UsuarioService {
         //Actualizar la BD
         await this.prisma.usuario.update({
             where: { id_usuario },
-            data: { contrase_a: hashedPassword },
+            data: { contrasena: hashedPassword },
         });
 
         return { message: 'Contraseña actualizada correctamente' };
@@ -232,12 +232,12 @@ export class UsuarioService {
 
     async createDentista(data: CreateDentistaDto) {
         const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(data.contrase_a, saltRounds);
+        const hashedPassword = await bcrypt.hash(data.contrasena, saltRounds);
 
         const newDentista = await this.prisma.usuario.create({
         data: {
             correo: data.correo,
-            contrase_a: hashedPassword,
+            contrasena: hashedPassword,
             rol: Rol.DENTISTA, //asignamos automáticamente
             proveedor_login: data.proveedor_login || ProveedorLogin.LOCAL,
             status: data.status || Status.ACTIVO,

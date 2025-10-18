@@ -354,7 +354,7 @@ model tipo_evento {
 model usuario {
   id_usuario         Int             @id @default(autoincrement())
   correo             String          @unique @db.VarChar(60)
-  contrase_a         String          @map("contraseña")
+  contrasena         String          @map("contraseña")
   proveedor_login    proveedor_login @default(local)
   rol                rol
   fecha_registro     DateTime        @default(now()) @db.Timestamptz(6)
@@ -365,6 +365,8 @@ model usuario {
   paciente           paciente[]
   verificacion_correo verificacion_correo[]
   recuperacion_contraseña recuperacion_contraseña[]
+  sesion                  sesion[]
+
   consultorio        consultorio?     @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
 }
 
@@ -385,6 +387,19 @@ model recuperacion_contraseña {
   fecha_uso       DateTime?
   usado           Boolean   @default(false)
   usuario         usuario   @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+}
+
+model sesion {
+  id_sesion           Int         @id @default(autoincrement())
+  id_usuario          Int
+  refresh_token_hash  String      @db.VarChar(255)
+  fecha_creacion      DateTime    @default(now())
+  fecha_expira        DateTime
+  activo              Boolean     @default(true)
+  // ip               String?  // a lo mejor a futuro, para auditoría
+  // user_agent       String?  // a lo mejor a futuro, para auditoría
+
+  usuario             usuario     @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
 }
 
 enum clasificacion_a_cm {

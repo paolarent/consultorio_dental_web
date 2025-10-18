@@ -12,21 +12,21 @@ export class RegistroService {
     ) {}
 
     async registrarPacienteCompleto(data: CreateRegistroDto) {
-        // Crear primero el usuario
-        const { usuario, message: usuarioMessage } = await this.usuarioService.create({
+        // Crear usuario
+        const { usuario } = await this.usuarioService.create({
             correo: data.correo,
-            contrase_a: data.contrase_a,
-            rol: Rol.PACIENTE,                
-            proveedor_login: ProveedorLogin.LOCAL, 
-            status: Status.ACTIVO,           
-            id_consultorio: data.id_consultorio,
+            contrasena: data.contrasena,
+            rol: Rol.PACIENTE,
+            proveedor_login: ProveedorLogin.LOCAL,
+            status: Status.ACTIVO,
+            id_consultorio: data.id_consultorio, // ya viene del controller
         });
 
         if (!usuario) {
             throw new BadRequestException('Error al crear el usuario');
         }
 
-        // Crear el paciente asociado al usuario recién creado
+        // Crear paciente
         const paciente = await this.pacienteService.create({
             nombre: data.nombre,
             apellido1: data.apellido1,
@@ -34,8 +34,7 @@ export class RegistroService {
             telefono: data.telefono,
             fecha_nacimiento: data.fecha_nacimiento,
             sexo: data.sexo,
-            
-            // **Dirección**
+            // Dirección opcional
             d_calle: data.d_calle ?? undefined,
             d_num_exterior: data.d_num_exterior ?? undefined,
             d_colonia: data.d_colonia ?? undefined,
@@ -43,16 +42,15 @@ export class RegistroService {
             d_entidadfed: data.d_entidadfed ?? undefined,
             d_municipio: data.d_municipio ?? undefined,
             d_localidad: data.d_localidad ?? undefined,
-            
-            // **Tutor**
-            tiene_tutor: data.tiene_tutor,     
+            // Tutor opcional
+            tiene_tutor: data.tiene_tutor,
             tutor_nombre: data.tutor_nombre ?? undefined,
             tutor_apellido1: data.tutor_apellido1 ?? undefined,
             tutor_apellido2: data.tutor_apellido2 ?? undefined,
             tutor_telefono: data.tutor_telefono ?? undefined,
             tutor_correo: data.tutor_correo ?? undefined,
             tutor_relacion: data.tutor_relacion ?? undefined,
-            id_usuario: usuario.id_usuario,    //Se enlaza con el usuario
+            id_usuario: usuario.id_usuario, // enlace con el usuario
             id_consultorio: data.id_consultorio,
         });
 

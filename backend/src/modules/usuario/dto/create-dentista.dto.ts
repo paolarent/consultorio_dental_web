@@ -11,7 +11,7 @@ export class CreateDentistaDto {
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,20}$/,
         { message: 'La contraseña debe tener entre 8 y 20 caracteres, incluir al menos una mayúscula, una minúscula, un número y un símbolo especial.',},
     )
-    contrase_a: string;
+    contrasena: string;
 
     @IsInt()
     id_consultorio: number;
