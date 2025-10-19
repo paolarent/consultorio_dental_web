@@ -2,6 +2,10 @@ import { Controller, Post, Body, Req, UseGuards, Res} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import type { Response, Request } from 'express';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Rol } from 'src/common/enums';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -21,6 +25,8 @@ export class AuthController {
     }
 
     @Post('logout')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA, Rol.PACIENTE, Rol.ADMINISTRADOR)
     async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
         const refreshToken = req.cookies['refresh_token'];
         if (refreshToken) {
@@ -32,6 +38,8 @@ export class AuthController {
     }
 
     @Post('refresh')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA, Rol.PACIENTE, Rol.ADMINISTRADOR)
     async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
         const refreshToken = req.cookies['refresh_token'];
         if (!refreshToken) throw new Error('No hay refresh token');

@@ -13,6 +13,7 @@ export class AuthService {
     // LOGIN: retorna access + refresh tokens
     async login(correo: string, contrasena: string) {
         const usuario = await this.prisma.usuario.findUnique({ where: { correo } });
+        
         if (!usuario || usuario.status !== 'activo') {
             throw new UnauthorizedException('Correo o contraseña incorrectos');
         }
@@ -21,13 +22,13 @@ export class AuthService {
         if (!match) throw new UnauthorizedException('Correo o contraseña incorrectos');
 
         // Generar access token
-        const payload = { id_usuario: usuario.id_usuario, rol: usuario.rol };
+        const payload = { id_usuario: usuario.id_usuario, rol: usuario.rol, id_consultorio: usuario.id_consultorio, };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: Number(process.env.ACCESS_TOKEN_EXP_MINUTES || 10) * 60,
         });
 
         // Generar refresh token
-        const refreshPayload = { id_usuario: usuario.id_usuario, rol: usuario.rol };
+        const refreshPayload = { id_usuario: usuario.id_usuario, rol: usuario.rol, id_consultorio: usuario.id_consultorio, };
         const refreshToken = this.jwtService.sign(refreshPayload, {
             expiresIn: Number(process.env.REFRESH_TOKEN_EXP_DAYS || 7) * 24 * 60 * 60,
         });
@@ -96,14 +97,14 @@ export class AuthService {
 
             // Generar nuevos tokens
             const newAccessToken = this.jwtService.sign(
-                { id_usuario: usuario.id_usuario, rol: usuario.rol },
+                { id_usuario: usuario.id_usuario, rol: usuario.rol, id_consultorio: usuario.id_consultorio },
                 {
                     expiresIn: Number(process.env.ACCESS_TOKEN_EXP_MINUTES ?? 10) * 60, // minutos a segundos
                 },
             );
 
             const newRefreshToken = this.jwtService.sign(
-                { id_usuario: usuario.id_usuario, rol: usuario.rol },
+                { id_usuario: usuario.id_usuario, rol: usuario.rol, id_consultorio: usuario.id_consultorio },
                 {
                     expiresIn: Number(process.env.REFRESH_TOKEN_EXP_DAYS ?? 7) * 24 * 60 * 60, // días a segundos
                 },

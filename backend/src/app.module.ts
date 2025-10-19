@@ -13,11 +13,13 @@ import { EventoModule } from './modules/evento/evento.module';
 import { EgresoModule } from './modules/egreso/egreso.module';
 import { ServicioModule } from './modules/servicio/servicio.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './common/guards/roles.guard';
 
 @Module({
   imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule, 
             EgresoModule, ServicioModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService, MailerService],
+  providers: [AppService, MailerService]//, { provide: APP_GUARD, useClass: RolesGuard }],
 })
 export class AppModule {}
