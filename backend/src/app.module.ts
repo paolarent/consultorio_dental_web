@@ -15,10 +15,11 @@ import { ServicioModule } from './modules/servicio/servicio.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guards/roles.guard';
+import { HorarioModule } from './modules/horario/horario.module';
 
 @Module({
   imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule, 
-            EgresoModule, ServicioModule, AuthModule],
+            EgresoModule, ServicioModule, AuthModule, HorarioModule],
   controllers: [AppController],
   providers: [AppService, MailerService]//, { provide: APP_GUARD, useClass: RolesGuard }],
 })

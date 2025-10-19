@@ -1,5 +1,3 @@
-import { IsString, IsOptional, IsDateString, IsEnum } from 'class-validator';
-import { Sexo, SiONo } from '../../../common/enums';
 import { CreatePacienteDto } from './create-paciente.dto';
 import { OmitType, PartialType } from '@nestjs/mapped-types';
 

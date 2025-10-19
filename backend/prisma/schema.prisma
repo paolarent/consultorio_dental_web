@@ -176,8 +176,8 @@ model horario {
   id_horario     Int         @id @default(autoincrement())
   id_consultorio Int
   dia            Int         @db.SmallInt
-  hora_inicio    DateTime    @db.Timetz(6)
-  hora_fin       DateTime    @db.Timetz(6)
+  hora_inicio    String       //HH:MM     
+  hora_fin       String
   status         status      @default(activo)
   consultorio    consultorio @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: NoAction, onUpdate: NoAction, map: "id_consultorio")
 }
