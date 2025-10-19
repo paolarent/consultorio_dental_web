@@ -9,20 +9,18 @@ import { Rol } from 'src/common/enums';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('consultorios')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Rol.ADMINISTRADOR)
 export class ConsultorioController {
     constructor(private readonly consultorioService: ConsultorioService) {}
 
     @Get()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.ADMINISTRADOR)
     async getAll() {
         return this.consultorioService.findAll();
     }
 
     @Post()
     @UseInterceptors(FileInterceptor('logo'))
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.ADMINISTRADOR)
     async create(
         @Body() dto:CreateConsultorioDto,
         @UploadedFile() file?: Express.Multer.File,
@@ -30,17 +28,13 @@ export class ConsultorioController {
         return this.consultorioService.createConsultorio(dto, file);
     }
 
-    @Patch(':id/delete')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.ADMINISTRADOR)
+    @Patch('delete/:id')
     async delete(@Param('id', ParseIntPipe) id:number) {
         return this.consultorioService.deleteLogical(id);
     }
 
     @Patch(':id')
     @UseInterceptors(FileInterceptor('logo'))
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.ADMINISTRADOR)
     async updatePartial(
         @Param('id') id: string,
         @Body() dto: UpdateConsultorioDto,

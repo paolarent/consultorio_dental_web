@@ -1,4 +1,4 @@
-import { IsInt, IsDateString, Min, Max, IsEnum, Matches, IsOptional } from 'class-validator';
+import { IsInt, Min, Max, IsEnum, Matches, IsOptional } from 'class-validator';
 import { Status } from 'src/common/enums';
 
 export class CreateHorarioDto {

@@ -22,7 +22,7 @@ model alergia {
 model archivo {
   id_archivo   Int            @id @default(autoincrement())
   id_paciente  Int
-  nombre       String         @db.VarChar(100)
+  nombre       String         @db.VarChar(40)
   descripcion  String?
   url_imagen   String         @db.VarChar(500)
   imagen_public_id    String?               // para eliminar o reemplazar la imagen

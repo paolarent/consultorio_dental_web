@@ -9,6 +9,7 @@ import { Rol } from 'src/common/enums';
 import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('servicio')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ServicioController {
     constructor( private readonly servicioService: ServicioService ) {}
 
@@ -18,7 +19,6 @@ export class ServicioController {
     }
 
     @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     @UseInterceptors(FileInterceptor('imagen'))
     createServicio(@Body() dto: CreateServicioDto, @UploadedFile() file: Express.Multer.File, @Req() req: any) {
@@ -30,7 +30,6 @@ export class ServicioController {
     }
 
     @Patch(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     @UseInterceptors(FileInterceptor('imagen'))
     updateServicio(
@@ -42,7 +41,6 @@ export class ServicioController {
     }
 
     @Patch('soft-delete/:id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     softDelete(@Param('id') id: string) {
         return this.servicioService.softDelete(Number(id));

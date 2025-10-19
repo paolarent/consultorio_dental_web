@@ -7,12 +7,12 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('registro')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class RegistroController {
     constructor(private readonly registroService: RegistroService) {}
 
     // Endpoint para registrar paciente completo (ambas tablas)
     @Post('paciente-completo')
-    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     async createPacienteCompleto(@Body() data: CreateRegistroDto, @Req() req: any) {
         const usuarioAuth = req.user; // { id_usuario, rol, id_consultorio }
@@ -25,7 +25,6 @@ export class RegistroController {
 
 
     @Patch('paciente-logical/:usuarioId/:pacienteId')
-    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     async deletePacienteLogical(
         @Param('usuarioId') usuarioId: number,
