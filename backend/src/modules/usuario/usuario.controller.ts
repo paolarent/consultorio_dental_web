@@ -5,6 +5,9 @@ import { UpdateCorreoDto } from './dto/update-correo.dto';
 import { UpdateContrasenaDto } from './dto/update-contrasena.dto';
 import { Rol } from 'src/common/enums';
 import { CreateDentistaDto } from './dto/create-dentista.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 //import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // pienso usar JWT tmb para login
 
 @Controller('usuario')
@@ -27,6 +30,8 @@ export class UsuarioController {
     }
 
     @Post('dentista')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.ADMINISTRADOR)
     createDentista(@Body() data: CreateDentistaDto) {
         return this.usuarioService.createDentista(data);
     }

@@ -1,23 +1,21 @@
-import { Controller, Post, Body, Param, Patch, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Param, Patch, UseGuards, Req} from '@nestjs/common';
 import { RegistroService } from './registro.service';
 import { CreateRegistroDto } from './dto/create-registro.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Rol } from 'src/common/enums';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('registro')
 export class RegistroController {
     constructor(private readonly registroService: RegistroService) {}
 
-    // Endpoint para registrar paciente completo
+    // Endpoint para registrar paciente completo (ambas tablas)
     @Post('paciente-completo')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
     async createPacienteCompleto(@Body() data: CreateRegistroDto, @Req() req: any) {
         const usuarioAuth = req.user; // { id_usuario, rol, id_consultorio }
-
-        // Solo dentistas pueden registrar
-        if (usuarioAuth.rol !== Rol.DENTISTA) {
-            throw new UnauthorizedException('Solo dentistas pueden registrar pacientes');
-        }
 
         // Asignar automáticamente el id_consultorio del dentista q registra el usuario
         data.id_consultorio = usuarioAuth.id_consultorio;
@@ -27,19 +25,12 @@ export class RegistroController {
 
 
     @Patch('paciente-logical/:usuarioId/:pacienteId')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
     async deletePacienteLogical(
         @Param('usuarioId') usuarioId: number,
         @Param('pacienteId') pacienteId: number,
-        @Req() req: any,  // para obtener info del usuario logueado
     ) {
-        const usuarioAuth = req.user; // { id_usuario, rol, id_consultorio }
-
-        // Validar que solo dentistas puedan 'eliminar' pacientes
-        if (usuarioAuth.rol !== Rol.DENTISTA) {
-            throw new UnauthorizedException('Solo dentistas pueden desactivar pacientes');
-        }
-
         return this.registroService.deletePacienteLogical(usuarioId, pacienteId);
     }
 

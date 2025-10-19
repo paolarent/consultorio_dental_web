@@ -19,7 +19,7 @@ export class RegistroService {
             rol: Rol.PACIENTE,
             proveedor_login: ProveedorLogin.LOCAL,
             status: Status.ACTIVO,
-            id_consultorio: data.id_consultorio, // ya viene del controller
+            id_consultorio: data.id_consultorio!, // ya viene del controller
         });
 
         if (!usuario) {
@@ -51,7 +51,7 @@ export class RegistroService {
             tutor_correo: data.tutor_correo ?? undefined,
             tutor_relacion: data.tutor_relacion ?? undefined,
             id_usuario: usuario.id_usuario, // enlace con el usuario
-            id_consultorio: data.id_consultorio,
+            id_consultorio: data.id_consultorio!,
         });
 
         return {

@@ -15,7 +15,7 @@ export class CreateServicioDto {
 
     @IsNumber()
     @Min(0)
-    @Type(() => Number)  // convierte string a number
+    @Type(() => Number)  //convierte string a number
     precio_base: number;
 
     @IsInt()

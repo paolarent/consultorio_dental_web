@@ -13,8 +13,9 @@ export class CreateRegistroDto {
     )
     contrasena: string;
 
+    @IsOptional()
     @IsInt()
-    id_consultorio: number;
+    id_consultorio?: number;
 
     // Campos de paciente
     @IsString()
