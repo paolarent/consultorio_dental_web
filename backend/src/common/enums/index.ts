@@ -82,7 +82,7 @@ export enum StatusCitas {
 
 export enum StatusCondicionMed {
   ACTIVA = "activa",
-  RESUELTA = "resuelta",
+  DESCARTADA = "descartada",
   CRONICA = "cronica",
 }
 

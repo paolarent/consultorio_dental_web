@@ -54,7 +54,7 @@ model condicion_medica {
   id_tipo_condicion     Int
   nombre                String               @db.VarChar(60)
   a_o_diagnostico       Int                  @map("año_diagnostico")
-  medicamentos_actuales String
+  medicamentos_actuales Json
   condicion_controlada  si_o_no
   status                status_condicion_med
   paciente              paciente             @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
@@ -484,7 +484,7 @@ enum status_citas {
 
 enum status_condicion_med {
   activa
-  resuelta
+  descartada
   cronica
 }
 

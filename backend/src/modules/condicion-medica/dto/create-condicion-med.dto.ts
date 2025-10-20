@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsInt, IsString, IsEnum, IsOptional, IsArray } from 'class-validator';
 import { SiONo, StatusCondicionMed } from '../../../common/enums';
 import { Type } from 'class-transformer';
 
@@ -19,8 +19,9 @@ export class CreateCondicionMedicaDto {
     @Type(() => Number)
     a_o_diagnostico: number;
 
-    @IsString()
-    medicamentos_actuales: string;
+    @IsArray()
+    @IsString({ each: true })
+    medicamentos_actuales: string[];
 
     @IsEnum(SiONo)
     condicion_controlada: SiONo;

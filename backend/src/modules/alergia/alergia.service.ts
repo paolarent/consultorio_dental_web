@@ -37,19 +37,19 @@ export class AlergiaService {
     // Listar alergias activas de un paciente
     async listarPorPaciente(id_paciente: number) {
         return this.prisma.alergia.findMany({
-        where: { id_paciente, status: StatusAlergia.ACTIVA },
-        select: {
-            id_alergia: true,
-            nombre: true,
-            notas: true,
-            severidad: true,
-            tipo_alergia: {
+            where: { id_paciente, status: StatusAlergia.ACTIVA },
             select: {
-                id_tipo_alergia: true,
+                id_alergia: true,
                 nombre: true,
+                notas: true,
+                severidad: true
+                //tipo_alergia: {
+                //select: {
+                    //id_tipo_alergia: true,
+                    //nombre: true,
+                //},
+                //},
             },
-            },
-        },
         });
     }
 
