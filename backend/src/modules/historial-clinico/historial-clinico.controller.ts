@@ -40,13 +40,14 @@ export class HistorialClinicoController {
 
 
     @Patch('foto/delete/:id_foto')
+    @Roles(Rol.DENTISTA)
     eliminarFoto(@Param('id_foto') id_foto: string) {
         return this.historialService.eliminarFoto(Number(id_foto));
     }
 
-    @Patch('delete/:id')
+    @Patch('delete/:id_historial')
     @Roles(Rol.DENTISTA)
-    desactivar(@Param('id') id: string) {
-        return this.historialService.desactivarHistorial(Number(id));
+    desactivar(@Param('id_historial') id_historial: string) {
+        return this.historialService.desactivarHistorial(Number(id_historial));
     }
 }

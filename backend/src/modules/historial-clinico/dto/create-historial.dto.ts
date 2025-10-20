@@ -3,9 +3,11 @@ import { IsInt, IsDateString, IsString, MinLength, MaxLength, IsDate, IsOptional
 import { Status } from 'src/common/enums';
 
 export class CreateHistorialDto {
+    @Type(() => Number)
     @IsInt()
     id_paciente: number;
 
+    @Type(() => Number)
     @IsInt()
     id_servicio: number;
 

@@ -29,9 +29,9 @@ export class HistorialClinicoService {
             where: { id_historial: historial.id_historial },
         });
 
-        if (dto.fotos && fotosExistentes + dto.fotos.length > 6) {
+        if (dto.fotos && fotosExistentes + dto.fotos.length > 3) {
             throw new BadRequestException(
-                'Se ha alcanzado el límite máximo de 6 fotografías por registro de historial.'
+                'Se ha alcanzado el límite máximo de 3 fotografías por registro de historial.'
             );
         }
 
@@ -56,7 +56,15 @@ export class HistorialClinicoService {
     async obtenerHistorial(id_paciente: number) {
         return this.prisma.historial_clinico.findMany({
             where: { id_paciente, status: Status.ACTIVO },
-            include: { fotografia_historial: true, servicio: true },
+            include: { 
+                fotografia_historial: true, 
+                servicio: {
+                    select: {
+                        id_servicio: true,
+                        nombre: true,
+                    }, 
+                },
+            },
             orderBy: { fecha: 'desc' },
         });
     }
@@ -70,9 +78,9 @@ export class HistorialClinicoService {
             where: { id_historial },
         });
 
-        if (fotos && fotosExistentes + fotos.length > 6) {
+        if (fotos && fotosExistentes + fotos.length > 3) {
             throw new BadRequestException(
-                'Se ha alcanzado el límite máximo de 6 fotografías por registro de historial.'
+                'Se ha alcanzado el límite máximo de 3 fotografías por registro de historial.'
             );
         }
 
