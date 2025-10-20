@@ -5,11 +5,15 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Rol } from 'src/common/enums';
 import { CreateAlergiaDto } from './dto/create-alergia.dto';
+import { PacienteUtilsService } from 'src/common/services/paciente-utils.service';
 
 @Controller('alergias')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class AlergiaController {
-    constructor(private readonly alergiaService: AlergiaService) {}
+    constructor(
+        private readonly alergiaService: AlergiaService,
+        private pacienteUtils: PacienteUtilsService
+    ) {}
 
     //Crear alergia (puede ser desde paciente o dentista)
     @Post()
@@ -35,7 +39,7 @@ export class AlergiaController {
     @Roles(Rol.PACIENTE)
     async listarPaciente(@Req() req) {
         // Obtener id_paciente a partir del id_usuario del JWT
-        const paciente = await this.alergiaService.obtenerPacientePorUsuario(req.user.id_usuario);
+        const paciente = await this.pacienteUtils.obtenerPacientePorUsuario(req.user.id_usuario);
         return this.alergiaService.listarPorPaciente(paciente.id_paciente);
     }
 

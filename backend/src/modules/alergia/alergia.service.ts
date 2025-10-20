@@ -2,26 +2,21 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateAlergiaDto } from './dto/create-alergia.dto';
 import { Rol, StatusAlergia } from 'src/common/enums';
+import { PacienteUtilsService } from 'src/common/services/paciente-utils.service';
 
 @Injectable()
 export class AlergiaService {
-    constructor(private prisma: PrismaService) {}
-
-    // Obtener el paciente a partir del id_usuario
-    async obtenerPacientePorUsuario(id_usuario: number) {
-        const paciente = await this.prisma.paciente.findUnique({
-            where: { id_usuario },
-        });
-        if (!paciente) throw new NotFoundException('Paciente no encontrado');
-        return paciente;
-    }
+    constructor(
+        private prisma: PrismaService,
+        private pacienteUtils: PacienteUtilsService 
+    ) {}
 
     // Crear alergia (paciente o dentista)
     async agregarAlergia(dto: CreateAlergiaDto, id: number, rol: Rol) {
         let id_paciente: number;
 
         if (rol === Rol.PACIENTE) {
-            const paciente = await this.obtenerPacientePorUsuario(id); // Reutilizas la función
+            const paciente = await this.pacienteUtils.obtenerPacientePorUsuario(id); // Reutilizas la función
             id_paciente = paciente.id_paciente;
         } else {
             id_paciente = id; // Dentista ya envió id_paciente
