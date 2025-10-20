@@ -1,0 +1,56 @@
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Request, Req, BadRequestException } from '@nestjs/common';
+import { AlergiaService } from './alergia.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Rol } from 'src/common/enums';
+import { CreateAlergiaDto } from './dto/create-alergia.dto';
+
+@Controller('alergias')
+@UseGuards(JwtAuthGuard, RolesGuard)
+export class AlergiaController {
+    constructor(private readonly alergiaService: AlergiaService) {}
+
+    //Crear alergia (puede ser desde paciente o dentista)
+    @Post()
+    @Roles(Rol.PACIENTE, Rol.DENTISTA)
+    agregar(@Body() dto: CreateAlergiaDto, @Request() req: any) {
+        let id_paciente: number;
+
+        if (req.user.rol === Rol.PACIENTE) {
+            // Para pacientes, obtenemos id_paciente desde el service a partir de id_usuario
+            id_paciente = req.user.id_usuario; // temporal, el service hará la conversión
+        } else {
+            // Para dentista, se envía explícitamente en el DTO
+            if (!dto.id_paciente) throw new BadRequestException('Debe enviar id_paciente');
+            id_paciente = dto.id_paciente;
+        }
+
+        return this.alergiaService.agregarAlergia(dto, id_paciente, req.user.rol);
+    }
+
+    //LISTAR LAS ALERGIAS
+    //Para el paciente
+    @Get('mis-alergias')
+    @Roles(Rol.PACIENTE)
+    async listarPaciente(@Req() req) {
+        // Obtener id_paciente a partir del id_usuario del JWT
+        const paciente = await this.alergiaService.obtenerPacientePorUsuario(req.user.id_usuario);
+        return this.alergiaService.listarPorPaciente(paciente.id_paciente);
+    }
+
+
+    //Para el dentista que consulta un paciente específico
+    @Get('paciente/:id_paciente')
+    @Roles(Rol.DENTISTA)
+    listarPorPaciente(@Param('id_paciente') id_paciente: string) {
+    return this.alergiaService.listarPorPaciente(Number(id_paciente));
+    }
+
+    //Desactivar alergia
+    @Patch('desactivar/:id_alergia')
+    @Roles(Rol.PACIENTE, Rol.DENTISTA)
+    desactivar(@Param('id_alergia') id_alergia: string) {
+        return this.alergiaService.desactivarAlergia(Number(id_alergia));
+    }
+}

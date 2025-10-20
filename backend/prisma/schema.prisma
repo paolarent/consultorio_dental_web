@@ -229,7 +229,7 @@ model paciente {
   d_entidadfed      String?             @db.VarChar(30)
   d_municipio       String?             @db.VarChar(30)
   d_localidad       String?             @db.VarChar(30)
-  id_usuario        Int
+  id_usuario        Int                 @unique
   id_consultorio    Int
   tiene_tutor       si_o_no
   tutor_nombre      String?             @db.VarChar(60)

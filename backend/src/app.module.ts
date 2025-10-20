@@ -18,10 +18,11 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { HorarioModule } from './modules/horario/horario.module';
 import { ArchivoModule } from './modules/archivo/archivo.module';
 import { HistorialClinicoModule } from './modules/historial-clinico/historial-clinico.module';
+import { AlergiaModule } from './modules/alergia/alergia.module';
 
 @Module({
   imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule, 
-            EgresoModule, ServicioModule, AuthModule, HorarioModule, ArchivoModule, HistorialClinicoModule],
+            EgresoModule, ServicioModule, AuthModule, HorarioModule, ArchivoModule, HistorialClinicoModule, AlergiaModule],
   controllers: [AppController],
   providers: [AppService, MailerService]//, { provide: APP_GUARD, useClass: RolesGuard }],
 })
