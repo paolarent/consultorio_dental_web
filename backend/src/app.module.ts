@@ -19,10 +19,12 @@ import { HorarioModule } from './modules/horario/horario.module';
 import { ArchivoModule } from './modules/archivo/archivo.module';
 import { HistorialClinicoModule } from './modules/historial-clinico/historial-clinico.module';
 import { AlergiaModule } from './modules/alergia/alergia.module';
+import { CondicionMedicaModule } from './modules/condicion-medica/condicion-medica.module';
 
 @Module({
   imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule, 
-            EgresoModule, ServicioModule, AuthModule, HorarioModule, ArchivoModule, HistorialClinicoModule, AlergiaModule],
+            EgresoModule, ServicioModule, AuthModule, HorarioModule, ArchivoModule, HistorialClinicoModule, AlergiaModule, CondicionMedicaModule,
+            ],
   controllers: [AppController],
   providers: [AppService, MailerService]//, { provide: APP_GUARD, useClass: RolesGuard }],
 })
