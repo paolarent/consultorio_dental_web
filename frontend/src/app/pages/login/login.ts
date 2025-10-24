@@ -5,7 +5,7 @@ import { FormLoginPaciente } from '../../components/form-login-paciente/form-log
 
 @Component({
   selector: 'app-login',
-  imports: [FormLogin, FormLoginPaciente, CommonModule],
+  imports: [CommonModule, FormLogin, FormLoginPaciente],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
