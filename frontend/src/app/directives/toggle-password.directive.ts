@@ -9,7 +9,7 @@ private icon!: HTMLElement;
 
 constructor(private el: ElementRef, private renderer: Renderer2) {}
 
-    ngAfterViewInit() {
+    ngAfterViewInit() { //permite ejecutar código después de que Angular renderiza la vista
         const parent = this.el.nativeElement.parentElement;
 
         // Contenedor relativo necesario para posicionamiento

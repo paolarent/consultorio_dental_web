@@ -362,7 +362,7 @@ model usuario {
   id_consultorio     Int?
   status             status          @default(activo)
 
-  paciente           paciente[]
+  paciente           paciente?
   verificacion_correo verificacion_correo[]
   recuperacion_contraseña recuperacion_contraseña[]
   sesion                  sesion[]

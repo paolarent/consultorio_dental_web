@@ -12,18 +12,29 @@
             />
         </div>
         
-        <h1 class="text-2xl font-bold mb-6 text-center text-black">RECUPERAR CONTRASEÑA</h1>
-        <p class="text-lg font-regular mb-6 text-center text-black">Ingrese su correo electrónico para reestablecer la contraseña de su cuenta</p>
+        <h1 class="text-2xl font-bold mb-4 text-center text-black">CAMBIAR CONTRASEÑA</h1>
+        <p class="text-lg font-regular mb-6 text-center text-black">Ingrese su nueva contraseña y confirmela</p>
         
         <form class="flex flex-col">
             <!-- Grupo inputs -->
             <div class="flex flex-col gap-8 mb-2">
-                <div>
-                    <label class="block text-lg font-medium text-[#545454] mb-1">Correo</label>
+                <div class="relative">
+                    <label class="block text-lg font-medium text-[#545454] mb-1">Nueva Contraseña</label>
                     <input
-                        type="email"
-                        placeholder="Ingresa tu correo"
-                        class="w-full h-12 border border-gray-300 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        type="password"
+                        appTogglePassword
+                        placeholder="Ingresa tu contraseña"
+                        class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                    />
+                </div>
+
+                <div class="relative">
+                    <label class="block text-lg font-medium text-[#545454] mb-1">Confirme su nueva Contraseña</label>
+                    <input
+                        type="password"
+                        appTogglePassword
+                        placeholder="Ingresa tu contraseña"
+                        class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
                     />
                 </div>
 
@@ -31,15 +42,15 @@
                     type="submit"
                     class="w-full h-14 bg-[#25BEC4] text-white text-xl font-bold py-2 rounded-lg shadow-xl hover:bg-[#1D8F93] transition-colors duration-200"
                 >
-                    Enviar
+                    Confirmar
                 </button>
 
-                <a 
+                <!--<a 
                 href="#" 
                 class="block text-center text-[#545454] text-lg font-semibold underline tracking-wide italic hover:text-[#000000] transition-colors"
                 >
                     Volver al inicio de sesión
-                </a>
+                </a>-->
             </div>
 
         </form>

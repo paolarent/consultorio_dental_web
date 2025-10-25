@@ -10,9 +10,36 @@ export class AuthService {
         private jwtService: JwtService,
     ) {}
 
+    async getUsuarioById(id_usuario: number) {
+        const usuario = await this.prisma.usuario.findUnique({
+            where: { id_usuario },
+            select: {
+                id_usuario: true,
+                correo: true,
+                rol: true,
+                consultorio: {
+                    select: {
+                        nombre: true,
+                        logo_url: true,
+                    },
+                },
+                paciente: {
+                    select: {
+                        nombre: true
+                    }
+                }
+            },
+        });
+
+        if (!usuario) throw new UnauthorizedException('Usuario no válido');
+
+        return usuario;
+    }
+
+
     // LOGIN: retorna access + refresh tokens
     async login(correo: string, contrasena: string) {
-        const usuario = await this.prisma.usuario.findUnique({ where: { correo } });
+        const usuario = await this.prisma.usuario.findUnique({ where: { correo }, include: { paciente: { select: { nombre: true } } }  });
         
         if (!usuario || usuario.status !== 'activo') {
             throw new UnauthorizedException('Correo o contraseña incorrectos');
@@ -53,7 +80,7 @@ export class AuthService {
             },
         });
 
-        return { accessToken, refreshToken };
+        return { accessToken, refreshToken, usuario };
     }
 
     // LOGOUT (desactivar la sesión actual por refresh token)
