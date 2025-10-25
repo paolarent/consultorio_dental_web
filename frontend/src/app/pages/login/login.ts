@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
-import { FormLogin } from '../../components/form-login/form-login';
 import { CommonModule } from '@angular/common';
-import { FormLoginPaciente } from '../../components/form-login-paciente/form-login-paciente';
+import { RouterOutlet } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { FormLogin } from "../../components/form-login/form-login";
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormLogin, FormLoginPaciente],
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
 export class Login {
-
+  
 }
