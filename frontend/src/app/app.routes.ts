@@ -6,6 +6,7 @@ import { FormRestorePassw } from './components/form-restore-passw/form-restore-p
 import { FormNewPassw } from './components/form-new-passw/form-new-passw';
 import { Home } from './pages/home/home';
 import { AuthGuard } from './auth/auth.guard';
+import { AgendaDoc } from './pages/agenda-doc/agenda-doc';
 
 export const routes: Routes = [
     { 
@@ -20,13 +21,27 @@ export const routes: Routes = [
     },
 
     {
-        path: '',
+        path: 'home',
         component: Home,
-        //canActivate: [AuthGuard]
+        canActivate: [AuthGuard]
         /*
         children: [
             { path: 'paciente', component: FormLoginPaciente },
             { path: '', component: FormLogin },
+            { path: 'forgot-password', component: FormRestorePassw },
+            { path: 'restore-password', component: FormNewPassw }
+        ]
+        */
+    },
+
+    {
+        path: 'doc',
+        component: AgendaDoc,
+        canActivate: [AuthGuard]
+        /*
+        children: [
+            { path: 'mi-agenda', component: FormLoginPaciente },
+            { path: 'finanzas', component: FormLogin },
             { path: 'forgot-password', component: FormRestorePassw },
             { path: 'restore-password', component: FormNewPassw }
         ]

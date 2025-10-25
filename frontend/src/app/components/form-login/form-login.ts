@@ -5,7 +5,6 @@ import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../auth/auth.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { finalize, switchMap, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-form-login',
@@ -22,7 +21,7 @@ export class FormLogin {
   contrasena = '';
   loading = signal(false);
 
-  submitForm() {
+  sendLoginDA() {
     if (!this.correo || !this.contrasena) {
       this.notify.error('Debes ingresar correo y contraseña');
       return;
@@ -32,13 +31,31 @@ export class FormLogin {
 
     this.auth.login(this.correo, this.contrasena)
     .subscribe({
-      next: (res: any) => {
-        console.log('Login response:', res); //
-        const usuario = res; // res ya incluye paciente
-        const nombre = usuario.paciente?.nombre || usuario.correo;
-        this.notify.success(`Bienvenido ${nombre}`, 'Inicio exitoso');
-        this.auth.setUsuario(usuario);
-        this.router.navigate(['/'], { replaceUrl: true });
+      next: (usuario: any) => {
+
+         // Verificar rol paciente para redirigir
+        if (usuario.rol.toLowerCase() === 'paciente') {
+          this.notify.error('Este no es el login de paciente, redirigiendo');
+          setTimeout(() => this.router.navigate(['/login/paciente'], { replaceUrl: true }), 1000);
+          this.loading.set(false);
+          return;
+        }
+        
+        // Mensaje según rol
+        let mensajeBienvenida = '';
+        if (usuario.rol.toLowerCase() === 'dentista') {
+          // Mostrar nombre del titular del consultorio
+          const titular = usuario.consultorio?.titular_nombre || 'Doctor';
+          mensajeBienvenida = `Bienvenido Dr. ${titular}`;
+        } else if (usuario.rol.toLowerCase() === 'admin') {
+          mensajeBienvenida = 'Bienvenido Admin';
+        } else {
+          mensajeBienvenida = `Bienvenido ${usuario.correo}`;
+        }
+
+      this.notify.success(mensajeBienvenida, 'Inicio exitoso');
+        
+        this.router.navigate(['/doc'], { replaceUrl: true });
       },
       error: (err) => {
         console.error(err);

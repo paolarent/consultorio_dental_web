@@ -25,6 +25,8 @@
                             type="email"
                             placeholder="Ingresa tu correo"
                             class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            [(ngModel)]="correo"
+                            name="correo"
                         />
                     </div>
 
@@ -35,12 +37,15 @@
                             appTogglePassword
                             placeholder="Ingresa tu contraseña"
                             class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            [(ngModel)]="contrasena"
+                            name="contrasena"
                         />
                     </div>
 
                     <a 
                     href="#" 
                     class="block text-left text-[#1D8F93] text-sm font-semibold underline tracking-wide italic hover:text-[#545454] transition-colors"
+                    (click)="forgotPassw()"
                     >
                         ¿Olvidó su contraseña?
                     </a>
@@ -51,6 +56,7 @@
                     <button
                     type="submit"
                     class="w-full h-14 bg-[#25BEC4] text-white text-xl font-bold py-2 rounded-lg shadow-xl hover:bg-[#1D8F93] transition-colors duration-200"
+                    (click)="sendLogin()"
                     >
                         Iniciar Sesión
                     </button>

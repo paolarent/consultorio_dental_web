@@ -20,7 +20,10 @@ export class AuthService {
     login(correo: string, contrasena: string) {
         return this.http.post(`${this.baseUrl}/login`, { correo, contrasena }, { withCredentials: true })
         .pipe(
-            switchMap(() => this.getMe()) // ahora sí devuelve el usuario completo
+            switchMap(() => this.getMe()), // ahora devuelve el usuario completo
+            tap(usuario => {
+                this.usuarioSubject.next(usuario);
+            })
         );
     }
 

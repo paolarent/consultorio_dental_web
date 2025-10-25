@@ -21,6 +21,7 @@ export class AuthService {
                     select: {
                         nombre: true,
                         logo_url: true,
+                        titular_nombre: true
                     },
                 },
                 paciente: {
@@ -140,21 +141,22 @@ export class AuthService {
             const newRefreshTokenHash = await bcrypt.hash(newRefreshToken, 10);
 
             // Desactivar sesión antigua y crear nueva
-            await this.prisma.sesion.update({
-                where: { id_sesion: sesion.id_sesion },
-                data: { activo: false },
-            });
-
-            await this.prisma.sesion.create({
-                data: {
+            await this.prisma.$transaction([
+                this.prisma.sesion.update({
+                    where: { id_sesion: sesion.id_sesion },
+                    data: { activo: false },
+                }),
+                this.prisma.sesion.create({
+                    data: {
                     id_usuario: usuario.id_usuario,
                     refresh_token_hash: newRefreshTokenHash,
                     fecha_expira: new Date(
                         Date.now() + Number(process.env.REFRESH_TOKEN_EXP_DAYS ?? 7) * 24 * 60 * 60 * 1000,
                     ),
                     activo: true,
-                },
-            });
+                    },
+                }),
+            ]);
 
             return { accessToken: newAccessToken, refreshToken: newRefreshToken };
         } catch (error) {
