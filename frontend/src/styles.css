@@ -14,19 +14,19 @@ body {
 }
 
 .toast-success {
-    @apply bg-[#1D8F93] pr-12 pl-6 py-6 text-white text-xl font-semibold rounded-lg shadow-xl;
+    @apply bg-[#1D8F93] pr-12 pl-6 py-6 text-white text-lg font-semibold rounded-lg shadow-xl;
 }
 
 .toast-error  {
-    @apply bg-[#962D2D] pr-12 pl-6 py-6 text-white text-xl font-semibold rounded-lg shadow-xl;
+    @apply bg-[#962D2D] pr-12 pl-6 py-6 text-white text-lg font-semibold rounded-lg shadow-xl;
 }
 
 .toast-info {
-    @apply bg-[#545454] pr-12 pl-6 py-6 text-white text-xl font-semibold rounded-lg shadow-xl;
+    @apply bg-[#545454] pr-12 pl-6 py-6 text-white text-lg font-semibold rounded-lg shadow-xl;
 }
 
 .toast-warning {
-    @apply bg-[#D9BE66] pr-12 pl-6 py-6 text-white text-xl font-semibold rounded-lg shadow-xl;
+    @apply bg-[#D9BE66] pr-12 pl-6 py-6 text-white text-lg font-semibold rounded-lg shadow-xl;
 }
 
 /* Estilo global para el botón de cerrar de todos los toasts */

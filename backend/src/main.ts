@@ -8,7 +8,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: 'http://localhost:4200', // o tu frontend
+    origin: 'http://localhost:4200', //ruta del front
     credentials: true,
   });
 
