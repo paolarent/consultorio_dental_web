@@ -1,0 +1,30 @@
+<nav class="flex items-center justify-between p-4 bg-gray-100 shadow-md">
+    @if (usuario()) {
+        <!-- Logo del consultorio -->
+        @if (usuario().consultorio) {
+        <div class="flex items-center space-x-2">
+            <img [src]="usuario().consultorio.logo_url" 
+                alt="Logo del consultorio" 
+                class="w-20 h-10">
+            <span class="font-bold text-lg">{{ usuario().consultorio.nombre }}</span>
+        </div>
+        }
+
+        <!-- Menú principal -->
+        <div class="flex items-center space-x-4">
+        <a routerLink="/dashboard" class="text-gray-700 hover:text-gray-900">Dashboard</a>
+        <a routerLink="/pacientes" class="text-gray-700 hover:text-gray-900">Pacientes</a>
+        <button (click)="logout()" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+            Cerrar sesión
+        </button>
+        </div>
+    } @else {
+        <!-- Usuario no loggeado -->
+        <div class="flex items-center">
+        <a routerLink="/login" class="text-blue-600 hover:underline">Iniciar sesión</a>
+        </div>
+    }
+
+</nav>
+
+
