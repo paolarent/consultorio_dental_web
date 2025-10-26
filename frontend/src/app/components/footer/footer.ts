@@ -12,5 +12,4 @@ import { TelefonoPipe } from '../../pipes/telefono.pipe';
 export class Footer {
   auth = inject(AuthService);
 
-
 }

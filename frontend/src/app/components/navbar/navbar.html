@@ -1,30 +1,43 @@
-<nav class="flex items-center justify-between p-4 bg-gray-100 shadow-md">
-    @if (usuario()) {
-        <!-- Logo del consultorio -->
-        @if (usuario().consultorio) {
-        <div class="flex items-center space-x-2">
-            <img [src]="usuario().consultorio.logo_url" 
-                alt="Logo del consultorio" 
-                class="w-20 h-10">
-            <span class="font-bold text-lg">{{ usuario().consultorio.nombre }}</span>
+<nav class="w-full flex items-center justify-between bg-white shadow-md h-24 px-6 relative">
+
+    <!-- Fondo estético opcional -->
+    <div class="absolute left-0 top-0 w-full h-full bg-[#dde0eb] rounded-xl"></div>
+
+    @if (auth.usuario(); as usuario) {
+        <div class="flex items-center z-10">
+            <img [src]="usuario.consultorio.logo_url" alt="Logo del consultorio" class="w-120 h-24 rounded-xl" />
         </div>
-        }
 
         <!-- Menú principal -->
-        <div class="flex items-center space-x-4">
-        <a routerLink="/dashboard" class="text-gray-700 hover:text-gray-900">Dashboard</a>
-        <a routerLink="/pacientes" class="text-gray-700 hover:text-gray-900">Pacientes</a>
-        <button (click)="logout()" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-            Cerrar sesión
-        </button>
-        </div>
-    } @else {
-        <!-- Usuario no loggeado -->
-        <div class="flex items-center">
-        <a routerLink="/login" class="text-blue-600 hover:underline">Iniciar sesión</a>
+        <div class="flex items-center space-x-6 z-10">
+            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
+                <img src="assets/icons/home.svg" alt="Inicio" title="Inicio" class="w-8 h-8" />
+                <span>Inicio</span>
+            </a>
+
+            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
+                <img src="assets/icons/citas.svg" alt="Citas" title="Citas" class="w-8 h-8" />
+                <span>Citas</span>
+            </a>
+
+            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
+                <img src="assets/icons/mensaje.svg" alt="Contáctanos" title="Contáctanos" class="w-8 h-8" />
+                <span>Contáctanos</span>
+            </a>
+
+
+            <!-- Botón de usuario -->
+            <div class="flex items-center space-x-2 bg-[#115153] rounded-xl px-4 py-2 text-white ml-8">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center">
+                    <img src="assets/icons/user.svg" alt="icono de usuario" title="usuario" class="w-10 h-10" />
+                </div>
+                <span class="text-lg font-semibold text-[#dde0eb] tracking-widest">{{ usuario.paciente?.nombre }}</span>
+            </div>
+
         </div>
     }
 
 </nav>
+
 
 
