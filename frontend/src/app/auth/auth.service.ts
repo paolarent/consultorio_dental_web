@@ -9,6 +9,7 @@ import { switchMap, tap } from 'rxjs/operators';
 export class AuthService {
     private http = inject(HttpClient);
     private baseUrl = 'http://localhost:3000/auth';
+    private urlPasswRec = 'http://localhost:3000/usuario';
     
     private usuarioSubject = new BehaviorSubject<any>(null);
     usuario$ = this.usuarioSubject.asObservable();
@@ -45,6 +46,16 @@ export class AuthService {
             })
         );
     }
+
+    solicitarRecuperacion(correo: string) {
+        return this.http.post(`${this.urlPasswRec}/recuperacion`, { correo }, { withCredentials: true });
+    }
+
+
+    restablecerContrasena(token: string, nuevaContrasena: string) {
+        return this.http.patch(`${this.urlPasswRec}/restablecer`, { token, nuevaContrasena }, { withCredentials: true });
+    }
+
 
 }
 

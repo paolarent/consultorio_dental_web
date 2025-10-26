@@ -22,6 +22,8 @@
                     <label class="block text-lg font-medium text-[#545454] mb-1">Nueva Contraseña</label>
                     <input
                         type="password"
+                        [(ngModel)]="nueva"
+                        name="nueva"
                         appTogglePassword
                         placeholder="Ingresa tu contraseña"
                         class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
@@ -32,6 +34,8 @@
                     <label class="block text-lg font-medium text-[#545454] mb-1">Confirme su nueva Contraseña</label>
                     <input
                         type="password"
+                        [(ngModel)]="confirmar"
+                        name="confirmar"
                         appTogglePassword
                         placeholder="Ingresa tu contraseña"
                         class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
@@ -39,7 +43,8 @@
                 </div>
 
                 <button
-                    type="submit"
+                    type="button"
+                    (click)="submitNewPassword()"
                     class="w-full h-14 bg-[#25BEC4] text-white text-xl font-bold py-2 rounded-lg shadow-xl hover:bg-[#1D8F93] transition-colors duration-200"
                 >
                     Confirmar

@@ -167,7 +167,9 @@ export class UsuarioService {
         });
 
         // Enviar el correo con enlace
-        const enlace = `${process.env.APP_URL}/usuario/recuperar/${token}`;
+        //const enlace = `${process.env.APP_URL}/login/restore-password?token=${token}`;
+        const enlace = `${process.env.FRONTEND_URL}/login/restore-password?token=${token}`;
+
         await this.mailerService.enviarCorreoRecuperacion(usuario.correo, enlace);
 
         return { message: 'Si el correo está registrado, se ha enviado un enlace de recuperación.' };

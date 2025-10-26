@@ -62,7 +62,7 @@ export class FormLoginPaciente {
 
   }
 
-  forgotPassw() {
-    this.notify.info('Aqui mandaremos la logica de restauracion de contraseña', 'Olvido su contraseña');
+  gotoForgotPassword() {
+    this.router.navigate(['/login/forgot-password'], { replaceUrl: true });
   }
 }
