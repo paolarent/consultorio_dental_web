@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { TogglePasswordDirective } from "../../directives/toggle-password.directive";
+import { TogglePasswordDirective } from "../../directives/toggle-password";
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../auth/auth.service';
 import { Router } from '@angular/router';

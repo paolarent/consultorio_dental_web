@@ -150,7 +150,7 @@ export class UsuarioService {
     }
 
     async solicitarRecuperacion(correo: string) {
-        const usuario = await this.prisma.usuario.findUnique({ where: { correo } });
+        const usuario = await this.prisma.usuario.findUnique({ where: { correo }, include: {consultorio: { select: { logo_url: true } }} });
         if (!usuario) {
             // Por seguridad, no revelamos si el correo existe o no
             return { message: 'Si el correo está registrado, se enviará un enlace de recuperación.' };
@@ -169,9 +169,9 @@ export class UsuarioService {
         // Enviar el correo con enlace
         //const enlace = `${process.env.APP_URL}/login/restore-password?token=${token}`;
         const enlace = `${process.env.FRONTEND_URL}/login/restore-password?token=${token}`;
+        const logoUrl = usuario.consultorio?.logo_url || 'https://sitio.com/default-logo.png'; // sacamos la URL del logo
 
-        await this.mailerService.enviarCorreoRecuperacion(usuario.correo, enlace);
-
+        await this.mailerService.enviarCorreoRecuperacion(usuario.correo, enlace, logoUrl);
         return { message: 'Si el correo está registrado, se ha enviado un enlace de recuperación.' };
     }
 
