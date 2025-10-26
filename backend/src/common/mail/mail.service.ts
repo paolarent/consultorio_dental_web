@@ -57,13 +57,46 @@ export class MailerService {
     } 
 
     //METODO PARA RESTABLECER CONTRASEÑA
-    async enviarCorreoRecuperacion(to: string, enlace: string) {
+    async enviarCorreoRecuperacion(to: string, enlace: string, logoUrl: string) {
         const html = `
-            <p>Has solicitado restablecer tu contraseña.</p>
-            <p>Haz clic en el siguiente enlace para establecer una nueva:</p>
-            <p><a href="${enlace}">${enlace}</a></p>
-            <br>
-            <p>Este enlace expirará en 10 minutos.</p>
+        <div style="
+            background-color: #f0f0f0;
+            padding: 40px 0;
+            font-family: Arial, sans-serif;
+        ">
+            <div style="
+                max-width: 400px;
+                margin: 0 auto;
+                background-color: #ffffff;
+                border-radius: 16px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                padding: 40px;
+                text-align: center;
+            ">
+                <img src="${logoUrl}" alt="Logo" style="width: 220px; margin-bottom: 14px; border-radius:10px" />
+                <h2 style="color: #000000; font-size: 24px; margin-bottom: 16px;">Restablece tu contraseña</h2>
+                <p style="color: #545454; font-size: 16px; margin-bottom: 30px;">
+                    Hola!, Has solicitado restablecer tu contraseña. Haz clic en el botón para establecer una nueva.
+                </p>
+                <a href="${enlace}" style="
+                    display: inline-block;
+                    padding: 14px 28px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #ffffff;
+                    background-color: #25BEC4;
+                    border-radius: 12px;
+                    text-decoration: none;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.2); /* sombra */
+                    transition: all 0.3s ease; /* animación suave (funciona en web) */
+                ">
+                    Restablecer contraseña
+                </a>
+                <p style="color: #621313ff; font-size: 14px; margin-top: 40px;">
+                    Si no solicitaste este cambio, ignora este correo. Este enlace expirará en 10 minutos.
+                </p>
+            </div>
+        </div>
         `;
 
         await this.transporter.sendMail({
@@ -73,4 +106,5 @@ export class MailerService {
             html,
         });
     }
+
 }
