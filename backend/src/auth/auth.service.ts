@@ -20,8 +20,13 @@ export class AuthService {
                 consultorio: {
                     select: {
                         nombre: true,
+                        telefono: true,
+                        correo: true,
                         logo_url: true,
-                        titular_nombre: true
+                        titular_nombre: true,
+                        facebook_url: true,
+                        maps_url: true,
+                        instagram_url: true
                     },
                 },
                 paciente: {

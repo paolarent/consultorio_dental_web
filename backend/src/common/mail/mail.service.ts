@@ -84,7 +84,7 @@ export class MailerService {
                     font-size: 18px;
                     font-weight: bold;
                     color: #ffffff;
-                    background-color: #25BEC4;
+                    background-color: #1D8F93;
                     border-radius: 12px;
                     text-decoration: none;
                     box-shadow: 0 4px 6px rgba(0,0,0,0.2); /* sombra */

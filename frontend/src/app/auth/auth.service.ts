@@ -1,49 +1,42 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
+import { toObservable } from '@angular/core/rxjs-interop';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
     private http = inject(HttpClient);
+
+
     private baseUrl = 'http://localhost:3000/auth';
     private urlPasswRec = 'http://localhost:3000/usuario';
-    
-    private usuarioSubject = new BehaviorSubject<any>(null);
-    usuario$ = this.usuarioSubject.asObservable();
 
-    setUsuario(usuario: any) {
-        this.usuarioSubject.next(usuario);
-    }
+    // --- Estado reactivo del usuario usando Signals ---
+    private _usuario = signal<any | null>(null);
+    usuario = this._usuario.asReadonly();       // solo lectura desde fuera
+    usuario$ = toObservable(this.usuario);      // observable para compatibilidad RxJS si lo necesitas
+
 
     login(correo: string, contrasena: string) {
         return this.http.post(`${this.baseUrl}/login`, { correo, contrasena }, { withCredentials: true })
         .pipe(
-            switchMap(() => this.getMe()), // ahora devuelve el usuario completo
-            tap(usuario => {
-                this.usuarioSubject.next(usuario);
-            })
+            // Tras el login, obtenemos el usuario completo
+            switchMap(() => this.getMe())
         );
     }
 
-
-    logout(): Observable<any> {
+    logout() {
         return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true })
         .pipe(
-            tap(() => this.usuarioSubject.next(null))
+            // Limpiamos el estado del usuario
+            tap(() => this._usuario.set(null))
         );
     }
 
-
-    getMe(): Observable<any> {
-        return this.http.get(`${this.baseUrl}/me`, { withCredentials: true }).pipe(
-            tap((usuario: any) => {
-                // Guardamos info combinada directamente
-                // paciente ya viene incluido en el response del backend
-                this.usuarioSubject.next(usuario);
-            })
+    getMe() {
+        return this.http.get(`${this.baseUrl}/me`, { withCredentials: true })
+        .pipe(
+            tap((usuario: any) => this._usuario.set(usuario))
         );
     }
 
@@ -51,11 +44,11 @@ export class AuthService {
         return this.http.post(`${this.urlPasswRec}/recuperacion`, { correo }, { withCredentials: true });
     }
 
-
     restablecerContrasena(token: string, nuevaContrasena: string) {
         return this.http.patch(`${this.urlPasswRec}/restablecer`, { token, nuevaContrasena }, { withCredentials: true });
     }
 
-
+    setUsuario(usuario: any) {
+        this._usuario.set(usuario);
+    }
 }
-
