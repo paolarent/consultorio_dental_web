@@ -46,6 +46,15 @@ export class UsuarioService {
                 id_consultorio: data.id_consultorio,
                 correo_verificado: false,
             },
+            include: {
+                consultorio: {
+                    select: {
+                        logo_url: true,
+                        titular_nombre: true,
+                        titular_ap1: true,
+                    },
+                },
+            },
         });
 
         //Generar el token de verificación
@@ -62,8 +71,13 @@ export class UsuarioService {
             },
         });
 
+        const logoUrl = newUser.consultorio?.logo_url || '';
+        const nombreTitular = newUser.consultorio?.titular_nombre || '';
+        const apellidoTitular = newUser.consultorio?.titular_ap1 || '';
+        const nombreDoc = `${nombreTitular} ${apellidoTitular}`.trim();
+
         //Enviar el correo con enlace de confirmación usando MailerService
-        await this.mailerService.sendVerificationEmail(newUser.correo, token, 'registro');
+        await this.mailerService.sendVerificationEmail(newUser.correo, token, 'registro', logoUrl, nombreDoc);
 
         //return { message: 'Usuario creado, correo de verificación enviado' };
         // Devuelve tanto el usuario como un mensaje
@@ -108,11 +122,14 @@ export class UsuarioService {
         });
         if (existingUser) throw new Error('El correo ya está en uso');
 
+        const usuario = await this.prisma.usuario.findUnique({ where: { id_usuario: id }, include: {consultorio: { select: { logo_url: true, titular_nombre: true, titular_ap1: true } }} });
+        if (!usuario) throw new Error('Usuario no encontrado');
+
         // Generar token temporal
         const token = randomBytes(32).toString('hex');
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min de validez
 
-        // Guardamos token en tabla temporal (puede ser otra tabla llamada VerificacionCorreo)
+        // Guardamos el token en tabla temporal 
         await this.prisma.verificacion_correo.create({
             data: {
                 id_usuario: id,
@@ -123,8 +140,14 @@ export class UsuarioService {
             },
         });
 
+        // Armamos los datos q mandaremos al service del correo
+        const logoUrl = usuario.consultorio?.logo_url || '';
+        const nombreTitular = usuario.consultorio?.titular_nombre || '';
+        const apellidoTitular = usuario.consultorio?.titular_ap1 || '';
+        const nombreDoc = `${nombreTitular} ${apellidoTitular}`.trim();
+
         //Usamos el MailerService para enviar el correo con link
-        await this.mailerService.sendVerificationEmail(newCorreo, token, 'actualizacion');
+        await this.mailerService.sendVerificationEmail(newCorreo, token, 'actualizacion', logoUrl, nombreDoc);
 
         return { message: 'Correo de verificación enviado para actualización.' };
     }
@@ -150,7 +173,7 @@ export class UsuarioService {
     }
 
     async solicitarRecuperacion(correo: string) {
-        const usuario = await this.prisma.usuario.findUnique({ where: { correo }, include: {consultorio: { select: { logo_url: true } }} });
+        const usuario = await this.prisma.usuario.findUnique({ where: { correo }, include: {consultorio: { select: { logo_url: true, titular_nombre: true, titular_ap1: true } }} });
         if (!usuario) {
             // Por seguridad, no revelamos si el correo existe o no
             return { message: 'Si el correo está registrado, se enviará un enlace de recuperación.' };
@@ -169,9 +192,13 @@ export class UsuarioService {
         // Enviar el correo con enlace
         //const enlace = `${process.env.APP_URL}/login/restore-password?token=${token}`;
         const enlace = `${process.env.FRONTEND_URL}/login/restore-password?token=${token}`;
-        const logoUrl = usuario.consultorio?.logo_url || 'https://sitio.com/default-logo.png'; // sacamos la URL del logo
+        const logoUrl = usuario.consultorio?.logo_url || ''; // sacamos la URL del logo
+        const nombreTitular = usuario.consultorio?.titular_nombre || '';
+        const apellidoTitular = usuario.consultorio?.titular_ap1 || '';
+        const nombreDoc = `${nombreTitular} ${apellidoTitular}`.trim();
+        //const nombreDoc = usuario.consultorio?.titular_nombre || 'Prueba';
 
-        await this.mailerService.enviarCorreoRecuperacion(usuario.correo, enlace, logoUrl);
+        await this.mailerService.enviarCorreoRecuperacion(usuario.correo, enlace, logoUrl, nombreDoc);
         return { message: 'Si el correo está registrado, se ha enviado un enlace de recuperación.' };
     }
 
@@ -254,8 +281,3 @@ export class UsuarioService {
         };
     }
 }
-
-/* USO FUTURO EN CONDICIONES AHORITA NO ANDAMOS EN ESO
-const isMatch = await bcrypt.compare(inputPassword, usuario.contrase_a);
-if (!isMatch) throw new Error('Contraseña incorrecta');
- */

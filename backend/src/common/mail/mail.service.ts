@@ -20,44 +20,80 @@ export class MailerService {
         });
     }
 
-    async sendVerificationEmail(to: string, token: string, tipo: 'registro' | 'actualizacion') {
+    async sendVerificationEmail(to: string, token: string, tipo: 'registro' | 'actualizacion', logoUrl: string, nombreDoc: string) {
         const appUrl = process.env.APP_URL;
         let verifyUrl: string;   //`${process.env.APP_URL}/usuario/confirmar-cambio-correo?token=${token}`;              //`${appUrl}/usuario/confirmar-cambio-correo?token=${token}`;
-        let html: string;
+        let asunto: string;
+        let mensajePrincipal: string;
+        let mensajeExtra: string;
 
         if (tipo === 'registro') {
             verifyUrl = `${appUrl}/usuario/confirmar-registro?token=${token}`;
-            html = `
-                <p>Hola,</p>
-                <p>Para activar tu cuenta haz clic en el siguiente enlace:</p>
-                <p><a href="${verifyUrl}">Confirmar correo</a></p>
-                <br><br>
-                <p>Si no te registraste, ignora este correo.</p>
-            `;
+            asunto = 'Confirma tu cuenta';
+            mensajePrincipal =
+                'Gracias por registrarte. Haz clic en el botón para activar tu cuenta.';
+            mensajeExtra =
+                'Si no te registraste, puedes ignorar este correo.';
         } else {
             verifyUrl = `${appUrl}/usuario/confirmar-cambio-correo?token=${token}`;
-            html = `
-                <p>Hola,</p>
-                <p>Para confirmar tu nuevo correo haz clic en el siguiente enlace:</p>
-                <p><a href="${verifyUrl}">Confirmar correo</a></p>
-                <br><br>
-                <p>Si no solicitaste este cambio, ignora este correo.</p>
-            `;
+            asunto = 'Confirma tu cambio de correo';
+            mensajePrincipal =
+                'Has solicitado cambiar tu correo. Haz clic en el botón para confirmarlo.';
+            mensajeExtra =
+                'Si no solicitaste este cambio, ignora este mensaje.';
         }
 
-        return this.transporter.sendMail({
-            from: process.env.EMAIL_FROM,
+        const html = `
+            <div style="
+                background-color: #f0f0f0;
+                padding: 40px 0;
+                font-family: Arial, sans-serif;
+            ">
+                <div style="
+                    max-width: 400px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    padding: 40px;
+                    text-align: center;
+                ">
+                    <img src="${logoUrl}" alt="Logo" style="width: 220px; margin-bottom: 14px; border-radius:10px" />
+                    <h2 style="color: #000000; font-size: 24px; margin-bottom: 16px;">${asunto}</h2>
+                    <p style="color: #545454; font-size: 16px; margin-bottom: 30px;">
+                        ${mensajePrincipal}
+                    </p>
+                    <a href="${verifyUrl}" style="
+                        display: inline-block;
+                        padding: 14px 28px;
+                        font-size: 18px;
+                        font-weight: bold;
+                        color: #ffffff;
+                        background-color: #1D8F93;
+                        border-radius: 12px;
+                        text-decoration: none;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+                        transition: all 0.3s ease;
+                    ">
+                        Confirmar ahora
+                    </a>
+                    <p style="color: #621313ff; font-size: 14px; margin-top: 40px;">
+                        ${mensajeExtra}
+                    </p>
+                </div>
+            </div>
+            `;
+
+        await this.transporter.sendMail({
+            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
             to,
-            subject:
-            tipo === 'registro'
-                ? 'Confirma tu cuenta'
-                : 'Confirma tu cambio de correo',
-            html,
+            subject: asunto,
+            html
         });
     } 
 
     //METODO PARA RESTABLECER CONTRASEÑA
-    async enviarCorreoRecuperacion(to: string, enlace: string, logoUrl: string) {
+    async enviarCorreoRecuperacion(to: string, enlace: string, logoUrl: string, nombreDoc: string) {
         const html = `
         <div style="
             background-color: #f0f0f0;
@@ -100,7 +136,7 @@ export class MailerService {
         `;
 
         await this.transporter.sendMail({
-            from: process.env.EMAIL_FROM,
+            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`, //el nombre del doctor sera dinamico al mandar el correo
             to,
             subject: 'Recuperación de contraseña',
             html,

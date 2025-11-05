@@ -24,6 +24,7 @@ export class AuthService {
                         correo: true,
                         logo_url: true,
                         titular_nombre: true,
+                        titular_ap1: true,
                         facebook_url: true,
                         maps_url: true,
                         instagram_url: true
