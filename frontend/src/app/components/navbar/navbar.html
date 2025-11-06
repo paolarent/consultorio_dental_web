@@ -1,6 +1,5 @@
 <nav class="w-full flex items-center justify-between bg-white shadow-md h-24 px-6 relative">
 
-    <!-- Fondo estético opcional -->
     <div class="absolute left-0 top-0 w-full h-full bg-[#dde0eb] rounded-xl"></div>
 
     @if (auth.usuario(); as usuario) {
@@ -9,32 +8,65 @@
         </div>
 
         <!-- Menú principal -->
-        <div class="flex items-center space-x-6 z-10">
+        <div class="flex items-center space-x-10 z-10">
             <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
                 <img src="assets/icons/home.svg" alt="Inicio" title="Inicio" class="w-8 h-8" />
                 <span>Inicio</span>
             </a>
 
             <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
-                <img src="assets/icons/citas.svg" alt="Citas" title="Citas" class="w-8 h-8" />
+                <img src="assets/icons/citas.svg" alt="Citas" title="Citas" class="w-7 h-7" />
                 <span>Citas</span>
             </a>
 
             <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
-                <img src="assets/icons/mensaje.svg" alt="Contáctanos" title="Contáctanos" class="w-8 h-8" />
-                <span>Contáctanos</span>
+                <img src="assets/icons/signo-pesos.svg" alt="Mis Adeudos" title="Adeudos" class="w-7 h-6" />
+                <span>Mis Adeudos</span>
             </a>
 
 
             <!-- Botón de usuario -->
-            <div class="flex items-center space-x-2 bg-[#115153] rounded-xl px-4 py-2 text-white ml-8">
+            <div class="relative flex items-center space-x-2 bg-[#115153] rounded-xl px-4 py-2 text-white ml-8 cursor-pointer select-none" 
+                (click)="menuDesplegable()"
+            >
                 <div class="w-10 h-10 rounded-full flex items-center justify-center">
                     <img src="assets/icons/user.svg" alt="icono de usuario" title="usuario" class="w-10 h-10" />
                 </div>
-                <span class="text-lg font-semibold text-[#dde0eb] tracking-widest">{{ usuario.paciente?.nombre }}</span>
+                <span class="text-lg font-semibold text-[#ffffff] tracking-widest">{{ usuario.paciente?.nombre }}</span>
+
             </div>
 
         </div>
+
+        @if (menuAbierto()) {
+            <div
+                class="fixed inset-0 z-40"
+                (click)="menuAbierto.set(false)"
+            ></div>
+        }
+
+        @if (menuAbierto()) {
+            <div
+                class="absolute right-8 top-full translate-y-0 w-72 h-48 bg-[#C3F2F3] rounded-[20px] shadow-xl overflow-hidden z-50 animate-fadeIn"
+            >
+                <div
+                    class="w-60 h-16 bg-[#1D8F93] rounded-[20px] mx-auto mt-6 flex items-center px-6 cursor-pointer hover:bg-[#545454] transition shadow-lg"
+                    (click)="verPerfil()"
+                >
+                    <img src="assets/icons/perfil-paciente_vb.svg" alt="perfil" class="w-8 h-8 mr-4">
+                    <span class="text-white text-lg font-semibold tracking-wide">Mi Perfil</span>
+                </div>
+
+                <div
+                    class="w-60 h-16 bg-[#BC0E0E] rounded-[20px] mx-auto mt-4 flex items-center px-6 cursor-pointer hover:bg-[#8F1010] transition shadow-lg"
+                    (click)="cerrarSesion()"
+                >
+                    <img src="assets/icons/logout_vb.svg" alt="logout" class="w-8 h-8 mr-4" />
+                    <span class="text-white text-lg font-semibold tracking-wide">Cerrar Sesión</span>
+                </div>
+
+            </div>
+        }
     }
 
 </nav>
