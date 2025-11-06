@@ -14,6 +14,7 @@ export class ServicioController {
     constructor( private readonly servicioService: ServicioService ) {}
 
     @Get('activo')
+    @Roles(Rol.PACIENTE)
     findAllActive(@Query('id_consultorio') id_consultorio?: string) {
         return this.servicioService.findAllActive(id_consultorio ? Number(id_consultorio) : undefined);
     }

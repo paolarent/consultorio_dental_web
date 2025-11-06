@@ -17,6 +17,7 @@ export class AuthService {
                 id_usuario: true,
                 correo: true,
                 rol: true,
+                id_consultorio: true,
                 consultorio: {
                     select: {
                         nombre: true,

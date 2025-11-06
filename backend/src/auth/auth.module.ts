@@ -21,6 +21,7 @@ const accessTokenExp = Number(process.env.ACCESS_TOKEN_EXP_MINUTES || 10) * 60;
     ],
     providers: [AuthService, PrismaService, JwtStrategy, UsuarioService],
     controllers: [AuthController],
+    exports: [AuthService]
 })
 export class AuthModule {}
 

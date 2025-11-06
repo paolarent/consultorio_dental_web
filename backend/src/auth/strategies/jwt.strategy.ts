@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from 'prisma/prisma.service';
 
 function cookieExtractor(req: any) {
-  return req?.cookies?.access_token || null;
+    return req?.cookies?.access_token || null;
 }
 
 @Injectable()

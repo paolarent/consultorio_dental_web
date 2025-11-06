@@ -20,6 +20,13 @@ export class ServicioService {
         return this.prisma.servicio.findMany({
             where,
             orderBy: { nombre: 'asc' },
+            select: {
+                id_servicio: true,
+                nombre: true,
+                descripcion: true,
+                url_imagen: true,
+                id_consultorio: true
+            },
         });
     }
 
