@@ -1,6 +1,6 @@
-<nav class="w-full flex items-center justify-between bg-white shadow-md h-24 px-6 relative">
+<nav class="sticky top-0 z-50 w-full flex items-center justify-between bg-white shadow-md h-24 px-6 relative">
 
-    <div class="absolute left-0 top-0 w-full h-full bg-[#dde0eb] rounded-xl"></div>
+    <div class="absolute left-0 top-0 w-full h-full bg-[#dde0eb]"></div>
 
     @if (auth.usuario(); as usuario) {
         <div class="flex items-center z-10">
@@ -9,24 +9,24 @@
 
         <!-- Menú principal -->
         <div class="flex items-center space-x-10 z-10">
-            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
+            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img src="assets/icons/home.svg" alt="Inicio" title="Inicio" class="w-8 h-8" />
                 <span>Inicio</span>
             </a>
 
-            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
+            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img src="assets/icons/citas.svg" alt="Citas" title="Citas" class="w-7 h-7" />
                 <span>Citas</span>
             </a>
 
-            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2">
+            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img src="assets/icons/signo-pesos.svg" alt="Mis Adeudos" title="Adeudos" class="w-7 h-6" />
                 <span>Mis Adeudos</span>
             </a>
 
 
             <!-- Botón de usuario -->
-            <div class="relative flex items-center space-x-2 bg-[#115153] rounded-xl px-4 py-2 text-white ml-8 cursor-pointer select-none" 
+            <div class="relative flex items-center space-x-2 bg-[#115153] rounded-xl px-4 py-2 text-white ml-8 cursor-pointer select-none hover:scale-105 transition-transform duration-300" 
                 (click)="menuDesplegable()"
             >
                 <div class="w-10 h-10 rounded-full flex items-center justify-center">
