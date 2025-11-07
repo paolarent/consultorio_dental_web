@@ -10,13 +10,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     return next(req).pipe(
         catchError(err => {
-        if (err.status === 401) {
-            // Si el token/cookie expiró
-            authService.logout().subscribe(() => {
-            router.navigate(['/login']);
-            });
-        }
-        return throwError(() => err);
+            if ( err.status === 401 &&
+            // Ignora 401 de /auth/me o de rutas de login
+            !req.url.includes('/auth/me') &&
+            !req.url.includes('/login')
+            ) {
+                authService.clearSession();
+                router.navigate(['/login']);
+            }
+
+            return throwError(() => err);
         })
     );
 };

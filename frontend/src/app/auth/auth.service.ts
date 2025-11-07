@@ -29,8 +29,13 @@ export class AuthService {
         return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true })
         .pipe(
             // Limpiamos el estado del usuario
-            tap(() => this._usuario.set(null))
+            //tap(() => this._usuario.set(null))
+            tap(() => this.clearSession())
         );
+    }
+
+    clearSession() {
+        this._usuario.set(null);
     }
 
     getMe() {
@@ -38,6 +43,16 @@ export class AuthService {
         .pipe(
             tap((usuario: any) => this._usuario.set(usuario))
         );
+    }
+
+    initAuthCheck() {
+        this.getMe().subscribe({
+            next: () => {},
+            error: () => {
+            // Si no hay sesión, limpiar el estado
+            this._usuario.set(null);
+            }
+        });
     }
 
     solicitarRecuperacion(correo: string) {
