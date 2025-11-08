@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { ServicioService } from '../../services/servicio.service';
 
@@ -10,6 +10,7 @@ import { ServicioService } from '../../services/servicio.service';
   styleUrl: './landing-page.css'
 })
 export class LandingPage implements OnInit {
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
   // Injecta AuthService para poder usarlo en el template
   auth = inject(AuthService);
   servicioService = inject(ServicioService);
@@ -27,5 +28,14 @@ export class LandingPage implements OnInit {
         error: (err) => console.error(err)
       });
     }
+  }
+
+  scroll(direction: 'left' | 'right') {
+    const el = this.scrollContainer.nativeElement;
+    const scrollAmount = el.clientWidth * 0.8; // Desplazamiento dinámico
+    el.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
   }
 }

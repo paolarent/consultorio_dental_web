@@ -37,4 +37,14 @@ body {
     cursor: pointer;
 }
 
+/* Oculta la barra de scroll para que sea más limpio */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+
 
