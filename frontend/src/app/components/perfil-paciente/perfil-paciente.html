@@ -12,7 +12,7 @@
             </p>
 
             <button
-                class="bg-[#C3F2F3] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider rounded-lg shadow-md px-8 py-3 hover:scale-105 transition-transform duration-300"
+                class="bg-[#C3F2F3] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider rounded-lg shadow-md px-20 py-3 hover:scale-105 transition-transform duration-300"
             >
                 Llenar formulario médico
             </button>
@@ -29,12 +29,90 @@
 </section>
 
 
-<!-- seccion para las alergias -->
-<section>
+<!-- Seccion para Alergias y Condiciones Médicas -->
+<section class="w-full px-10 max-w-8xl mx-auto mt-6 flex flex-col md:flex-row gap-12 mb-10">
+    <!-- Tarjeta de Alergias -->
+    <div class="flex-1 bg-[#F5F8FC] rounded-xl shadow-md p-6 relative">
+        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3 mb-4">
+            <img src="assets/icons/alergia.svg" alt="Alergias" class="w-12 h-12">
+            <h2 class="text-[#105053] text-3xl font-bold">Alergias</h2>
+        </div>
+        <button
+            class="flex items-center gap-2 bg-[#C3F2F3] text-[#545454] text-lg font-semibold px-5 py-2 rounded-lg shadow hover:scale-105 transition">
+            <img src="assets/icons/agregar.svg" alt="Agregar" class="w-8 h-8">
+                Agregar
+        </button>
+        </div>
 
+        <!-- Alergias registradas -->
+        <div class="space-y-4">
+            <!-- Ejemplo de alergia -->
+            <div class="flex justify-between items-center bg-red-200/60 border-l-8 border-red-700 rounded-lg p-4 shadow-sm mb-3">
+                <!-- Columna izquierda: texto -->
+                <div class="flex flex-col flex-1">
+                    <h3 class="text-neutral-700 text-xl font-bold">Penicilina</h3>
+                    <p class="text-neutral-600 text-base">Reacción alérgica severa en el pasado</p>
+                </div>
+
+                <!-- Columna derecha: severidad y botón -->
+                <div class="flex items-center gap-4 ml-6">
+                    <span class="bg-red-700/25 text-red-950 text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap">
+                        Severidad Alta
+                    </span>
+                    <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
+                        <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8" />
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="flex justify-between items-start bg-orange-100 border-l-8 border-amber-400 rounded-lg p-4 shadow-sm mb-3">
+                <div class="flex flex-col flex-1">
+                    <h3 class="text-neutral-700 text-xl font-bold">Látex</h3>
+                    <p class="text-neutral-600 text-base">Irritación en la piel</p>
+                </div>
+
+                <div class="flex items-center gap-4 ml-6">
+                    <span class="bg-orange-300/50 text-yellow-900 text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap">Severidad Media</span>
+                    <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
+                        <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjeta de Condiciones Médicas -->
+    <div class="flex-1 bg-[#F5F8FC] rounded-xl shadow-md p-6 relative">
+        <!-- Encabezado -->
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3 mb-4">
+                <img src="assets/icons/cond-med.svg" alt="Condiciones Médicas" class="w-12 h-12">
+                <h2 class="text-[#105053] text-3xl font-bold">Condiciones Médicas</h2>
+            </div>
+            <button
+                class="flex items-center gap-2 bg-[#C3F2F3] text-[#545454] text-lg font-semibold px-5 py-2 rounded-lg shadow hover:scale-105 transition">
+                <img src="assets/icons/agregar.svg" alt="Agregar" class="w-8 h-8">
+                    Agregar
+            </button>
+        </div>
+
+        <!-- Condiciones registradas -->
+        <div class="space-y-4">
+            <div class="flex items-center bg-zinc-200 border-l-8 border-teal-900 rounded-lg p-4 shadow-sm">
+                <div class="flex flex-col flex-1">
+                    <h3 class="text-teal-900 text-xl font-bold">Hipertensión arterial</h3>
+                    <p class="text-neutral-600 text-base">Diagnosticada en: 2020<br>Medicamento: Losartán 50mg</p>
+                </div>
+                <div class="flex items-center justify-center gap-4 ml-6">
+                    <span class="bg-[#C8FCCA] text-green-950 text-sm font-bold px-4 py-2 rounded-md">Controlada</span>
+                    <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
+                        <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
-<!-- seccion para las condiciones medicas -->
-<section>
-
-</section>
