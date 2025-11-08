@@ -1,11 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
@@ -21,8 +21,16 @@ export class Navbar {
 
   verPerfil() {
     //redirigir al perfil del usuario
-    this.router.navigate(['']);
+    this.router.navigate(['/home/mi-perfil']).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
     this.menuAbierto.set(false);
+  }
+
+  goHome() {
+    this.router.navigate(['/home']).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   cerrarSesion() {
@@ -34,5 +42,6 @@ export class Navbar {
         error: (err) => console.error('Error al cerrar sesion', err)
     });
   }
+
 }
 

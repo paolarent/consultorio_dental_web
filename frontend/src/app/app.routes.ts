@@ -7,14 +7,18 @@ import { FormNewPassw } from './components/form-new-passw/form-new-passw';
 import { Home } from './pages/home/home';
 import { AuthGuard } from './auth/auth.guard';
 import { AgendaDoc } from './pages/agenda-doc/agenda-doc';
+import { LandingPage } from './components/landing-page/landing-page';
+import { CitasPaciente } from './components/citas-paciente/citas-paciente';
+import { AdeudosPaciente } from './components/adeudos-paciente/adeudos-paciente';
+import { PerfilPaciente } from './components/perfil-paciente/perfil-paciente';
 
 export const routes: Routes = [
     { 
         path: 'login', 
         component: Login, // layout/page
         children: [
-            { path: 'paciente', component: FormLoginPaciente },
             { path: '', component: FormLogin },
+            { path: 'paciente', component: FormLoginPaciente },
             { path: 'forgot-password', component: FormRestorePassw },
             { path: 'restore-password', component: FormNewPassw }
         ]
@@ -23,15 +27,13 @@ export const routes: Routes = [
     {
         path: 'home',
         component: Home,
-        canActivate: [AuthGuard]
-        /*
+        canActivate: [AuthGuard],
         children: [
-            { path: 'paciente', component: FormLoginPaciente },
-            { path: '', component: FormLogin },
-            { path: 'forgot-password', component: FormRestorePassw },
-            { path: 'restore-password', component: FormNewPassw }
+            { path: '', component: LandingPage },  //vista principal
+            { path: 'citas', component: CitasPaciente },
+            { path: 'mis-adeudos', component: AdeudosPaciente },
+            { path: 'mi-perfil', component: PerfilPaciente }
         ]
-        */
     },
 
     {

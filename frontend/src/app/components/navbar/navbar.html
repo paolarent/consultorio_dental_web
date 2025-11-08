@@ -9,17 +9,18 @@
 
         <!-- Menú principal -->
         <div class="flex items-center space-x-10 z-10">
-            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <a (click)="goHome()" 
+                class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img src="assets/icons/home.svg" alt="Inicio" title="Inicio" class="w-8 h-8" />
                 <span>Inicio</span>
             </a>
 
-            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <a [routerLink]="['citas']" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img src="assets/icons/citas.svg" alt="Citas" title="Citas" class="w-7 h-7" />
                 <span>Citas</span>
             </a>
 
-            <a routerLink="#" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
+            <a [routerLink]="['mis-adeudos']" class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img src="assets/icons/signo-pesos.svg" alt="Mis Adeudos" title="Adeudos" class="w-7 h-6" />
                 <span>Mis Adeudos</span>
             </a>
