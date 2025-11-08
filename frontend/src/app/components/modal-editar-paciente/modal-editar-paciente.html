@@ -1,0 +1,46 @@
+<div class="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-xl w-3/4 max-w-3xl">
+        <h2 class="text-2xl font-bold mb-4">Editar Paciente</h2>
+
+        <!-- Datos personales -->
+        <div class="grid grid-cols-2 gap-4">
+        <input type="text" [value]="paciente.nombre" placeholder="Nombre" (input)="actualizarCampo($event, 'nombre')"/>
+        <input type="text" [value]="paciente.apellido1" placeholder="Apellido1" (input)="actualizarCampo($event, 'apellido1')"/>
+        <input type="text" [value]="paciente.apellido2" placeholder="Apellido2" (input)="actualizarCampo($event, 'apellido2')"/>
+        <input type="text" [value]="paciente.telefono" placeholder="Teléfono" (input)="actualizarCampo($event, 'telefono')"/>
+        <input type="date" [value]="paciente.fecha_nacimiento" placeholder="Fecha de nacimiento" (input)="actualizarCampo($event, 'fecha_nacimiento')"/>
+        <select (change)="actualizarCampo($event, 'sexo')">
+            <option value="M" [selected]="paciente.sexo === Sexo.MASCULINO">Masculino</option>
+            <option value="F" [selected]="paciente.sexo === Sexo.FEMENINO">Femenino</option>
+            <option value="O" [selected]="paciente.sexo === Sexo.OTRO">Otro</option>
+        </select>
+        </div>
+
+        <!-- Toggle tutor -->
+        <div class="flex items-center mt-4">
+        <span class="mr-2">¿Tiene tutor?</span>
+        <img [src]="tieneTutor ? 'assets/icons/on_switch.svg' : 'assets/icons/off_switch.svg'"
+            class="w-12 h-6 cursor-pointer" (click)="toggleTutor()"/>
+        </div>
+
+        <!-- Datos tutor -->
+        @if(tieneTutor) {
+        <div class="grid grid-cols-2 gap-4 mt-4">
+            <input type="text" [value]="paciente.tutor_nombre" placeholder="Nombre tutor" (input)="actualizarCampo($event, 'tutor_nombre')"/>
+            <input type="text" [value]="paciente.tutor_apellido1" placeholder="Apellido1 tutor" (input)="actualizarCampo($event, 'tutor_apellido1')"/>
+            <input type="text" [value]="paciente.tutor_apellido2" placeholder="Apellido2 tutor" (input)="actualizarCampo($event, 'tutor_apellido2')"/>
+            <input type="text" [value]="paciente.tutor_telefono" placeholder="Teléfono tutor" (input)="actualizarCampo($event, 'tutor_telefono')"/>
+            <input type="email" [value]="paciente.tutor_correo" placeholder="Correo tutor" (input)="actualizarCampo($event, 'tutor_correo')"/>
+            <input type="text" [value]="paciente.tutor_relacion" placeholder="Relación" (input)="actualizarCampo($event, 'tutor_relacion')"/>
+        </div>
+        }
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 mt-6">
+            <button (click)="cancelar()" class="btn-secondary">Cancelar</button>
+            <button (click)="guardarCambios()" class="btn-primary">Guardar</button>
+        </div>
+    </div>
+</div>
+
+

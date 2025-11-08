@@ -20,12 +20,24 @@
 
         <!-- Icono alineado al extremo derecho -->
         <img
+            (click)="abrirModalEditarPac()"
             src="assets/icons/editar-datos.svg"
             alt="Editar datos"
             title="Editar datos"
             class="w-14 h-14 object-contain mt-8 md:mt-0 self-center md:self-start cursor-pointer hover:scale-105 transition-transform duration-300"
         />
     </div>
+
+    <!-- Modal -->
+    @if(modalEditar()) {
+        <app-modal-editar-paciente
+            [paciente]="paciente()"
+            (actualizar)="actualizarPaciente($event)"
+            (cerrar)="cerrarModal()">
+        </app-modal-editar-paciente>
+    }
+
+
 </section>
 
 
