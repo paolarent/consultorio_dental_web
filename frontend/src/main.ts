@@ -12,7 +12,7 @@ bootstrapApplication(App, {
   providers: [
     ...(appConfig.providers || []),
     importProvidersFrom(HttpClientModule),
-    provideHttpClient(withInterceptors([authInterceptor]))
+    provideHttpClient(withInterceptors([authInterceptor])),
   ]
 })
 .catch((err) => console.error(err));

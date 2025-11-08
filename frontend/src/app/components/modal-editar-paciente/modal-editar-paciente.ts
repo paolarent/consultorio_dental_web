@@ -1,8 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UpdatePaciente } from '../../models/update-paciente.model';
+import flatpickr from 'flatpickr';
+import { Spanish } from 'flatpickr/dist/l10n/es.js';
 
 @Component({
   selector: 'app-modal-editar-paciente',
@@ -15,14 +17,29 @@ export class ModalEditarPaciente {
   @Output() actualizar = new EventEmitter<UpdatePaciente>();
   @Output() cerrar = new EventEmitter<void>();
 
+  @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
+
   // Enums expuestos al template
   Sexo = Sexo;
   SiONo = SiONo;
   
   tieneTutor: boolean = false;
+  step: number = 1; // <-- control del wizard (1 = datos personales, 2 = dirección)
 
   ngOnInit() {
     this.tieneTutor = this.paciente.tiene_tutor === SiONo.SI;
+  }
+
+  ngAfterViewInit() {
+    flatpickr(this.fechaInput.nativeElement, {
+      dateFormat: 'd-m-Y',
+      locale: Spanish, 
+      defaultDate: this.paciente.fecha_nacimiento || undefined, //para que se muestre la fecha actual del paciente
+      onChange: (selectedDates) => {
+        const fecha = selectedDates[0]?.toISOString().split('T')[0];
+        if (fecha) this.paciente.fecha_nacimiento = fecha;
+      },
+    });
   }
 
   toggleTutor() {
@@ -36,19 +53,20 @@ export class ModalEditarPaciente {
       this.paciente.tutor_relacion = '';
     }
   }
-
   
-  actualizarinput(campo: keyof UpdatePaciente, valor: any) {
-    (this.paciente as any)[campo] = valor;
-  }
-  
-
   // Método seguro para inputs y selects
   actualizarCampo(event: Event, campo: keyof UpdatePaciente) {
     const target = event.target as HTMLInputElement | HTMLSelectElement;
     (this.paciente as any)[campo] = target.value;
   }
 
+  siguienteStep() {
+    this.step = 2;
+  }
+
+  volverStep() {
+    this.step = 1;
+  }
 
   guardarCambios() {
     this.paciente.tiene_tutor = this.tieneTutor ? SiONo.SI : SiONo.NO;

@@ -30,7 +30,14 @@ export class PerfilPaciente implements OnInit {
     tutor_apellido2: '',
     tutor_telefono: '',
     tutor_correo: '',
-    tutor_relacion: ''
+    tutor_relacion: '',
+    d_calle: '',
+    d_num_exterior: '',
+    d_colonia: '',
+    d_cp: '',
+    d_entidadfed: '',
+    d_municipio: '',
+    d_localidad: ''
   });
 
   constructor(

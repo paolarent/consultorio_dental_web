@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import 'flatpickr/dist/flatpickr.min.css';
 
 @tailwind base;
 @tailwind components;
@@ -45,6 +46,58 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+.flatpickr-day.selected {
+    background-color: #1D8F93 !important;
+    color: white !important;
+}
+
+.flatpickr-day:hover {
+    background-color: #32bec3 !important;
+    color: #ffffff !important;
+}
+
+/* ======== ENCABEZADO (mes y año) ======== */
+.flatpickr-months {
+  background-color: #C3F2F3 !important;  /* fondo teal */
+  color: white !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 6px 0 !important;
+  text-align: center;
+}
+
+/* Nombre del mes */
+.flatpickr-current-month .cur-month {
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  letter-spacing: 0.5px;
+}
+
+/* Año editable */
+.flatpickr-current-month input.cur-year {
+  margin-left: 4px;
+  color: black !important;
+  background: transparent !important;
+  border: none !important;
+  font-weight: 500 !important;
+  width: 4em;
+  text-align: left;
+}
+
+/* Flechas de navegación */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  color: white !important;
+  transition: 0.3s ease;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  color: #99f6e4 !important; /* teal clarito */
+  transform: scale(1.2);
+}
+
 
 
 
