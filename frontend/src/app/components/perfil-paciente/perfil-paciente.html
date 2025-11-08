@@ -45,42 +45,49 @@
         </button>
         </div>
 
-        <!-- Alergias registradas -->
+        <!-- Listado de Alergias -->
         <div class="space-y-4">
-            <!-- Ejemplo de alergia -->
-            <div class="flex justify-between items-center bg-red-200/60 border-l-8 border-red-700 rounded-lg p-4 shadow-sm mb-3">
-                <!-- Columna izquierda: texto -->
-                <div class="flex flex-col flex-1">
-                    <h3 class="text-neutral-700 text-xl font-bold">Penicilina</h3>
-                    <p class="text-neutral-600 text-base">Reacción alérgica severa en el pasado</p>
-                </div>
+            @for (alergia of alergias; track alergia.id_alergia; let i = $index) {
+                <div class="flex items-start rounded-lg p-4 shadow-sm"
+                    [class.bg-red-200/60]="alergia.severidad.toLowerCase() === 'alta'"
+                    [class.border-l-8]="true"
+                    [class.border-red-700]="alergia.severidad.toLowerCase() === 'alta'"
+                    [class.bg-yellow-100/60]="alergia.severidad.toLowerCase() === 'media'"
+                    [class.border-yellow-400]="alergia.severidad.toLowerCase() === 'media'"
+                    [class.bg-green-100/60]="alergia.severidad.toLowerCase() === 'baja'"
+                    [class.border-green-400]="alergia.severidad.toLowerCase() === 'baja'"
+                >
+                    <div class="flex flex-col flex-1">
+                        <h3 class="text-neutral-700 text-xl font-bold">{{ alergia.nombre }}</h3>
+                        <p class="text-neutral-600 text-base">{{ alergia.notas }}</p>
+                    </div>
 
-                <!-- Columna derecha: severidad y botón -->
-                <div class="flex items-center gap-4 ml-6">
-                    <span class="bg-red-700/25 text-red-950 text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap">
-                        Severidad Alta
-                    </span>
-                    <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
-                        <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8" />
-                    </button>
+                    <div class="flex items-center gap-4 ml-6 self-start">
+                        <span 
+                            class="text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap"
+                            [class.bg-red-700/25]="alergia.severidad.toLowerCase() === 'alta'"
+                            [class.text-red-950]="alergia.severidad.toLowerCase() === 'alta'"
+                            [class.bg-orange-300/50]="alergia.severidad.toLowerCase() === 'media'"
+                            [class.text-yellow-950]="alergia.severidad.toLowerCase() === 'media'"
+                            [class.bg-green-300]="alergia.severidad.toLowerCase() === 'baja'"
+                            [class.text-green-950]="alergia.severidad.toLowerCase() === 'baja'"
+                        >
+                            Severidad {{ alergia.severidad | titlecase }}
+                        </span>
+                        
+                        
+                        <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
+                            <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
+                        </button>
+                    </div>
                 </div>
-            </div>
+            }
 
-
-            <div class="flex justify-between items-start bg-orange-100 border-l-8 border-amber-400 rounded-lg p-4 shadow-sm mb-3">
-                <div class="flex flex-col flex-1">
-                    <h3 class="text-neutral-700 text-xl font-bold">Látex</h3>
-                    <p class="text-neutral-600 text-base">Irritación en la piel</p>
-                </div>
-
-                <div class="flex items-center gap-4 ml-6">
-                    <span class="bg-orange-300/50 text-yellow-900 text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap">Severidad Media</span>
-                    <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
-                        <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
-                    </button>
-                </div>
-            </div>
+            @if (!alergias || alergias.length === 0) {
+                <p class="text-neutral-500 text-base italic">No hay alergias registradas.</p>
+            }
         </div>
+
     </div>
 
     <!-- Tarjeta de Condiciones Médicas -->
@@ -100,18 +107,37 @@
 
         <!-- Condiciones registradas -->
         <div class="space-y-4">
-            <div class="flex items-center bg-zinc-200 border-l-8 border-teal-900 rounded-lg p-4 shadow-sm">
+            @for (cond of condiciones; track cond.id_condicion_medica; let i = $index) {
+                <div class="flex items-center bg-zinc-200 border-l-8 border-teal-900 rounded-lg p-4 shadow-sm">
                 <div class="flex flex-col flex-1">
-                    <h3 class="text-teal-900 text-xl font-bold">Hipertensión arterial</h3>
-                    <p class="text-neutral-600 text-base">Diagnosticada en: 2020<br>Medicamento: Losartán 50mg</p>
+                    <h3 class="text-teal-900 text-xl font-bold">{{ cond.nombre }}</h3>
+                    <p class="text-neutral-600 text-base">
+                        Diagnosticada en: {{ cond.a_o_diagnostico }}<br>
+                        Medicamento: {{ cond.medicamentos_formateados }}
+                    </p>
                 </div>
                 <div class="flex items-center justify-center gap-4 ml-6">
-                    <span class="bg-[#C8FCCA] text-green-950 text-sm font-bold px-4 py-2 rounded-md">Controlada</span>
+                    <span
+                        class="text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap"
+                        [class.bg-[#C8FCCA]]="cond.condicion_controlada === 'si'"
+                        [class.text-green-950]="cond.condicion_controlada === 'si'"
+                        [class.bg-orange-300/50]="cond.condicion_controlada === 'no'"
+                        [class.text-yellow-950]="cond.condicion_controlada === 'no'"
+                    >
+                        {{ cond.condicion_controlada === 'si' ? 'Controlada' : 'No controlada' }}
+                    </span>
+
+
+
                     <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
                         <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
                     </button>
                 </div>
-            </div>
+                </div>
+            }
+            @if (!condiciones || condiciones.length === 0) {
+                <p class="text-neutral-500 text-base italic">No hay condiciones médicas registradas.</p>
+            }
         </div>
     </div>
 </section>
