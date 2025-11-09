@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreatePacienteDto } from '../paciente/dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
@@ -11,6 +11,40 @@ export class PacienteService {
         return this.prisma.paciente.findMany({
             where: { status: 'activo'},         //listar solo los pacientes activos
         });
+    }
+
+    async getPacienteById(id: number) {
+        const paciente = await this.prisma.paciente.findUnique({
+            where: { id_paciente: id },
+            select: {
+                nombre: true,
+                apellido1: true,
+                apellido2: true,
+                telefono: true,
+                fecha_nacimiento: true,
+                sexo: true,      
+                tiene_tutor: true,
+                tutor_nombre: true,
+                tutor_apellido1: true,
+                tutor_apellido2: true,
+                tutor_telefono: true,
+                tutor_correo: true,
+                tutor_relacion: true,
+                d_calle: true,
+                d_num_exterior: true,
+                d_colonia: true,
+                d_cp: true,
+                d_entidadfed: true,
+                d_municipio: true,
+                d_localidad: true
+            },
+        });
+
+        if (!paciente) {
+            throw new NotFoundException('Paciente no encontrado');
+        }
+
+        return paciente;
     }
 
     async create(data: CreatePacienteDto) {

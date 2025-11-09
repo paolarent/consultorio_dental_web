@@ -29,9 +29,9 @@
     </div>
 
     <!-- Modal -->
-    @if(modalEditar()) {
+    @if(modalEditar() && paciente()) {
         <app-modal-editar-paciente
-            [paciente]="paciente()"
+            [paciente]="paciente()!"
             (actualizar)="actualizarPaciente($event)"
             (cerrar)="cerrarModal()">
         </app-modal-editar-paciente>

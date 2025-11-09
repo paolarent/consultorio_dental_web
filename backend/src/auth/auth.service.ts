@@ -33,6 +33,7 @@ export class AuthService {
                 },
                 paciente: {
                     select: {
+                        id_paciente: true,
                         nombre: true
                     }
                 }

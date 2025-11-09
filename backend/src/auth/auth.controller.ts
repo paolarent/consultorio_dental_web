@@ -16,6 +16,7 @@ export class AuthController {
     //Endpoint para obtener info del usuario logueado
     @Get('me')
     @UseGuards(JwtAuthGuard)
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
     async getMe(@CurrentUser() user: any) {
         if (!user) throw new UnauthorizedException('Usuario no autenticado');
         return this.authService.getUsuarioById(user.id_usuario);

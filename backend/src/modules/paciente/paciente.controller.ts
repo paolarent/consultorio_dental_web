@@ -12,6 +12,11 @@ export class PacienteController {
         return this.pacienteService.findAllActive();
     }
 
+    @Get(':id')
+    async getPacienteById(@Param('id') id: string) {
+        return this.pacienteService.getPacienteById(Number(id));
+    }
+
     @Post()
     create(@Body() createPacienteDto: CreatePacienteDto) {
         return this.pacienteService.create(createPacienteDto);

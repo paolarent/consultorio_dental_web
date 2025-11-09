@@ -1,7 +1,17 @@
-<div class="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-xl w-3/4 max-w-3xl max-h-[90vh] overflow-y-auto">
-        <h2 class="text-3xl font-bold mt-2 mb-6 text-[#105053]">
-            {{ step === 1 ? 'Editar mis datos' : 'Editar dirección' }}
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+    
+    <!-- Fondo con patrón (por detrás del form) -->
+    <div
+        class="absolute inset-0 opacity-20 pointer-events-none z-0"
+        style="background-image: url('assets/images/patron_dientes.png');
+            background-repeat: repeat;
+            background-position: center;
+            background-size: 700px 500px;">
+    </div>
+
+    <div class="relative bg-white p-6 rounded-xl w-3/4 max-w-3xl max-h-[90vh] overflow-y-auto">
+        <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
+            {{ step === 1 ? 'Editar Mis Datos' : 'Editar Dirección' }}
         </h2>
 
         <!-- STEP 1: Datos personales + tutor -->
@@ -75,9 +85,9 @@
                         (selectionChange)="actualizarCampo($event.value, 'sexo')"
                         
                         >
-                        <mat-option value="M">Masculino</mat-option>
-                        <mat-option value="F">Femenino</mat-option>
-                        <mat-option value="O">Otro</mat-option>
+                        <mat-option [value]="Sexo.MASCULINO">Masculino</mat-option>
+                        <mat-option [value]="Sexo.FEMENINO">Femenino</mat-option>
+                        <mat-option [value]="Sexo.OTRO">Otro</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
@@ -87,9 +97,9 @@
 
             <!-- Toggle tutor -->
             <div class="flex items-center mt-0 mb-6">
-                <span class="mr-2 text-[#545454] font-bold">¿Tiene tutor?</span>
+                <span class="mr-2 text-[#545454] font-bold text-lg">¿Tiene tutor?</span>
                 <img [src]="tieneTutor ? 'assets/icons/on_switch.svg' : 'assets/icons/off_switch.svg'"
-                    class="w-12 h-10 cursor-pointer" (click)="toggleTutor()"
+                    class="w-14 h-10 cursor-pointer" (click)="toggleTutor()"
                 />
             </div>
 

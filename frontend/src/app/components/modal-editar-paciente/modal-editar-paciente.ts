@@ -1,8 +1,9 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UpdatePaciente } from '../../models/update-paciente.model';
+import { PacienteService } from '../../services/paciente.service';
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,36 +12,51 @@ import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-modal-editar-paciente',
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatOptionModule,],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatOptionModule],
   templateUrl: './modal-editar-paciente.html',
   styleUrl: './modal-editar-paciente.css'
 })
-export class ModalEditarPaciente {
+export class ModalEditarPaciente implements OnInit, AfterViewInit {
   @Input() paciente!: UpdatePaciente;
   @Output() actualizar = new EventEmitter<UpdatePaciente>();
   @Output() cerrar = new EventEmitter<void>();
 
   @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
 
-  // Enums expuestos al template
   Sexo = Sexo;
   SiONo = SiONo;
-  
-  tieneTutor: boolean = false;
-  step: number = 1; // <-- control del wizard (1 = datos personales, 2 = dirección)
+
+  tieneTutor = false;
+  step = 1;
+
+  private fpInstance: any;
+
+  constructor(private pacienteService: PacienteService) {}
 
   ngOnInit() {
     this.tieneTutor = this.paciente.tiene_tutor === SiONo.SI;
   }
 
   ngAfterViewInit() {
-    flatpickr(this.fechaInput.nativeElement, {
-      dateFormat: 'd-m-Y',
-      locale: Spanish, 
-      defaultDate: this.paciente.fecha_nacimiento || undefined, //para que se muestre la fecha actual del paciente
+    this.initFlatpickr();
+  }
+
+  private initFlatpickr() {
+    if (!this.fechaInput) return;
+
+    // Inicializamos flatpickr
+    this.fpInstance = flatpickr(this.fechaInput.nativeElement, {
+      dateFormat: 'Y-m-d', // formato ISO, consistente con paciente.fecha_nacimiento
+      locale: Spanish,
+      defaultDate: this.paciente.fecha_nacimiento || undefined,
       onChange: (selectedDates) => {
-        const fecha = selectedDates[0]?.toISOString().split('T')[0];
-        if (fecha) this.paciente.fecha_nacimiento = fecha;
+        if (selectedDates.length > 0) {
+          const d = selectedDates[0];
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          this.paciente.fecha_nacimiento = `${yyyy}-${mm}-${dd}`;
+        }
       },
     });
   }
@@ -56,19 +72,22 @@ export class ModalEditarPaciente {
       this.paciente.tutor_relacion = '';
     }
   }
-  
-  // Método seguro para inputs y selects
-  actualizarCampo(event: Event, campo: keyof UpdatePaciente) {
-    const target = event.target as HTMLInputElement | HTMLSelectElement;
-    (this.paciente as any)[campo] = target.value;
+
+  actualizarCampo(valor: any, campo: keyof UpdatePaciente) {
+    (this.paciente as any)[campo] = valor;
   }
 
   siguienteStep() {
     this.step = 2;
+    if (this.fpInstance) {
+      this.fpInstance.destroy();
+      this.fpInstance = null;
+    }
   }
 
   volverStep() {
     this.step = 1;
+    setTimeout(() => this.initFlatpickr(), 0); // re-iniciamos flatpickr al volver
   }
 
   guardarCambios() {
