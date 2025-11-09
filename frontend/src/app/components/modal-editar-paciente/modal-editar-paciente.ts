@@ -5,10 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { UpdatePaciente } from '../../models/update-paciente.model';
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-modal-editar-paciente',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatOptionModule,],
   templateUrl: './modal-editar-paciente.html',
   styleUrl: './modal-editar-paciente.css'
 })

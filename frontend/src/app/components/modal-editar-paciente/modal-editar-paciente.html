@@ -68,21 +68,26 @@
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Sexo</label>
-                    <select
-                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                    (change)="actualizarCampo($event, 'sexo')"
-                    >
-                    <option value="M" [selected]="paciente.sexo === Sexo.MASCULINO">Masculino</option>
-                    <option value="F" [selected]="paciente.sexo === Sexo.FEMENINO">Femenino</option>
-                    <option value="O" [selected]="paciente.sexo === Sexo.OTRO">Otro</option>
-                    </select>
+
+                    <mat-form-field appearance="outline" class="w-full">
+                        <mat-select
+                        [(value)]="paciente.sexo"
+                        (selectionChange)="actualizarCampo($event.value, 'sexo')"
+                        
+                        >
+                        <mat-option value="M">Masculino</mat-option>
+                        <mat-option value="F">Femenino</mat-option>
+                        <mat-option value="O">Otro</mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </div>
+
 
             </div>
 
             <!-- Toggle tutor -->
-            <div class="flex items-center mt-6 mb-4">
-                <span class="mr-2 text-[#545454] font-medium">¿Tiene tutor?</span>
+            <div class="flex items-center mt-0 mb-6">
+                <span class="mr-2 text-[#545454] font-bold">¿Tiene tutor?</span>
                 <img [src]="tieneTutor ? 'assets/icons/on_switch.svg' : 'assets/icons/off_switch.svg'"
                     class="w-12 h-10 cursor-pointer" (click)="toggleTutor()"
                 />

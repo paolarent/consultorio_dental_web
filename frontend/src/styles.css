@@ -60,44 +60,105 @@ body {
 /* ======== ENCABEZADO (mes y año) ======== */
 .flatpickr-months {
   background-color: #C3F2F3 !important;  /* fondo teal */
-  color: white !important;
-  border-radius: 12px 12px 0 0 !important;
-  padding: 6px 0 !important;
-  text-align: center;
+    color: white !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 6px 0 !important;
+    text-align: center;
 }
 
 /* Nombre del mes */
 .flatpickr-current-month .cur-month {
-  color: white !important;
-  font-weight: 600 !important;
-  font-size: 1.1rem !important;
-  letter-spacing: 0.5px;
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 0.5px;
 }
 
 /* Año editable */
 .flatpickr-current-month input.cur-year {
-  margin-left: 4px;
-  color: black !important;
-  background: transparent !important;
-  border: none !important;
-  font-weight: 500 !important;
-  width: 4em;
-  text-align: left;
+    margin-left: 4px;
+    color: black !important;
+    background: transparent !important;
+    border: none !important;
+    font-weight: 500 !important;
+    width: 4em;
+    text-align: left;
 }
 
 /* Flechas de navegación */
 .flatpickr-prev-month,
 .flatpickr-next-month {
-  color: white !important;
-  transition: 0.3s ease;
+    color: white !important;
+    transition: 0.3s ease;
 }
 
 .flatpickr-prev-month:hover,
 .flatpickr-next-month:hover {
-  color: #99f6e4 !important; /* teal clarito */
-  transform: scale(1.2);
+    color: #99f6e4 !important; /* teal clarito */
+    transform: scale(1.2);
 }
 
+/* SELECT DE ANGULAR MATERIALS */
+/* Quita el borde negro externo del mat-form-field */
+.mat-mdc-form-field {
+    border: none !important;
+}
+
+/* Elimina la línea del contorno "outline" de Material */
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch,
+.mdc-notched-outline__trailing {
+    border: none !important;
+}
+
+/* Ajusta la altura para que combine con tus inputs */
+.mat-mdc-form-field-flex {
+    height: 3rem !important;
+    border-radius: 0.5rem !important;
+    align-items: center;
+}
+
+/* ======== Arregla alineación del texto dentro del mat-select ======== */
+.mat-mdc-form-field-flex {
+    align-items: center !important;
+}
+
+/* ======== Ajusta el padding interno para que se vea como tus inputs ======== */
+.mat-mdc-form-field-infix {
+    padding: 0.4rem 0.75rem !important;
+    min-height: 3rem !important; /* altura similar a tus inputs */
+    display: flex;
+    align-items: center;
+}
+
+/* ======== Colores y borde para que coincidan con tus inputs personalizados ======== */
+.mat-mdc-text-field-wrapper {
+    background-color: rgba(244, 244, 244, 0.6) !important; /* gris clarito tipo bg-zinc-300/30 */
+    border: 1px solid #0d9488 !important; /* teal-600 */
+    border-radius: 0.5rem !important;
+}
+
+/* ======== Corrige el z-index del menú desplegable para que no quede detrás del modal ======== */
+.cdk-overlay-container {
+    z-index: 9999 !important;
+}
+
+/* ======== Opcional: mejora el aspecto de las opciones ======== */
+.mat-mdc-option {
+    font-size: 0.95rem;
+    color: #333 !important;
+}
+
+.mat-mdc-option:hover {
+    background-color: #e0f7f6 !important; /* tono teal claro */
+}
+
+/* ======== Fondo sólido del panel desplegable ======== */
+.mat-mdc-select-panel {
+    background-color: #EBEBF0 !important; /* o usa #f4f4f4 si prefieres gris */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 0.5rem !important;
+}
 
 
 
