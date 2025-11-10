@@ -6,6 +6,7 @@ import { PacienteService } from '../../services/paciente.service';
 import { ModalEditarPaciente } from '../modal-editar-paciente/modal-editar-paciente';
 import { UpdatePaciente } from '../../models/update-paciente.model';
 import { AuthService } from '../../auth/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-perfil-paciente',
@@ -16,6 +17,7 @@ import { AuthService } from '../../auth/auth.service';
 export class PerfilPaciente implements OnInit {
   private authService = inject(AuthService);
   private pacienteService = inject(PacienteService);
+  private notify = inject(NotificationService);
 
   modalEditar = signal(false);
   paciente = signal<UpdatePaciente | null>(null);
@@ -97,11 +99,13 @@ export class PerfilPaciente implements OnInit {
     this.pacienteService.updatePaciente(updated.id_paciente, updated).subscribe({
       next: (dataGuardada) => {
         this.paciente.set(dataGuardada);
-        console.log('Paciente actualizado en la BD con exito');
+        this.notify.success('Datos actualizados con éxito.');
+        //console.log('Paciente actualizado en la BD con exito');
         this.cerrarModal();
       },
       error: (err) => {
-        console.error('Error al actualizar paciente en la BD', err)
+        this.notify.error('Error al actualizar los datos.');
+        //console.error('Error al actualizar paciente en la BD', err)
       }
     })
 

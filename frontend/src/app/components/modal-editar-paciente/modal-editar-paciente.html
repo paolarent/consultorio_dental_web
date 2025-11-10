@@ -196,7 +196,7 @@
                 <button
                     class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                     [ngClass]="pacienteStep1Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
-                    [disabled]="pacienteStep1Form.invalid"
+                    
                     (click)="siguienteStep()"
                 >
                     <span class="text-center text-white text-lg font-semibold tracking-wider">Siguiente</span>
@@ -307,7 +307,7 @@
                     <button
                         class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                         [ngClass]="pacienteStep2Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
-                        [disabled]="pacienteStep2Form.invalid"
+                        
                         (click)="guardarCambios()"
                     >
                         <span class="text-center text-white text-lg font-semibold tracking-wider">Guardar cambios</span>

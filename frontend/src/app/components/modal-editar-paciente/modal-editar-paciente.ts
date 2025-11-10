@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnInit, AfterViewInit, inject } from '@angular/core';
 import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -9,6 +9,7 @@ import { Spanish } from 'flatpickr/dist/l10n/es.js';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-modal-editar-paciente',
@@ -17,6 +18,8 @@ import { MatOptionModule } from '@angular/material/core';
   styleUrl: './modal-editar-paciente.css'
 })
 export class ModalEditarPaciente implements OnInit, AfterViewInit {
+  private notify = inject(NotificationService);
+
   @Input() paciente!: UpdatePaciente;
   @Output() actualizar = new EventEmitter<UpdatePaciente>();
   @Output() cerrar = new EventEmitter<void>();
@@ -56,38 +59,44 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
     if (!this.fechaInput) return;
 
     let fechaParaFlatpickr = this.paciente.fecha_nacimiento;
-  
-     // Detectamos si la fecha viene con información de hora y zona horaria
-     // y si es así, extraemos SOLAMENTE la parte YYYY-MM-DD.
-      if (fechaParaFlatpickr && fechaParaFlatpickr.includes('T')) {
-        fechaParaFlatpickr = fechaParaFlatpickr.split('T')[0];
-      }
+    if (fechaParaFlatpickr && fechaParaFlatpickr.includes('T')) {
+      fechaParaFlatpickr = fechaParaFlatpickr.split('T')[0];
+    }
 
-      // Inicializamos flatpickr
-      this.fpInstance = flatpickr(this.fechaInput.nativeElement, {
+    this.fpInstance = flatpickr(this.fechaInput.nativeElement, {
       dateFormat: 'Y-m-d',
       locale: Spanish,
-       // Usamos la fecha limpia 'YYYY-MM-DD'
-        defaultDate: fechaParaFlatpickr, 
-        onChange: (selectedDates, dateStr) => {
-        if (selectedDates.length > 0) {
-          // Guarda directamente en el modelo
-          this.paciente.fecha_nacimiento = dateStr;
+      defaultDate: fechaParaFlatpickr,
+      allowInput: true, // permite que el usuario borre manualmente
+      onChange: (selectedDates, dateStr) => this.validateFecha(dateStr),
+    });
 
-          // Si quieres que Angular detecte el cambio en el template:
-          if (this.pacienteStep1Form?.controls?.['fechaNacimiento']) {
-            this.pacienteStep1Form.controls['fechaNacimiento'].markAsDirty();
-            this.pacienteStep1Form.controls['fechaNacimiento'].updateValueAndValidity();
-          }
-        }
-      },
+    // Detecta si el usuario borra manualmente la fecha
+    this.fechaInput.nativeElement.addEventListener('input', (event: any) => {
+      this.validateFecha(event.target.value);
     });
   }
+
+  private validateFecha(value: string) {
+    this.paciente.fecha_nacimiento = value;
+
+    if (this.pacienteStep1Form?.controls?.['fechaNacimiento']) {
+      const control = this.pacienteStep1Form.controls['fechaNacimiento'];
+      if (!value) {
+        control.setErrors({ required: true }); // marca como inválido si está vacío
+      } else {
+        control.setErrors(null); // marca como válido si tiene valor
+      }
+      control.markAsDirty();
+      control.updateValueAndValidity();
+    }
+  }
+
 
   toggleTutor() {
     this.tieneTutor = !this.tieneTutor;
     if (!this.tieneTutor) {
-      // Limpiar los campos del tutor para enviarle null/vacío al backend
+      // Limpiar los campos del tutor para enviarle null al backend
       this.paciente.tutor_nombre = null;
       this.paciente.tutor_apellido1 = null;
       this.paciente.tutor_apellido2 = null;
@@ -118,7 +127,7 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
 
   siguienteStep() {
     if (this.pacienteStep1Form.invalid) {
-      // Mostrar un mensaje de error al usuario, maybe con los toast
+      this.notify.warning('Debe completar los campos obligatorios');
       return;
     }
 
@@ -135,6 +144,11 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   }
 
   guardarCambios() {
+    if (this.pacienteStep2Form.invalid) {
+      this.notify.warning('Debe completar los campos obligatorios');
+      return;
+    }
+
     this.paciente.tiene_tutor = this.tieneTutor ? SiONo.SI : SiONo.NO;
 
     const datosActualizados = {
