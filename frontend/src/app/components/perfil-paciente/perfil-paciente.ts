@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Alergia, AlergiasService } from '../../services/alergia.service';
 import { CondicionMedica, CondicionesMedicasService } from '../../services/cond-med.service';
 import { PacienteService } from '../../services/paciente.service';
-import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
 import { ModalEditarPaciente } from '../modal-editar-paciente/modal-editar-paciente';
 import { UpdatePaciente } from '../../models/update-paciente.model';
 import { AuthService } from '../../auth/auth.service';
@@ -30,7 +29,7 @@ export class PerfilPaciente implements OnInit {
   condiciones: CondicionMedica[] = [];
 
   ngOnInit() {
-    // Si ya hay un usuario en sesión, puedes cargar su paciente desde aquí
+    // Si ya hay un usuario en sesión, puede cargar el paciente desde aquí
     const usuario = this.authService.usuario();
     const id_paciente = usuario?.paciente?.id_paciente;
 
@@ -66,7 +65,7 @@ export class PerfilPaciente implements OnInit {
   }
 
   abrirModalEditarPac() {
-    const usuario = this.authService.usuario(); // obtiene datos del usuario activo
+    const usuario = this.authService.usuario();// obtiene datos del usuario activo
     const id_paciente = usuario?.paciente?.id_paciente;
 
     if (!id_paciente) {
@@ -74,9 +73,14 @@ export class PerfilPaciente implements OnInit {
       return;
     }
 
-    // pasamos el id al modal y lo mostramos
-    this.paciente.update((p) => ({ ...p, id_paciente } as any));
-    this.modalEditar.set(true);
+    // Refrescamos los datos desde la BD antes de abrir el modal
+    this.pacienteService.getPacienteById(id_paciente).subscribe({
+      next: (data) => {
+        this.paciente.set(data);
+        this.modalEditar.set(true); // Ahora sí abrimos el modal
+      },
+      error: (err) => console.error('Error al cargar paciente antes de editar', err),
+    });
   }
 
 
@@ -85,7 +89,22 @@ export class PerfilPaciente implements OnInit {
   }
 
   actualizarPaciente(updated: UpdatePaciente) {
-    this.paciente.set(updated);
-    this.cerrarModal();
+    if (!updated.id_paciente) {
+      console.error('No se puede actualizar, falta el ID del paciente');
+      return;
+    }
+
+    this.pacienteService.updatePaciente(updated.id_paciente, updated).subscribe({
+      next: (dataGuardada) => {
+        this.paciente.set(dataGuardada);
+        console.log('Paciente actualizado en la BD con exito');
+        this.cerrarModal();
+      },
+      error: (err) => {
+        console.error('Error al actualizar paciente en la BD', err)
+      }
+    })
+
+    //this.paciente.set(updated);
   }
 }

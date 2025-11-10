@@ -16,15 +16,17 @@
 
         <!-- STEP 1: Datos personales + tutor -->
         @if(step === 1) {
+        <form #pacienteStep1Form="ngForm">
             <div class="grid grid-cols-2 gap-6">
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Nombre</label>
                     <input
                     type="text"
-                    [value]="paciente.nombre"
+                    name="nombre"
+                    [(ngModel)]="paciente.nombre"
                     placeholder="Ingresa tu nombre"
+                    required
                     class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                    (input)="actualizarCampo($event, 'nombre')"
                     />
                 </div>
 
@@ -32,10 +34,11 @@
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno</label>
                     <input
                     type="text"
-                    [value]="paciente.apellido1"
+                    name="apellido1"
+                    [(ngModel)]="paciente.apellido1"
                     placeholder="Ingresa tu primer apellido"
+                    required
                     class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                    (input)="actualizarCampo($event, 'apellido1')"
                     />
                 </div>
 
@@ -43,10 +46,10 @@
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno</label>
                     <input
                     type="text"
-                    [value]="paciente.apellido2"
+                    name="apellido2"
+                    [(ngModel)]="paciente.apellido2"
                     placeholder="Ingresa tu segundo apellido"
                     class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                    (input)="actualizarCampo($event, 'apellido2')"
                     />
                 </div>
 
@@ -54,10 +57,11 @@
                     <label class="block text-base font-medium text-[#545454] mb-1">Teléfono</label>
                     <input
                     type="text"
-                    [value]="paciente.telefono"
+                    name="telefono"
+                    [(ngModel)]="paciente.telefono"
                     placeholder="Ingresa tu teléfono"
+                    required
                     class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                    (input)="actualizarCampo($event, 'telefono')"
                     />
                 </div>
 
@@ -70,7 +74,9 @@
                         <input
                             #fechaInput
                             type="text"
+                            name="fechaNacimiento"
                             placeholder="Selecciona la fecha de nacimiento"
+                            required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
                         />
                     </div>
@@ -81,9 +87,9 @@
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-select
-                        [(value)]="paciente.sexo"
-                        (selectionChange)="actualizarCampo($event.value, 'sexo')"
-                        
+                        name="sexo"
+                        [(ngModel)]="paciente.sexo"
+                        required
                         >
                         <mat-option [value]="Sexo.MASCULINO">Masculino</mat-option>
                         <mat-option [value]="Sexo.FEMENINO">Femenino</mat-option>
@@ -91,7 +97,6 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-
 
             </div>
 
@@ -110,10 +115,11 @@
                         <label class="block text-base font-medium text-[#545454] mb-1">Nombre de Tutor</label>
                         <input
                             type="text"
-                            [value]="paciente.tutor_nombre"
+                            name="tutor_nombre"
+                            [(ngModel)]="paciente.tutor_nombre"
                             placeholder="Nombre tutor"
+                            required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                            (input)="actualizarCampo($event, 'tutor_nombre')"
                         />
                     </div>
                     
@@ -121,10 +127,11 @@
                         <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno de Tutor</label>
                         <input
                             type="text"
-                            [value]="paciente.tutor_apellido1"
+                            name="tutor_apellido1"
+                            [(ngModel)]="paciente.tutor_apellido1"
                             placeholder="Apellido1 tutor"
+                            required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                            (input)="actualizarCampo($event, 'tutor_apellido1')"
                         />
                     </div>
 
@@ -132,10 +139,10 @@
                         <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno de Tutor</label>
                         <input
                             type="text"
-                            [value]="paciente.tutor_apellido2"
+                            name="tutor_apellido2"
+                            [(ngModel)]="paciente.tutor_apellido2"
                             placeholder="Apellido2 tutor"
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                            (input)="actualizarCampo($event, 'tutor_apellido2')"
                         />
                     </div>
                     
@@ -143,10 +150,11 @@
                         <label class="block text-base font-medium text-[#545454] mb-1">Teléfono Tutor</label>
                         <input
                             type="text"
-                            [value]="paciente.tutor_telefono"
+                            name="tutor_telefono"
+                            [(ngModel)]="paciente.tutor_telefono"
                             placeholder="Teléfono tutor"
+                            required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                            (input)="actualizarCampo($event, 'tutor_telefono')"
                         />
                     </div>
                 
@@ -154,10 +162,11 @@
                         <label class="block text-base font-medium text-[#545454] mb-1">Correo tutor</label>
                         <input
                             type="email"
-                            [value]="paciente.tutor_correo"
+                            name="tutor_correo"
+                            [(ngModel)]="paciente.tutor_correo"
                             placeholder="Correo tutor"
+                            required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                            (input)="actualizarCampo($event, 'tutor_correo')"
                         />
                     </div>
                     
@@ -165,10 +174,11 @@
                         <label class="block text-base font-medium text-[#545454] mb-1">Relación</label>
                         <input
                             type="text"
-                            [value]="paciente.tutor_relacion"
+                            name="tutor_relacion"
+                            [(ngModel)]="paciente.tutor_relacion"
                             placeholder="Relación"
+                            required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                            (input)="actualizarCampo($event, 'tutor_relacion')"
                         />
                     </div>
                     
@@ -185,112 +195,125 @@
                 
                 <button
                     class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                    [ngClass]="pacienteStep1Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
+                    [disabled]="pacienteStep1Form.invalid"
                     (click)="siguienteStep()"
                 >
                     <span class="text-center text-white text-lg font-semibold tracking-wider">Siguiente</span>
                 </button>
             </div>
+        </form>
         }
 
         <!-- STEP 2: Datos de direccion -->
         @if(step === 2) {
-            <div class="grid grid-cols-2 gap-6">
-                <!-- campos de dirección -->
+            <form #pacienteStep2Form="ngForm">
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- campos de dirección -->
+                    <div>
+                        <label class="block text-base font-medium text-[#545454] mb-1">Calle</label>
+                        <input
+                            type="text"
+                            name="d_calle"
+                            [(ngModel)]="paciente.d_calle"
+                            placeholder="Ingresa la calle"
+                            required
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
 
-                <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Calle</label>
-                    <input
-                        type="text"
-                        [value]="paciente.d_calle"
-                        placeholder="Ingresa la calle"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                        (input)="actualizarCampo($event, 'd_calle')"
-                    />
+                    <div>
+                        <label class="block text-base font-medium text-[#545454] mb-1">Núm. Exterior</label>
+                        <input
+                            type="text"
+                            name="d_num_exterior"
+                            [(ngModel)]="paciente.d_num_exterior"
+                            placeholder="Ingresa el numero"
+                            required
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-base font-medium text-[#545454] mb-1">Colonia</label>
+                        <input
+                            type="text"
+                            name="d_colonia"
+                            [(ngModel)]="paciente.d_colonia"
+                            placeholder="Ingresa la colonia"
+                            required
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-base font-medium text-[#545454] mb-1">Código Póstal</label>
+                        <input
+                            type="text"
+                            name="d_cp"
+                            [(ngModel)]="paciente.d_cp"
+                            placeholder="Ingresa el CP"
+                            required
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-base font-medium text-[#545454] mb-1">Entidad Federativa</label>
+                        <input
+                            type="text"
+                            name="d_entidadfed"
+                            [(ngModel)]="paciente.d_entidadfed"
+                            placeholder="Ingresa la entidad"
+                            required
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-base font-medium text-[#545454] mb-1">Municipio</label>
+                        <input
+                            type="text"
+                            name="d_municipio"
+                            [(ngModel)]="paciente.d_municipio"
+                            placeholder="Ingresa el municipio"
+                            required
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-base font-medium text-[#545454] mb-1">Localidad</label>
+                        <input
+                            type="text"
+                            name="d_localidad"
+                            [(ngModel)]="paciente.d_localidad"
+                            placeholder="Ingresa la localidad"
+                            required
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
+
                 </div>
 
-                <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Núm. Exterior</label>
-                    <input
-                        type="text"
-                        [value]="paciente.d_num_exterior"
-                        placeholder="Ingresa la calle"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                        (input)="actualizarCampo($event, 'd_num_exterior')"
-                    />
+                <div class="flex justify-end gap-4 mt-6">
+                    <button
+                        class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                        (click)="volverStep()"
+                    >
+                        <span class="text-center text-white text-lg font-semibold tracking-wider">Volver</span>
+                    </button>
+                    
+                    <button
+                        class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                        [ngClass]="pacienteStep2Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
+                        [disabled]="pacienteStep2Form.invalid"
+                        (click)="guardarCambios()"
+                    >
+                        <span class="text-center text-white text-lg font-semibold tracking-wider">Guardar cambios</span>
+                    </button>
                 </div>
-
-                <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Colonia</label>
-                    <input
-                        type="text"
-                        [value]="paciente.d_colonia"
-                        placeholder="Ingresa la calle"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                        (input)="actualizarCampo($event, 'd_colonia')"
-                    />
-                </div>
-
-                <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Código Póstal</label>
-                    <input
-                        type="text"
-                        [value]="paciente.d_cp"
-                        placeholder="Ingresa la calle"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                        (input)="actualizarCampo($event, 'd_cp')"
-                    />
-                </div>
-
-                <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Entidad Federativa</label>
-                    <input
-                        type="text"
-                        [value]="paciente.d_entidadfed"
-                        placeholder="Ingresa la calle"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                        (input)="actualizarCampo($event, 'd_entidadfed')"
-                    />
-                </div>
-
-                <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Municipio</label>
-                    <input
-                        type="text"
-                        [value]="paciente.d_municipio"
-                        placeholder="Ingresa la calle"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                        (input)="actualizarCampo($event, 'd_municipio')"
-                    />
-                </div>
-
-                <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Localidad</label>
-                    <input
-                        type="text"
-                        [value]="paciente.d_localidad"
-                        placeholder="Ingresa la calle"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                        (input)="actualizarCampo($event, 'd_localidad')"
-                    />
-                </div>
-
-            </div>
-
-            <div class="flex justify-end gap-4 mt-6">
-                <button
-                    class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
-                    (click)="volverStep()"
-                >
-                    <span class="text-center text-white text-lg font-semibold tracking-wider">Volver</span>
-                </button>
-                
-                <button
-                    class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
-                    (click)="guardarCambios()"
-                >
-                    <span class="text-center text-white text-lg font-semibold tracking-wider">Guardar cambios</span>
-                </button>
-            </div>
+            </form>
         }
 
     </div>

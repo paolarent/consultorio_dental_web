@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { UpdatePaciente } from '../../models/update-paciente.model';
 import { PacienteService } from '../../services/paciente.service';
 import flatpickr from 'flatpickr';
@@ -22,6 +22,8 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   @Output() cerrar = new EventEmitter<void>();
 
   @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('pacienteStep1Form') pacienteStep1Form!: NgForm;
+  @ViewChild('pacienteStep2Form') pacienteStep2Form!: NgForm;
 
   Sexo = Sexo;
   SiONo = SiONo;
@@ -30,6 +32,8 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   step = 1;
 
   private fpInstance: any;
+  // Propiedad para validar el botón 'Siguiente'
+  isStep1Valid = false;
 
   constructor(private pacienteService: PacienteService) {}
 
@@ -41,29 +45,40 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
     this.initFlatpickr();
   }
 
+  // Observa los cambios del formulario para habilitar el botón "Siguiente"
+  ngDoCheck() {
+    if (this.pacienteStep1Form) {
+      this.isStep1Valid = !!this.pacienteStep1Form.valid;
+    }
+  }
+
   private initFlatpickr() {
     if (!this.fechaInput) return;
 
-      // --- 1. Arreglo Defensivo para Fechas con T/Z (UTC) ---
     let fechaParaFlatpickr = this.paciente.fecha_nacimiento;
   
-     // Detectamos si la fecha viene con información de hora y zona horaria (T...Z)
+     // Detectamos si la fecha viene con información de hora y zona horaria
      // y si es así, extraemos SOLAMENTE la parte YYYY-MM-DD.
       if (fechaParaFlatpickr && fechaParaFlatpickr.includes('T')) {
         fechaParaFlatpickr = fechaParaFlatpickr.split('T')[0];
       }
-      // ----------------------------------------------------
 
       // Inicializamos flatpickr
       this.fpInstance = flatpickr(this.fechaInput.nativeElement, {
       dateFormat: 'Y-m-d',
       locale: Spanish,
        // Usamos la fecha limpia 'YYYY-MM-DD'
-       defaultDate: fechaParaFlatpickr, // <-- Usamos la fecha corregida
+        defaultDate: fechaParaFlatpickr, 
         onChange: (selectedDates, dateStr) => {
         if (selectedDates.length > 0) {
-         // Al seleccionar, flatpickr nos da el string 'YYYY-MM-DD', lo guardamos tal cual
+          // Guarda directamente en el modelo
           this.paciente.fecha_nacimiento = dateStr;
+
+          // Si quieres que Angular detecte el cambio en el template:
+          if (this.pacienteStep1Form?.controls?.['fechaNacimiento']) {
+            this.pacienteStep1Form.controls['fechaNacimiento'].markAsDirty();
+            this.pacienteStep1Form.controls['fechaNacimiento'].updateValueAndValidity();
+          }
         }
       },
     });
@@ -72,20 +87,41 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   toggleTutor() {
     this.tieneTutor = !this.tieneTutor;
     if (!this.tieneTutor) {
-      this.paciente.tutor_nombre = '';
-      this.paciente.tutor_apellido1 = '';
-      this.paciente.tutor_apellido2 = '';
-      this.paciente.tutor_telefono = '';
-      this.paciente.tutor_correo = '';
-      this.paciente.tutor_relacion = '';
+      // Limpiar los campos del tutor para enviarle null/vacío al backend
+      this.paciente.tutor_nombre = null;
+      this.paciente.tutor_apellido1 = null;
+      this.paciente.tutor_apellido2 = null;
+      this.paciente.tutor_telefono = null;
+      this.paciente.tutor_correo = null;
+      this.paciente.tutor_relacion = null;
+    }
+
+    // Forzar revalidación si cambiamos el estado del tutor
+    if (this.pacienteStep1Form) {
+      this.pacienteStep1Form.form.updateValueAndValidity();
+
     }
   }
 
-  actualizarCampo(valor: any, campo: keyof UpdatePaciente) {
-    (this.paciente as any)[campo] = valor;
+  actualizarCampo(eventoOValor: any, campo: keyof UpdatePaciente) {
+    let valorFinal = eventoOValor;
+
+    // Si el 'eventoOValor' parece ser un evento de input HTML (tiene target y target.value)
+    if (eventoOValor && eventoOValor.target && eventoOValor.target.value !== undefined) {
+      valorFinal = eventoOValor.target.value;
+    } 
+    // Si viene de MatSelect, ya viene el valor, no se toca.
+
+    (this.paciente as any)[campo] = valorFinal;
+    //(this.paciente as any)[campo] = valor;
   }
 
   siguienteStep() {
+    if (this.pacienteStep1Form.invalid) {
+      // Mostrar un mensaje de error al usuario, maybe con los toast
+      return;
+    }
+
     this.step = 2;
     if (this.fpInstance) {
       this.fpInstance.destroy();
@@ -100,7 +136,13 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
 
   guardarCambios() {
     this.paciente.tiene_tutor = this.tieneTutor ? SiONo.SI : SiONo.NO;
-    this.actualizar.emit(this.paciente);
+
+    const datosActualizados = {
+      ...this.paciente, // ya contiene todos los valores actualizados
+      id_paciente: this.paciente.id_paciente
+    };
+
+    this.actualizar.emit(datosActualizados);
   }
 
   cancelar() {

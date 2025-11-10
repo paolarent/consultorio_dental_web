@@ -17,6 +17,7 @@ export class PacienteService {
         const paciente = await this.prisma.paciente.findUnique({
             where: { id_paciente: id },
             select: {
+                id_paciente: true,
                 nombre: true,
                 apellido1: true,
                 apellido2: true,
