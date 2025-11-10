@@ -69,6 +69,8 @@ export class PacienteService {
         }
         }
 
+        const [year, month, day] = data.fecha_nacimiento.split('-').map(Number);
+        const fechaNacimientoLocal = new Date(year, month - 1, day);
         // Crear paciente en la base de datos
         const newPaciente = await this.prisma.paciente.create({
         data: {
@@ -77,7 +79,7 @@ export class PacienteService {
             apellido2: data.apellido2 || '',
             //apellido2: data.apellido2 || null,
             telefono: data.telefono,
-            fecha_nacimiento: new Date(data.fecha_nacimiento),
+            fecha_nacimiento: fechaNacimientoLocal,
             sexo: data.sexo,
             d_calle: data.d_calle || null,
             d_num_exterior: data.d_num_exterior || null,

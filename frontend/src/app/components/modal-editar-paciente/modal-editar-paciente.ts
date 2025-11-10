@@ -44,18 +44,26 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   private initFlatpickr() {
     if (!this.fechaInput) return;
 
-    // Inicializamos flatpickr
-    this.fpInstance = flatpickr(this.fechaInput.nativeElement, {
-      dateFormat: 'Y-m-d', // formato ISO, consistente con paciente.fecha_nacimiento
+      // --- 1. Arreglo Defensivo para Fechas con T/Z (UTC) ---
+    let fechaParaFlatpickr = this.paciente.fecha_nacimiento;
+  
+     // Detectamos si la fecha viene con información de hora y zona horaria (T...Z)
+     // y si es así, extraemos SOLAMENTE la parte YYYY-MM-DD.
+      if (fechaParaFlatpickr && fechaParaFlatpickr.includes('T')) {
+        fechaParaFlatpickr = fechaParaFlatpickr.split('T')[0];
+      }
+      // ----------------------------------------------------
+
+      // Inicializamos flatpickr
+      this.fpInstance = flatpickr(this.fechaInput.nativeElement, {
+      dateFormat: 'Y-m-d',
       locale: Spanish,
-      defaultDate: this.paciente.fecha_nacimiento || undefined,
-      onChange: (selectedDates) => {
+       // Usamos la fecha limpia 'YYYY-MM-DD'
+       defaultDate: fechaParaFlatpickr, // <-- Usamos la fecha corregida
+        onChange: (selectedDates, dateStr) => {
         if (selectedDates.length > 0) {
-          const d = selectedDates[0];
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, '0');
-          const dd = String(d.getDate()).padStart(2, '0');
-          this.paciente.fecha_nacimiento = `${yyyy}-${mm}-${dd}`;
+         // Al seleccionar, flatpickr nos da el string 'YYYY-MM-DD', lo guardamos tal cual
+          this.paciente.fecha_nacimiento = dateStr;
         }
       },
     });
