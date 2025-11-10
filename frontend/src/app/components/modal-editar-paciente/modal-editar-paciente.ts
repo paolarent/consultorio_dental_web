@@ -10,10 +10,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { NotificationService } from '../../services/notification.service';
+import { TogglePasswordDirective } from '../../directives/toggle-password';
 
 @Component({
   selector: 'app-modal-editar-paciente',
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatOptionModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatOptionModule, TogglePasswordDirective],
   templateUrl: './modal-editar-paciente.html',
   styleUrl: './modal-editar-paciente.css'
 })
@@ -27,12 +28,14 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
   @ViewChild('pacienteStep1Form') pacienteStep1Form!: NgForm;
   @ViewChild('pacienteStep2Form') pacienteStep2Form!: NgForm;
+  @ViewChild('pacienteStep3Form') pacienteStep3Form!: NgForm; 
 
   Sexo = Sexo;
   SiONo = SiONo;
 
   tieneTutor = false;
   step = 1;
+  showPasswordFields = false;
 
   private fpInstance: any;
   // Propiedad para validar el botón 'Siguiente'
@@ -45,15 +48,22 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.initFlatpickr();
+    if (this.step === 1) this.initFlatpickr();
+    //this.initFlatpickr();
   }
 
   // Observa los cambios del formulario para habilitar el botón "Siguiente"
   ngDoCheck() {
-    if (this.pacienteStep1Form) {
-      this.isStep1Valid = !!this.pacienteStep1Form.valid;
-    }
+    if (this.pacienteStep1Form) this.isStep1Valid = !!this.pacienteStep1Form.valid;
+    //if (this.pacienteStep1Form) {
+      //this.isStep1Valid = !!this.pacienteStep1Form.valid;
+    //}
   }
+
+  togglePasswordFields() {
+    this.showPasswordFields = !this.showPasswordFields;
+  }
+
 
   private initFlatpickr() {
     if (!this.fechaInput) return;
@@ -108,7 +118,6 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
     // Forzar revalidación si cambiamos el estado del tutor
     if (this.pacienteStep1Form) {
       this.pacienteStep1Form.form.updateValueAndValidity();
-
     }
   }
 
@@ -125,26 +134,40 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
     //(this.paciente as any)[campo] = valor;
   }
 
+  // --- Navegación entre steps ---
   siguienteStep() {
-    if (this.pacienteStep1Form.invalid) {
+    if (this.step === 1 && this.pacienteStep1Form.invalid) {
       this.notify.warning('Debe completar los campos obligatorios');
       return;
     }
 
-    this.step = 2;
-    if (this.fpInstance) {
-      this.fpInstance.destroy();
-      this.fpInstance = null;
+    if (this.step === 2 && this.pacienteStep2Form.invalid) {
+      this.notify.warning('Debe completar los campos obligatorios');
+      return;
+    }
+
+    if (this.step === 1) {
+      this.step = 2;
+      if (this.fpInstance) {
+        this.fpInstance.destroy();
+        this.fpInstance = null;
+      }
+    } else if (this.step === 2) {
+      this.step = 3; // Avanza al nuevo step 3
     }
   }
 
   volverStep() {
-    this.step = 1;
-    setTimeout(() => this.initFlatpickr(), 0); // re-iniciamos flatpickr al volver
+    if (this.step === 2) {
+      this.step = 1;
+      setTimeout(() => this.initFlatpickr(), 0);
+    } else if (this.step === 3) {
+      this.step = 2;
+    }
   }
 
   guardarCambios() {
-    if (this.pacienteStep2Form.invalid) {
+    if (this.step === 3 && this.pacienteStep3Form?.invalid) {
       this.notify.warning('Debe completar los campos obligatorios');
       return;
     }
@@ -152,7 +175,7 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
     this.paciente.tiene_tutor = this.tieneTutor ? SiONo.SI : SiONo.NO;
 
     const datosActualizados = {
-      ...this.paciente, // ya contiene todos los valores actualizados
+      ...this.paciente,
       id_paciente: this.paciente.id_paciente
     };
 

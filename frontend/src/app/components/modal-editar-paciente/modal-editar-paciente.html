@@ -9,9 +9,11 @@
             background-size: 700px 500px;">
     </div>
 
-    <div class="relative bg-white p-6 rounded-xl w-3/4 max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto"
+        [ngClass]="step === 3 ? 'w-2/5 max-w-md' : 'w-3/4 max-w-3xl'"
+    >
         <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
-            {{ step === 1 ? 'Editar Mis Datos' : 'Editar Dirección' }}
+            {{ step === 1 ? 'Editar Mis Datos' : (step === 2 ? 'Editar Dirección' : 'Editar Usuario') }}
         </h2>
 
         <!-- STEP 1: Datos personales + tutor -->
@@ -308,11 +310,104 @@
                         class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                         [ngClass]="pacienteStep2Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
                         
+                        (click)="siguienteStep()"
+                    >
+                        <span class="text-center text-white text-lg font-semibold tracking-wider">Siguiente</span>
+                    </button>
+                </div>
+            </form>
+        }
+
+        <!-- STEP 3: Datos de usuario (correo y contraseña) -->
+        @if(step === 3) {
+            <form #pacienteStep3Form="ngForm">
+                <div class="grid gap-10">
+                    
+                    <!-- Columna izquierda: Correo -->
+                    <div>
+                        <label class="block text-base font-medium text-[#545454] mb-1">Correo electrónico</label>
+                        <input
+                            type="email"
+                            name="correo"
+                            placeholder="Ingresa el correo"
+                            required
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
+
+                    <div class="flex flex-col items-start">
+                        <!-- Botón para cambiar contraseña -->
+                        <button
+                            type="button"
+                            class="w-full h-12 bg-[#C3F2F3] rounded-xl inline-flex justify-center items-center cursor-pointer hover:bg-[#545454] mb-4"
+                            (click)="togglePasswordFields()"
+                        >
+                            <span class="text-[#545454] font-bold text-lg hover:text-[#C3F2F3]">
+                                Cambiar contraseña
+                            </span>
+                        </button>
+
+                        @if(showPasswordFields) {
+                            <!-- Contraseña actual -->
+                            <div class="relative w-full mb-4">
+                                <label class="block text-base font-medium text-[#545454] mb-1">Contraseña actual</label>
+                                <input
+                                    type="password"
+                                    appTogglePassword
+                                    placeholder="Ingresa tu contraseña actual"
+                                    class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                                    name="contrasenaActual"
+                                    required
+                                />
+                            </div>
+
+                            <!-- Contraseña nueva -->
+                            <div class="relative w-full mb-4">
+                                <label class="block text-base font-medium text-[#545454] mb-1">Nueva contraseña</label>
+                                <input
+                                    type="password"
+                                    appTogglePassword
+                                    placeholder="Ingresa tu nueva contraseña"
+                                    class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                                    name="contrasenaNueva"
+                                    required
+                                />
+                            </div>
+
+                            <!-- Confirmar contraseña -->
+                            <div class="relative w-full mb-4">
+                                <label class="block text-base font-medium text-[#545454] mb-1">Confirmar contraseña</label>
+                                <input
+                                    type="password"
+                                    appTogglePassword
+                                    placeholder="Confirma tu nueva contraseña"
+                                    class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                                    name="contrasenaConfirmar"
+                                    required
+                                />
+                            </div>
+                        }
+                    </div>
+
+                </div>
+
+                <div class="flex justify-end gap-4 mt-6">
+                    <button
+                        class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                        (click)="volverStep()"
+                    >
+                        <span class="text-center text-white text-lg font-semibold tracking-wider">Volver</span>
+                    </button>
+
+                    <button
+                        class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                        [ngClass]="pacienteStep3Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
                         (click)="guardarCambios()"
                     >
                         <span class="text-center text-white text-lg font-semibold tracking-wider">Guardar cambios</span>
                     </button>
                 </div>
+
             </form>
         }
 
