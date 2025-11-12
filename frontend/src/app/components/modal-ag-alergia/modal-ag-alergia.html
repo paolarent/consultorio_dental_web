@@ -1,0 +1,24 @@
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto">
+        <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
+            Agregar Nueva Alergia
+        </h2>
+
+        <div class="flex justify-end gap-4 mt-6">
+            <button
+                class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                (click)="cancelar()"
+            >
+                <span class="text-center text-white text-lg font-semibold tracking-wider">Cancelar</span>
+            </button>
+
+            <button
+                class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                
+            >
+                <span class="text-center text-white text-lg font-semibold tracking-wider">Agregar</span>
+            </button>
+        </div>
+    </div>
+</div>

@@ -45,15 +45,25 @@
     <!-- Tarjeta de Alergias -->
     <div class="flex-1 bg-[#F5F8FC] rounded-xl shadow-md p-6 relative">
         <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3 mb-4">
-            <img src="assets/icons/alergia.svg" alt="Alergias" class="w-12 h-12">
-            <h2 class="text-[#105053] text-3xl font-bold">Alergias</h2>
-        </div>
-        <button
-            class="flex items-center gap-2 bg-[#C3F2F3] text-[#545454] text-lg font-semibold px-5 py-2 rounded-lg shadow hover:scale-105 transition">
-            <img src="assets/icons/agregar.svg" alt="Agregar" class="w-8 h-8">
+            <div class="flex items-center gap-3 mb-4">
+                <img src="assets/icons/alergia.svg" alt="Alergias" class="w-12 h-12">
+                <h2 class="text-[#105053] text-3xl font-bold">Alergias</h2>
+            </div>
+
+            <button
+                (click)="modalAlergias.set(true)"
+                class="flex items-center gap-2 bg-[#C3F2F3] text-[#545454] text-lg font-semibold px-5 py-2 rounded-lg shadow hover:scale-105 transition">
+                <img src="assets/icons/agregar.svg" alt="Agregar alergia" class="w-8 h-8">
                 Agregar
-        </button>
+            </button>
+
+            <!-- Modal Alergias -->
+            @if(modalAlergias()) {
+                <app-modal-ag-alergia
+                    (cerrar)="modalAlergias.set(false)">
+                </app-modal-ag-alergia>
+            }
+            
         </div>
 
         <!-- Listado de Alergias -->
@@ -109,11 +119,21 @@
                 <img src="assets/icons/cond-med.svg" alt="Condiciones Médicas" class="w-12 h-12">
                 <h2 class="text-[#105053] text-3xl font-bold">Condiciones Médicas</h2>
             </div>
+            
+            <!-- Botón agregar condición médica -->
             <button
+                (click)="modalCondMed.set(true)"
                 class="flex items-center gap-2 bg-[#C3F2F3] text-[#545454] text-lg font-semibold px-5 py-2 rounded-lg shadow hover:scale-105 transition">
-                <img src="assets/icons/agregar.svg" alt="Agregar" class="w-8 h-8">
-                    Agregar
+                <img src="assets/icons/agregar.svg" alt="Agregar condicion" class="w-8 h-8">
+                Agregar
             </button>
+
+            <!-- Modal Condiciones Médicas -->
+            @if(modalCondMed()) {
+                <app-modal-ag-condmed
+                    (cerrar)="modalCondMed.set(false)">
+                </app-modal-ag-condmed>
+            }
         </div>
 
         <!-- Condiciones registradas -->

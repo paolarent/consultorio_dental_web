@@ -9,11 +9,12 @@ import { AuthService } from '../../auth/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { Alergia } from '../../models/get-alergia.model';
 import { CondicionMedica } from '../../models/get-condmed.model';
-import { ActivatedRoute } from '@angular/router';
+import { ModalAgAlergia } from '../modal-ag-alergia/modal-ag-alergia';
+import { ModalAgCondmed } from '../modal-ag-condmed/modal-ag-condmed';
 
 @Component({
   selector: 'app-perfil-paciente',
-  imports: [CommonModule, ModalEditarPaciente],
+  imports: [CommonModule, ModalEditarPaciente, ModalAgAlergia, ModalAgCondmed],
   templateUrl: './perfil-paciente.html',
   styleUrl: './perfil-paciente.css'
 })
@@ -23,12 +24,14 @@ export class PerfilPaciente implements OnInit {
   private notify = inject(NotificationService);
 
   modalEditar = signal(false);
+  modalAlergias = signal(false);
+  modalCondMed = signal(false);
+
   paciente = signal<UpdatePaciente | null>(null);
   
   constructor(
     private alergiasService: AlergiasService,
     private condicionesService: CondicionesMedicasService,
-    private route: ActivatedRoute
   ) {}
 
   alergias: Alergia[] = [];

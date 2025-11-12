@@ -11,7 +11,7 @@
         <div class="flex items-center space-x-10 z-10">
             <a 
             [routerLink]="['/home']"
-            routerLinkActive="bg-teal-50 p-2 rounded-xl text-teal-700 shadow-sm scale-105"
+            routerLinkActive="p-2 rounded-xl text-teal-700 shadow-sm scale-105"
             [routerLinkActiveOptions]="{ exact: true }"
             (click)="goHome()"
                 class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
@@ -20,7 +20,7 @@
             </a>
 
             <a [routerLink]="['citas']" 
-            routerLinkActive="bg-teal-50 p-2 rounded-xl text-teal-700 shadow-sm scale-105"
+            routerLinkActive="p-2 rounded-xl text-teal-700 shadow-sm scale-105"
             [routerLinkActiveOptions]="{ exact: true }"
             class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img src="assets/icons/citas.svg" alt="Citas" title="Citas" class="w-7 h-7" />
@@ -28,7 +28,7 @@
             </a>
 
             <a [routerLink]="['mis-adeudos']" 
-            routerLinkActive="bg-teal-50 p-2 rounded-xl text-teal-700 shadow-sm scale-105"
+            routerLinkActive="p-2 rounded-xl text-teal-700 shadow-sm scale-105"
             [routerLinkActiveOptions]="{ exact: true }"
             class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
                 <img src="assets/icons/signo-pesos.svg" alt="Mis Adeudos" title="Adeudos" class="w-7 h-6" />

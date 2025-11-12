@@ -69,14 +69,11 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   // Observa los cambios del formulario para habilitar el botón "Siguiente"
   ngDoCheck() {
     if (this.pacienteStep1Form) this.isStep1Valid = !!this.pacienteStep1Form.valid;
-    //if (this.pacienteStep1Form) {
-      //this.isStep1Valid = !!this.pacienteStep1Form.valid;
-    //}
   }
 
   togglePasswordFields() {
     this.showPasswordFields = !this.showPasswordFields;
-
+    //limpiar los inputs por estetica
     this.contrasenaActual = '';
     this.contrasenaNueva = '';
     this.contrasenaConfirmar = '';
@@ -210,7 +207,7 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
     // Cambio de contraseña
     if (this.showPasswordFields && this.contrasenaNueva.trim()) {
 
-      // Validación frontend
+      // Validación frontend (ya esta validado en el back tmb)
       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,20}$/.test(this.contrasenaNueva)) {
         this.notify.warning('La nueva contraseña debe tener entre 8 y 20 caracteres, incluir mayúscula, minúscula, número y símbolo especial.');
         return;
@@ -242,7 +239,7 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
       );
     }
 
-    // Ejecuta todos los cambios y solo si hay éxito, emite al padre
+    // Ejecuta todos los cambios y solo si hay éxito, emite al componente padre
     forkJoin(observables).subscribe(results => {
       const hayErrores = results.some(r => r === null);
       if (!hayErrores) {
