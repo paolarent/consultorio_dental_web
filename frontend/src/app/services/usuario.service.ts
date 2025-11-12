@@ -14,7 +14,7 @@ export class UsuarioService {
     }
 
     //CAMBIAR CONTRASEÑA
-    updateContrasena(id: number, actual: string, nueva: string, confirmar: string) {
-        return this.http.patch<UpdateContrasena>(`${this.baseUrl}/cambiar-contrasena`, { id, actual, nueva, confirmar }, { withCredentials: true });
+    updateContrasena(actual: string, nueva: string, confirmar: string) {
+        return this.http.patch<UpdateContrasena>(`${this.baseUrl}/cambiar-contrasena`, { actual, nueva, confirmar }, { withCredentials: true });
     }
 }

@@ -360,6 +360,7 @@
                                     placeholder="Ingresa tu contraseña actual"
                                     class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
                                     name="contrasenaActual"
+                                    [(ngModel)]="contrasenaActual"
                                     required
                                 />
                             </div>
@@ -373,6 +374,7 @@
                                     placeholder="Ingresa tu nueva contraseña"
                                     class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
                                     name="contrasenaNueva"
+                                    [(ngModel)] = "contrasenaNueva" 
                                     required
                                 />
                             </div>
@@ -386,6 +388,7 @@
                                     placeholder="Confirma tu nueva contraseña"
                                     class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
                                     name="contrasenaConfirmar"
+                                    [(ngModel)] = "contrasenaConfirmar"
                                     required
                                 />
                             </div>

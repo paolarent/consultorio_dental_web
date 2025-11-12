@@ -1,4 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnInit, AfterViewInit, inject } from '@angular/core';
+import { forkJoin, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -74,6 +76,10 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
 
   togglePasswordFields() {
     this.showPasswordFields = !this.showPasswordFields;
+
+    this.contrasenaActual = '';
+    this.contrasenaNueva = '';
+    this.contrasenaConfirmar = '';
   }
 
 
@@ -186,76 +192,64 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
 
     const usuarioActual = this.auth.usuario();
     const idUsuario = usuarioActual?.id_usuario;
-    const correoOriginal = usuarioActual?.correo?.trim();
-    const correoNuevo = this.correoNuevo.trim();
+    const observables = [];
 
-    // 1️⃣ Cambio de correo
-    if (correoNuevo && correoNuevo !== correoOriginal) {
-      if (!idUsuario) {
-        this.notify.error('No se encontró el ID del usuario');
+    // Cambio de correo
+    if (this.correoNuevo.trim() && this.correoNuevo.trim() !== usuarioActual?.correo) {
+      observables.push(
+        this.usuarioService.correoUpdateRequest(idUsuario!, this.correoNuevo).pipe(
+          tap(() => this.notify.success('Se envió un correo de verificación al nuevo correo.')),
+          catchError(err => {
+            this.notify.error('Error al solicitar cambio de correo.');
+            return of(null); // evita que forkJoin se rompa
+          })
+        )
+      );
+    }
+
+    // Cambio de contraseña
+    if (this.showPasswordFields && this.contrasenaNueva.trim()) {
+
+      // Validación frontend
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,20}$/.test(this.contrasenaNueva)) {
+        this.notify.warning('La nueva contraseña debe tener entre 8 y 20 caracteres, incluir mayúscula, minúscula, número y símbolo especial.');
         return;
       }
 
-      this.usuarioService.correoUpdateRequest(idUsuario, correoNuevo).subscribe({
-        next: () => {
-          this.notify.success('Se envió un correo de verificación al nuevo correo.');
-          this.auth.getMe().subscribe(); // 🔄 actualiza datos del usuario en memoria
-        },
-        error: (err) => {
-          console.error('Error al solicitar cambio de correo', err);
-          this.notify.error('Error al solicitar cambio de correo.');
-        }
-      });
-    }
-
-    // 2️⃣ Cambio de contraseña
-    if (this.showPasswordFields && this.contrasenaNueva.trim()) {
       if (this.contrasenaNueva !== this.contrasenaConfirmar) {
         this.notify.warning('Las contraseñas no coinciden.');
         return;
       }
-
-      if (!idUsuario) {
-        this.notify.error('No se encontró el ID del usuario');
-        return;
-      }
-
-      this.usuarioService.updateContrasena(
-        idUsuario,
-        this.contrasenaActual,
-        this.contrasenaNueva,
-        this.contrasenaConfirmar
-      ).subscribe({
-        next: () => this.notify.success('Contraseña actualizada correctamente.'),
-        error: (err) => {
-          console.error('Error al actualizar contraseña', err);
-          this.notify.error('Error al actualizar la contraseña.');
-        }
-      });
+      observables.push(
+        this.usuarioService.updateContrasena(
+          this.contrasenaActual,
+          this.contrasenaNueva,
+          this.contrasenaConfirmar
+        ).pipe(
+          tap(() => this.notify.success('Contraseña actualizada correctamente.')),
+          catchError(err => {
+            if (err.status === 400) {
+              const mensaje = err?.error?.message?.[0] || err?.error?.message || 'Contraseña no válida';
+              this.notify.error(mensaje);
+            } else if (err.status === 401) {
+              this.notify.error('No se pudo actualizar, la contraseña actual es incorrecta.');
+            } else {
+              this.notify.error('Error al actualizar la contraseña.');
+            }
+            return of(null);
+          })
+        )
+      );
     }
 
-    // 3️⃣ Actualizamos los datos del paciente
-    const datosActualizados = { ...this.paciente, id_paciente: this.paciente.id_paciente };
-    this.actualizar.emit(datosActualizados);
-  }
-
-  onCorreoEditado() {
-    const idUsuario = this.auth.usuario()?.id_usuario
-    const correo = this.auth.usuario()?.correo.trim();
-
-    if (!correo || !idUsuario) return;
-
-    this.usuarioService.correoUpdateRequest(idUsuario, correo).subscribe({
-      next: () => {
-        this.notify.success('Correo actualizado correctamente.');
-      },
-      error: (err) => {
-        console.error('Error al actualizar correo', err);
-        this.notify.error('Error al actualizar el correo.');
-      },
+    // Ejecuta todos los cambios y solo si hay éxito, emite al padre
+    forkJoin(observables).subscribe(results => {
+      const hayErrores = results.some(r => r === null);
+      if (!hayErrores) {
+        this.actualizar.emit({ ...this.paciente, id_paciente: this.paciente.id_paciente });
+      }
     });
   }
-
 
   cancelar() {
     this.cerrar.emit();

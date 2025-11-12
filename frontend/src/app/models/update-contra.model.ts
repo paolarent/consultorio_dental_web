@@ -1,7 +1,7 @@
 
 export interface UpdateContrasena {
-    id_usuario: number;
-    contra_actual: string;
-    nueva_contra: string;
-    confirmar_nueva: string;
+    //id_usuario: number;
+    actual: string;
+    nueva: string;
+    confirmar: string;
 }

@@ -242,7 +242,7 @@ export class UsuarioService {
 
         //Verificar contraseña actual
         const coincide = await bcrypt.compare(actual, usuario.contrasena);
-        if (!coincide) throw new UnauthorizedException('Contraseña actual incorrecta');
+        if (!coincide) throw new BadRequestException('La contraseña actual es incorrecta');
 
         //Verificar que nueva y confirmación coincidan
         if (nueva !== confirmar) throw new BadRequestException('La nueva contraseña no coincide con la confirmación');

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, ParseIntPipe, Post, Param, Patch, UseGuards, Req, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, ParseIntPipe, Post, Param, Patch, UseGuards, Req, Query, Res, ValidationPipe } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateCorreoDto } from './dto/update-correo.dto';
@@ -112,10 +112,9 @@ export class UsuarioController {
     @Patch('cambiar-contrasena')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.PACIENTE)
-    cambiarContrasena(@Body() body: { id_usuario: number } & UpdateContrasenaDto) { //@Req() req, @Body() dto: UpdateContrasenaDto
-        const { id_usuario, ...dto } = body;
-            return this.usuarioService.cambiarContrasena(id_usuario, dto);
-        //req.user.id_usuario viene del payload del JWT
-        //return this.usuarioService.cambiarContrasena(req.user.id_usuario, dto);
+    cambiarContrasena(@Req() req, @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) dto: UpdateContrasenaDto) {
+        const id_usuario = req.user.id_usuario; // viene del JWT
+        return this.usuarioService.cambiarContrasena(id_usuario, dto);
     }
+
 }
