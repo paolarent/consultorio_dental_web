@@ -37,8 +37,10 @@ export class PacienteService {
                 d_cp: true,
                 d_entidadfed: true,
                 d_municipio: true,
-                d_localidad: true
-            },
+                d_localidad: true,
+
+            }
+            
         });
 
         if (!paciente) {

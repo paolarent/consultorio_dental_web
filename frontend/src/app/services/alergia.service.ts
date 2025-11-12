@@ -1,13 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Alergia } from '../models/get-alergia.model';
 
-export interface Alergia {
-    id_alergia: number;
-    nombre: string;
-    notas: string;
-    severidad: string;
-}
 
 @Injectable({
     providedIn: 'root'

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, ParseIntPipe, Post, Param, Patch, UseGuards, Req } from '@nestjs/common';
+import { Body, Controller, Get, ParseIntPipe, Post, Param, Patch, UseGuards, Req, Query, Res } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateCorreoDto } from './dto/update-correo.dto';
@@ -8,6 +8,7 @@ import { CreateDentistaDto } from './dto/create-dentista.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import type { Response } from 'express';
 //import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // pienso usar JWT tmb para login
 
 @Controller('usuario')
@@ -25,6 +26,8 @@ export class UsuarioController {
     }
 
     @Post()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
     create(@Body() data: CreateUsuarioDto) {
         return this.usuarioService.create(data);
     }
@@ -43,18 +46,16 @@ export class UsuarioController {
 
     // Confirmación de registro inicial
     @Patch('correo/confirmar-registro/:token')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.PACIENTE)
     confirmRegistro(@Param('token') token: string) {
         return this.usuarioService.confirmRegistro(token);
     }
 
-    // Confirmación de cambio de correo
-    @Patch('correo/confirm/:token')
-    confirmCorreoUpdate(@Param('token') token: string) {
-        return this.usuarioService.confirmCorreoUpdate(token);
-    }
-
     //Solicitar actualización de correo (envía token)
     @Patch(':id/correo/request')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
     requestCorreoUpdate(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: UpdateCorreoDto,
@@ -62,27 +63,58 @@ export class UsuarioController {
         return this.usuarioService.requestCorreoUpdate(id, body.correo);
     }
 
+    // Confirmación de cambio de correo
+    @Patch('correo/confirm/:token')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
+    confirmCorreoUpdate(@Param('token') token: string) {
+        return this.usuarioService.confirmCorreoUpdate(token);
+    }
+
+    @Get('confirmar-cambio-correo')
+    async confirmarCambioCorreo(
+    @Query('token') token: string,
+    @Res() res: Response,
+    ) {
+        try {
+            await this.usuarioService.confirmCorreoUpdate(token);
+
+            //Redirige a /home/mi-perfil
+            return res.redirect('http://localhost:4200/home/mi-perfil?confirm=success');
+        } catch (error) {
+            // Si falla, redirige con un indicador de error
+            return res.redirect('http://localhost:4200/home/mi-perfil?confirm=error');
+        }
+    }
+
+    //--------------------------------------------------
+
     //ACTUALIZACION DE CONTRASEÑA (CORREO VERSION)
     // Solicitar recuperación (envía enlace por correo)
     @Post('recuperacion')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.PACIENTE)
     solicitarRecuperacion(@Body('correo') correo: string) {
-    return this.usuarioService.solicitarRecuperacion(correo);
+        return this.usuarioService.solicitarRecuperacion(correo);
     }
 
     // Restablecer la contraseña usando el token JWT
     @Patch('restablecer')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.PACIENTE)
     restablecerContrasena(
     @Body('token') token: string,
     @Body('nuevaContrasena') nuevaContrasena: string,
     ) {
-    return this.usuarioService.restablecerContrasena(token, nuevaContrasena);
+        return this.usuarioService.restablecerContrasena(token, nuevaContrasena);
     }
 
-    //@UseGuards(JwtAuthGuard) // asegurarse que solo usuarios loggeados accedan
-    @Patch('contrasena')
+    @Patch('cambiar-contrasena')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.PACIENTE)
     cambiarContrasena(@Body() body: { id_usuario: number } & UpdateContrasenaDto) { //@Req() req, @Body() dto: UpdateContrasenaDto
         const { id_usuario, ...dto } = body;
-        return this.usuarioService.cambiarContrasena(id_usuario, dto);
+            return this.usuarioService.cambiarContrasena(id_usuario, dto);
         //req.user.id_usuario viene del payload del JWT
         //return this.usuarioService.cambiarContrasena(req.user.id_usuario, dto);
     }

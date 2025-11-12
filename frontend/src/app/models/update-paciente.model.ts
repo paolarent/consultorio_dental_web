@@ -24,6 +24,5 @@ export interface UpdatePaciente {
     tutor_telefono?: string | null;
     tutor_correo?: string | null;
     tutor_relacion?: string | null;
-
-    status?: Status;
+    //status?: Status;
 }

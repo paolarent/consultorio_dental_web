@@ -1,12 +1,15 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Alergia, AlergiasService } from '../../services/alergia.service';
-import { CondicionMedica, CondicionesMedicasService } from '../../services/cond-med.service';
+import { AlergiasService } from '../../services/alergia.service';
+import { CondicionesMedicasService } from '../../services/cond-med.service';
 import { PacienteService } from '../../services/paciente.service';
 import { ModalEditarPaciente } from '../modal-editar-paciente/modal-editar-paciente';
 import { UpdatePaciente } from '../../models/update-paciente.model';
 import { AuthService } from '../../auth/auth.service';
 import { NotificationService } from '../../services/notification.service';
+import { Alergia } from '../../models/get-alergia.model';
+import { CondicionMedica } from '../../models/get-condmed.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-perfil-paciente',
@@ -24,7 +27,8 @@ export class PerfilPaciente implements OnInit {
   
   constructor(
     private alergiasService: AlergiasService,
-    private condicionesService: CondicionesMedicasService
+    private condicionesService: CondicionesMedicasService,
+    private route: ActivatedRoute
   ) {}
 
   alergias: Alergia[] = [];
@@ -57,6 +61,7 @@ export class PerfilPaciente implements OnInit {
       },
       error: (err) => console.error('Error al obtener condiciones médicas', err),
     });
+
   }
 
   cargarPaciente(id_paciente: number) {

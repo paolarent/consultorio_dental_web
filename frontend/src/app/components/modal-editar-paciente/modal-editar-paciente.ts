@@ -11,6 +11,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { NotificationService } from '../../services/notification.service';
 import { TogglePasswordDirective } from '../../directives/toggle-password';
+import { UsuarioService } from '../../services/usuario.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-modal-editar-paciente',
@@ -19,7 +21,16 @@ import { TogglePasswordDirective } from '../../directives/toggle-password';
   styleUrl: './modal-editar-paciente.css'
 })
 export class ModalEditarPaciente implements OnInit, AfterViewInit {
+  private usuarioService = inject(UsuarioService);
   private notify = inject(NotificationService);
+  auth = inject(AuthService);
+  private pacienteService = inject(PacienteService);
+
+  correoNuevo: string = '';
+
+  contrasenaActual: string = '';
+  contrasenaNueva: string = '';
+  contrasenaConfirmar: string = '';
 
   @Input() paciente!: UpdatePaciente;
   @Output() actualizar = new EventEmitter<UpdatePaciente>();
@@ -41,10 +52,11 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   // Propiedad para validar el botón 'Siguiente'
   isStep1Valid = false;
 
-  constructor(private pacienteService: PacienteService) {}
-
   ngOnInit() {
     this.tieneTutor = this.paciente.tiene_tutor === SiONo.SI;
+
+    const usuarioActual = this.auth.usuario(); 
+    this.correoNuevo = usuarioActual?.correo ?? '';
   }
 
   ngAfterViewInit() {
@@ -172,15 +184,78 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
       return;
     }
 
-    this.paciente.tiene_tutor = this.tieneTutor ? SiONo.SI : SiONo.NO;
+    const usuarioActual = this.auth.usuario();
+    const idUsuario = usuarioActual?.id_usuario;
+    const correoOriginal = usuarioActual?.correo?.trim();
+    const correoNuevo = this.correoNuevo.trim();
 
-    const datosActualizados = {
-      ...this.paciente,
-      id_paciente: this.paciente.id_paciente
-    };
+    // 1️⃣ Cambio de correo
+    if (correoNuevo && correoNuevo !== correoOriginal) {
+      if (!idUsuario) {
+        this.notify.error('No se encontró el ID del usuario');
+        return;
+      }
 
+      this.usuarioService.correoUpdateRequest(idUsuario, correoNuevo).subscribe({
+        next: () => {
+          this.notify.success('Se envió un correo de verificación al nuevo correo.');
+          this.auth.getMe().subscribe(); // 🔄 actualiza datos del usuario en memoria
+        },
+        error: (err) => {
+          console.error('Error al solicitar cambio de correo', err);
+          this.notify.error('Error al solicitar cambio de correo.');
+        }
+      });
+    }
+
+    // 2️⃣ Cambio de contraseña
+    if (this.showPasswordFields && this.contrasenaNueva.trim()) {
+      if (this.contrasenaNueva !== this.contrasenaConfirmar) {
+        this.notify.warning('Las contraseñas no coinciden.');
+        return;
+      }
+
+      if (!idUsuario) {
+        this.notify.error('No se encontró el ID del usuario');
+        return;
+      }
+
+      this.usuarioService.updateContrasena(
+        idUsuario,
+        this.contrasenaActual,
+        this.contrasenaNueva,
+        this.contrasenaConfirmar
+      ).subscribe({
+        next: () => this.notify.success('Contraseña actualizada correctamente.'),
+        error: (err) => {
+          console.error('Error al actualizar contraseña', err);
+          this.notify.error('Error al actualizar la contraseña.');
+        }
+      });
+    }
+
+    // 3️⃣ Actualizamos los datos del paciente
+    const datosActualizados = { ...this.paciente, id_paciente: this.paciente.id_paciente };
     this.actualizar.emit(datosActualizados);
   }
+
+  onCorreoEditado() {
+    const idUsuario = this.auth.usuario()?.id_usuario
+    const correo = this.auth.usuario()?.correo.trim();
+
+    if (!correo || !idUsuario) return;
+
+    this.usuarioService.correoUpdateRequest(idUsuario, correo).subscribe({
+      next: () => {
+        this.notify.success('Correo actualizado correctamente.');
+      },
+      error: (err) => {
+        console.error('Error al actualizar correo', err);
+        this.notify.error('Error al actualizar el correo.');
+      },
+    });
+  }
+
 
   cancelar() {
     this.cerrar.emit();
