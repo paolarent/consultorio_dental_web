@@ -1,24 +1,81 @@
 <div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
 
     <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto">
-        <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
-            Agregar Nueva Alergia
-        </h2>
+        <div class="grid gap-0"> 
+            <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
+                Agregar Nueva Alergia
+            </h2>
 
-        <div class="flex justify-end gap-4 mt-6">
-            <button
-                class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
-                (click)="cancelar()"
-            >
-                <span class="text-center text-white text-lg font-semibold tracking-wider">Cancelar</span>
-            </button>
+            <div class="mb-6">
+                <label class="block text-base font-medium text-[#545454]">Nombre de la alergia</label>
+                <input
+                    type="text"
+                    name=""
+                    [(ngModel)]="nombreAlergia"
+                    placeholder="Alergia"
+                    required
+                    class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                />
+            </div>
 
-            <button
-                class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
-                
-            >
-                <span class="text-center text-white text-lg font-semibold tracking-wider">Agregar</span>
-            </button>
+            <!-- Tipo de alergia -->
+            <div>
+                <label class="block text-base font-medium text-[#545454] mb-1">Tipo de alergia</label>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-select
+                    [(ngModel)]="id_tipo_alergia"
+                    name="tipoAlergia"
+                    placeholder="Seleccione el tipo de alergia"
+                    required
+                    >
+                    @for (tipo of tiposAlergia; track tipo.id_tipo_alergia) {
+                        <mat-option [value]="tipo.id_tipo_alergia">
+                        {{ tipo.nombre }}
+                        </mat-option>
+                    }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div>
+                <label class="block text-base font-medium text-[#545454] mb-1">Severidad</label>
+                <mat-form-field appearance="outline" class="w-full">
+                <mat-select [(ngModel)]="severidad" name="severidad" placeholder="Seleccione el nivel de severidad" required>
+                    <mat-option [value]="Severidad.ALTA">Alta</mat-option>
+                    <mat-option [value]="Severidad.MEDIA">Media</mat-option>
+                    <mat-option [value]="Severidad.BAJA">Baja</mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- Notas -->
+            <div>
+                <label class="block text-base font-medium text-[#545454] mb-1">Notas</label>
+                <textarea
+                [(ngModel)]="notas"
+                placeholder="Describe brevemente la reacción o síntomas"
+                rows="3"
+                class="w-full border border-gray-300 bg-zinc-300/30 rounded-lg p-3 focus:ring-2 focus:ring-[#105053] focus:outline-none resize-none"
+                ></textarea>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-6">
+                <button
+                    class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                    (click)="cancelar()"
+                >
+                    <span class="text-center text-white text-lg font-semibold tracking-wider">Cancelar</span>
+                </button>
+
+                <button
+                    class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                    (click)="guardar()"
+                >
+                    <span class="text-center text-white text-lg font-semibold tracking-wider">Agregar</span>
+                </button>
+            </div>
+
         </div>
     </div>
 </div>

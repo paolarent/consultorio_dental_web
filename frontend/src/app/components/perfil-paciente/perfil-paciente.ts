@@ -119,4 +119,48 @@ export class PerfilPaciente implements OnInit {
 
     //this.paciente.set(updated);
   }
+
+  agregarAlergia(dto: any) {
+    this.alergiasService.agregarAlergia(dto).subscribe({
+      next: (nueva) => {
+        // Agrega la nueva alergia al array local
+        this.alergias = [...this.alergias, nueva];
+        this.notify.success('Alergia agregada');
+        this.modalAlergias.set(false); // cierra modal al terminar
+      },
+      error: (err) => console.error('Error al agregar alergia', err)
+    });
+  }
+
+  agregarCondMed(dto: any) {
+    this.condicionesService.agregarCondicion(dto).subscribe({
+      next: (nueva) => {
+        //Si viene como string (por ejemplo '["Insulina"]'), lo convertimos a array
+        if (typeof nueva.medicamentos_actuales === 'string') {
+          try {
+            nueva.medicamentos_actuales = JSON.parse(nueva.medicamentos_actuales);
+          } catch {
+            nueva.medicamentos_actuales = [];
+          }
+        }
+
+        // Asegurar texto formateado para mostrarlo en el textarea
+        nueva.medicamentos_formateados =
+          nueva.medicamentos_actuales.length > 0
+            ? nueva.medicamentos_actuales.join(', ')
+            : 'No medicación';
+
+        //para actualizar lista local sin mutar el array original
+        this.condiciones = [...this.condiciones, nueva];
+
+        this.notify.success('Condición médica agregada correctamente');
+        this.modalCondMed.set(false);
+      },
+      error: (err) => {
+        console.error('Error al agregar condición médica', err);
+        this.notify.error('Error al agregar la condición médica');
+      },
+    });
+  }
+
 }

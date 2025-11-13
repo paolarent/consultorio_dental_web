@@ -14,4 +14,14 @@ export class AlergiasService {
     listarAlergiasPaciente(): Observable<Alergia[]> {
         return this.http.get<Alergia[]>(`${this.baseUrl}/mis-alergias`, { withCredentials: true });
     }
+
+    agregarAlergia(dto: any): Observable<Alergia> {
+        return this.http.post<Alergia>(`${this.baseUrl}`, dto, { withCredentials: true });
+    }
+
+    listarTiposAlergia(): Observable<{ id_tipo_alergia: number; nombre: string }[]> {
+        return this.http.get<{ id_tipo_alergia: number; nombre: string }[]>(`${this.baseUrl}/tipos`, { withCredentials: true }
+        );
+    }
+
 }

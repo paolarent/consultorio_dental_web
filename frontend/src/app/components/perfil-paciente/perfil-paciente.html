@@ -60,7 +60,8 @@
             <!-- Modal Alergias -->
             @if(modalAlergias()) {
                 <app-modal-ag-alergia
-                    (cerrar)="modalAlergias.set(false)">
+                    (cerrar)="modalAlergias.set(false)"
+                    (agregar)="agregarAlergia($event)">
                 </app-modal-ag-alergia>
             }
             
@@ -131,9 +132,11 @@
             <!-- Modal Condiciones Médicas -->
             @if(modalCondMed()) {
                 <app-modal-ag-condmed
-                    (cerrar)="modalCondMed.set(false)">
+                    (cerrar)="modalCondMed.set(false)"
+                    (guardar)="agregarCondMed($event)">
                 </app-modal-ag-condmed>
             }
+
         </div>
 
         <!-- Condiciones registradas -->

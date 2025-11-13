@@ -34,6 +34,15 @@ export class CondicionMedicaService {
         });
     }
 
+    async listarTiposCondMed() {
+        return this.prisma.tipo_condicion_med.findMany({
+            select: {
+            id_tipo_condicion: true,
+            nombre: true
+            }
+        });
+    }
+
     async listarCMPorPaciente(id_paciente: number) {
         return this.prisma.condicion_medica.findMany({
             where: { id_paciente, status: StatusCondicionMed.ACTIVA },

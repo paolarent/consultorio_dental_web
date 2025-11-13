@@ -8,7 +8,6 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { CreateCondicionMedicaDto } from './dto/create-condicion-med.dto';
 
 @Controller('condiciones-medicas')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class CondicionMedicaController {
     constructor(
         private readonly condicionMedService: CondicionMedicaService,
@@ -16,6 +15,7 @@ export class CondicionMedicaController {
     ) {}
 
     @Post()
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.PACIENTE, Rol.DENTISTA)
     agregar(@Body() dto: CreateCondicionMedicaDto, @Request() req: any) {
         let id_paciente: number;
@@ -32,7 +32,13 @@ export class CondicionMedicaController {
         return this.condicionMedService.agregarCondicion(dto, id_paciente, req.user.rol);
     }
 
+    @Get('tipos')
+    listarTipos() {
+        return this.condicionMedService.listarTiposCondMed();
+    }
+
     @Get('mis-condiciones-medicas')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.PACIENTE)
     async listarPaciente(@Req() req) {
         // Obtener id_paciente a partir del id_usuario del JWT
@@ -41,12 +47,14 @@ export class CondicionMedicaController {
     }
 
     @Get('paciente/:id_paciente')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     listarPorPaciente(@Param('id_paciente') id_paciente: string) {
         return this.condicionMedService.listarCMPorPaciente(Number(id_paciente));
     }
 
     @Patch('descartar/:id_condicion_medica')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.PACIENTE, Rol.DENTISTA)
     descartar(@Param('id_condicion_medica') id_condicion_medica: string) {
         return this.condicionMedService.descartarCondMed(Number(id_condicion_medica));

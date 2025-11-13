@@ -8,7 +8,6 @@ import { CreateAlergiaDto } from './dto/create-alergia.dto';
 import { PacienteUtilsService } from 'src/common/services/paciente-utils.service';
 
 @Controller('alergias')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class AlergiaController {
     constructor(
         private readonly alergiaService: AlergiaService,
@@ -17,6 +16,7 @@ export class AlergiaController {
 
     //Crear alergia (puede ser desde paciente o dentista)
     @Post()
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.PACIENTE, Rol.DENTISTA)
     agregar(@Body() dto: CreateAlergiaDto, @Request() req: any) {
         let id_paciente: number;
@@ -33,9 +33,17 @@ export class AlergiaController {
         return this.alergiaService.agregarAlergia(dto, id_paciente, req.user.rol);
     }
 
+    @Get('tipos')
+    //@Public()
+    listarTipos() {
+        return this.alergiaService.listarTiposAlergia();
+    }
+
+
     //LISTAR LAS ALERGIAS
     //Para el paciente
     @Get('mis-alergias')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.PACIENTE)
     async listarPaciente(@Req() req) {
         // Obtener id_paciente a partir del id_usuario del JWT
@@ -46,6 +54,7 @@ export class AlergiaController {
 
     //Para el dentista que consulta un paciente específico
     @Get('paciente/:id_paciente')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     listarPorPaciente(@Param('id_paciente') id_paciente: string) {
     return this.alergiaService.listarPorPaciente(Number(id_paciente));
@@ -53,6 +62,7 @@ export class AlergiaController {
 
     //Desactivar alergia
     @Patch('desactivar/:id_alergia')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.PACIENTE, Rol.DENTISTA)
     desactivar(@Param('id_alergia') id_alergia: string) {
         return this.alergiaService.desactivarAlergia(Number(id_alergia));

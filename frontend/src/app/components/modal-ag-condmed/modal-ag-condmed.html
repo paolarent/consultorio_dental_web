@@ -1,24 +1,117 @@
 <div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-
-    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto">
-        <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
-            Agregar Nueva Condición Médica
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[450px]">
+        <div class="grid gap-0">
+        <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053] leading-tight">
+            Agregar Nueva <br />
+            Condición Médica
         </h2>
 
-        <div class="flex justify-end gap-4 mt-6">
-            <button
-                class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
-                (click)="cancelar()"
+        <!-- Nombre -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454]"
+            >Nombre de la condición</label
             >
-                <span class="text-center text-white text-lg font-semibold tracking-wider">Cancelar</span>
+            <input
+            [(ngModel)]="nombre"
+            type="text"
+            placeholder="Condición médica"
+            required
+            class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+            />
+        </div>
+
+        <!-- Tipo -->
+        <div>
+            <label class="block text-base font-medium text-[#545454] mb-1"
+            >Tipo de condición médica</label
+            >
+            <mat-form-field appearance="outline" class="w-full">
+            <mat-select
+                [(ngModel)]="id_tipo_condicion"
+                placeholder="Seleccione el tipo de condición"
+                required
+            >
+                @for (tipo of tiposCondMed; track tipo.id_tipo_condicion) {
+                <mat-option [value]="tipo.id_tipo_condicion">
+                    {{ tipo.nombre }}
+                </mat-option>
+                }
+            </mat-select>
+            </mat-form-field>
+        </div>
+
+        <!-- Año -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454]"
+            >Año de diagnóstico</label
+            >
+            <input
+            [(ngModel)]="a_o_diagnostico"
+            type="number"
+            min="1950"
+            [max]="currentYear"
+            placeholder="Ej. 2018"
+            required
+            class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+            />
+        </div>
+
+        <!-- Medicación -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454] mb-1"
+            >Medicación Actual</label
+            >
+            <textarea
+            [(ngModel)]="medicamentos_actuales"
+            placeholder="Ej: Metformina, Losartán, Insulina"
+            rows="3"
+            class="w-full border border-gray-300 bg-zinc-300/30 rounded-lg p-3 focus:ring-2 focus:ring-[#105053] focus:outline-none resize-none"
+            ></textarea>
+            <p class="text-sm text-gray-500 mt-1">
+            *Separa los medicamentos por comas
+            </p>
+        </div>
+
+        <!-- Condición controlada con toggle -->
+        <div class="flex items-center gap-4 mt-1">
+            <label class="text-base font-medium text-[#545454]">
+                ¿Condición controlada?
+            </label>
+
+            <button
+                (click)="toggleCondicion()"
+                class="relative w-16 h-8 rounded-full transition"
+            >
+                @if (condicion_controlada === 'si') {
+                <img src="assets/icons/on_switch.svg" alt="Sí" class="w-16 h-8" />
+                } @else {
+                <img src="assets/icons/off_switch.svg" alt="No" class="w-16 h-8" />
+                }
+            </button>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 mt-8">
+            <button
+            class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+            (click)="cancelar()"
+            >
+            <span
+                class="text-center text-white text-lg font-semibold tracking-wider"
+                >Cancelar</span
+            >
             </button>
 
             <button
-                class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
-                
+            class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+            (click)="agregar()"
             >
-                <span class="text-center text-white text-lg font-semibold tracking-wider">Agregar</span>
+            <span
+                class="text-center text-white text-lg font-semibold tracking-wider"
+                >Agregar</span
+            >
             </button>
+        </div>
         </div>
     </div>
 </div>

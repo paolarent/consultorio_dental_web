@@ -121,6 +121,8 @@ body {
 /* ======== Arregla alineación del texto dentro del mat-select ======== */
 .mat-mdc-form-field-flex {
     align-items: center !important;
+    min-height: 3rem !important;
+  height: 3rem !important;
 }
 
 /* ======== Ajusta el padding interno para que se vea como tus inputs ======== */
@@ -159,6 +161,9 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
     border-radius: 0.5rem !important;
 }
+
+
+
 
 
 

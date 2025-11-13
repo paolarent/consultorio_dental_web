@@ -13,4 +13,13 @@ export class CondicionesMedicasService {
     listarCMPaciente(): Observable<CondicionMedica[]> {
         return this.http.get<CondicionMedica[]>(`${this.baseUrl}/mis-condiciones-medicas`, { withCredentials: true });
     }
+
+    agregarCondicion(dto: any): Observable<CondicionMedica> {
+        return this.http.post<CondicionMedica>(`${this.baseUrl}`, dto, { withCredentials: true });
+    }
+
+
+    listarTiposCondiciones(): Observable<{ id_tipo_condicion: number; nombre: string }[]> {
+        return this.http.get<{ id_tipo_condicion: number; nombre: string }[]>(`${this.baseUrl}/tipos`, { withCredentials: true });
+    }
 }

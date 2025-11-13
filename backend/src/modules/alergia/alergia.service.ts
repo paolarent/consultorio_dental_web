@@ -34,6 +34,15 @@ export class AlergiaService {
         });
     }
 
+    async listarTiposAlergia() {
+        return this.prisma.tipo_alergia.findMany({
+            select: {
+            id_tipo_alergia: true,
+            nombre: true
+            }
+        });
+    }
+
     // Listar alergias activas de un paciente
     async listarPorPaciente(id_paciente: number) {
         return this.prisma.alergia.findMany({
