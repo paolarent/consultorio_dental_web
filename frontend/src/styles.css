@@ -122,7 +122,7 @@ body {
 .mat-mdc-form-field-flex {
     align-items: center !important;
     min-height: 3rem !important;
-  height: 3rem !important;
+    height: 3rem !important;
 }
 
 /* ======== Ajusta el padding interno para que se vea como tus inputs ======== */

@@ -24,4 +24,7 @@ export class AlergiasService {
         );
     }
 
+    desactivarAlergia(id_alergia: number): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/desactivar/${id_alergia}`, {}, { withCredentials: true });
+    }
 }

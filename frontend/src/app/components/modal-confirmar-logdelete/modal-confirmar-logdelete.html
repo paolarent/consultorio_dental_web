@@ -1,0 +1,35 @@
+<div class="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+    <div class="w-[560px] bg-white rounded-[20px] relative p-6 shadow-xl">
+        <!-- Encabezado -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <img src="assets/icons/simbolo-eliminar.svg" alt="icono-eliminar" class="w-12 h-12" />
+            
+                <h2 class="text-3xl font-semibold text-black">Eliminar elemento</h2>
+            </div>
+            <button (click)="onCancel()" class="text-neutral-700 hover:text-[#660F0F] text-4xl font-bold -mt-8 mr-0 leading-none">
+                &times;
+            </button>
+        </div>
+
+        <!-- Mensaje -->
+        <p class="text-center text-2xl font-light mb-10">¿Está seguro de eliminar este elemento?</p>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 mt-8">
+            <button
+                (click)="onCancel()"
+                class="w-36 h-12 bg-neutral-600 hover:bg-neutral-700 rounded-lg text-white text-xl font-semibold tracking-wider"
+            >
+                Volver
+            </button>
+
+            <button
+                (click)="onConfirm()"
+                class="w-44 h-12 bg-red-700 hover:bg-red-800 rounded-lg text-white text-xl font-semibold tracking-wider"
+            >
+                Confirmar
+            </button>
+        </div>
+    </div>
+</div>

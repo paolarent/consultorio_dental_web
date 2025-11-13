@@ -28,15 +28,6 @@
         />
     </div>
 
-    <!-- Modal -->
-    @if(modalEditar() && paciente()) {
-        <app-modal-editar-paciente
-            [paciente]="paciente()!"
-            (actualizar)="actualizarPaciente($event)"
-            (cerrar)="cerrarModal()">
-        </app-modal-editar-paciente>
-    }
-
 </section>
 
 
@@ -56,14 +47,6 @@
                 <img src="assets/icons/agregar.svg" alt="Agregar alergia" class="w-8 h-8">
                 Agregar
             </button>
-
-            <!-- Modal Alergias -->
-            @if(modalAlergias()) {
-                <app-modal-ag-alergia
-                    (cerrar)="modalAlergias.set(false)"
-                    (agregar)="agregarAlergia($event)">
-                </app-modal-ag-alergia>
-            }
             
         </div>
 
@@ -98,9 +81,12 @@
                         </span>
                         
                         
-                        <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
+                        <button 
+                            (click)="abrirModalEliminar('alergia', alergia.id_alergia)"
+                            class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
                             <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
                         </button>
+
                     </div>
                 </div>
             }
@@ -129,44 +115,38 @@
                 Agregar
             </button>
 
-            <!-- Modal Condiciones Médicas -->
-            @if(modalCondMed()) {
-                <app-modal-ag-condmed
-                    (cerrar)="modalCondMed.set(false)"
-                    (guardar)="agregarCondMed($event)">
-                </app-modal-ag-condmed>
-            }
-
         </div>
 
         <!-- Condiciones registradas -->
         <div class="space-y-4">
             @for (cond of condiciones; track cond.id_condicion_medica; let i = $index) {
                 <div class="flex items-center bg-zinc-200 border-l-8 border-teal-900 rounded-lg p-4 shadow-sm">
-                <div class="flex flex-col flex-1">
-                    <h3 class="text-teal-900 text-xl font-bold">{{ cond.nombre }}</h3>
-                    <p class="text-neutral-600 text-base">
-                        Diagnosticada en: {{ cond.a_o_diagnostico }}<br>
-                        Medicamento: {{ cond.medicamentos_formateados }}
-                    </p>
-                </div>
-                <div class="flex items-center justify-center gap-4 ml-6">
-                    <span
-                        class="text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap"
-                        [class.bg-[#C8FCCA]]="cond.condicion_controlada === 'si'"
-                        [class.text-green-950]="cond.condicion_controlada === 'si'"
-                        [class.bg-orange-300/50]="cond.condicion_controlada === 'no'"
-                        [class.text-yellow-950]="cond.condicion_controlada === 'no'"
-                    >
-                        {{ cond.condicion_controlada === 'si' ? 'Controlada' : 'No controlada' }}
-                    </span>
+                    <div class="flex flex-col flex-1">
+                        <h3 class="text-teal-900 text-xl font-bold">{{ cond.nombre }}</h3>
+                        <p class="text-neutral-600 text-base">
+                            Diagnosticada en: {{ cond.a_o_diagnostico }}<br>
+                            Medicamento: {{ cond.medicamentos_formateados }}
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-center gap-4 ml-6">
+                        <span
+                            class="text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap"
+                            [class.bg-[#C8FCCA]]="cond.condicion_controlada === 'si'"
+                            [class.text-green-950]="cond.condicion_controlada === 'si'"
+                            [class.bg-orange-300/50]="cond.condicion_controlada === 'no'"
+                            [class.text-yellow-950]="cond.condicion_controlada === 'no'"
+                        >
+                            {{ cond.condicion_controlada === 'si' ? 'Controlada' : 'No controlada' }}
+                        </span>
 
 
 
-                    <button class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
-                        <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
-                    </button>
-                </div>
+                        <button 
+                            (click)="abrirModalEliminar('condicion', cond.id_condicion_medica)"
+                            class="bg-red-700 w-12 h-12 p-2 rounded-lg hover:scale-105 transition">
+                            <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
+                        </button>
+                    </div>
                 </div>
             }
             @if (!condiciones || condiciones.length === 0) {
@@ -174,5 +154,38 @@
             }
         </div>
     </div>
+
 </section>
+
+<!-- Modal para editar los datos del paciente/usuario -->
+@if(modalEditar() && paciente()) {
+    <app-modal-editar-paciente
+        [paciente]="paciente()!"
+        (actualizar)="actualizarPaciente($event)"
+        (cerrar)="cerrarModal()">
+    </app-modal-editar-paciente>
+}
+
+<!-- Modal Alergias -->
+@if(modalAlergias()) {
+    <app-modal-ag-alergia
+        (cerrar)="modalAlergias.set(false)"
+        (agregar)="agregarAlergia($event)">
+    </app-modal-ag-alergia>
+}
+
+<!-- Modal Condiciones Médicas -->
+@if(modalCondMed()) {
+    <app-modal-ag-condmed
+        (cerrar)="modalCondMed.set(false)"
+        (guardar)="agregarCondMed($event)">
+    </app-modal-ag-condmed>
+}
+
+@if (modalConfirmacion()) {
+        <app-modal-confirmar-logdelete
+            (confirm)="confirmarEliminacion()"
+            (cancel)="cancelarEliminacion()">
+        </app-modal-confirmar-logdelete>
+    }
 

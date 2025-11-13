@@ -22,4 +22,10 @@ export class CondicionesMedicasService {
     listarTiposCondiciones(): Observable<{ id_tipo_condicion: number; nombre: string }[]> {
         return this.http.get<{ id_tipo_condicion: number; nombre: string }[]>(`${this.baseUrl}/tipos`, { withCredentials: true });
     }
+
+    desactivarCondicion(id_condicion_medica: number): Observable<any> {
+        return this.http.patch<void>(`${this.baseUrl}/descartar/${id_condicion_medica}`, {}, { withCredentials: true });
+    }
+
+
 }

@@ -39,7 +39,6 @@ export class AlergiaController {
         return this.alergiaService.listarTiposAlergia();
     }
 
-
     //LISTAR LAS ALERGIAS
     //Para el paciente
     @Get('mis-alergias')
@@ -51,13 +50,12 @@ export class AlergiaController {
         return this.alergiaService.listarPorPaciente(paciente.id_paciente);
     }
 
-
     //Para el dentista que consulta un paciente específico
     @Get('paciente/:id_paciente')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     listarPorPaciente(@Param('id_paciente') id_paciente: string) {
-    return this.alergiaService.listarPorPaciente(Number(id_paciente));
+        return this.alergiaService.listarPorPaciente(Number(id_paciente));
     }
 
     //Desactivar alergia
