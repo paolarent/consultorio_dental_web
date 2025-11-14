@@ -27,5 +27,4 @@ export class CondicionesMedicasService {
         return this.http.patch<void>(`${this.baseUrl}/descartar/${id_condicion_medica}`, {}, { withCredentials: true });
     }
 
-
 }
