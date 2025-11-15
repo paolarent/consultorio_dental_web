@@ -11,6 +11,10 @@ import { LandingPage } from './components/landing-page/landing-page';
 import { CitasPaciente } from './components/citas-paciente/citas-paciente';
 import { AdeudosPaciente } from './components/adeudos-paciente/adeudos-paciente';
 import { PerfilPaciente } from './components/perfil-paciente/perfil-paciente';
+import { AgendaDoc } from './components/agenda-doc/agenda-doc';
+import { Pacientes } from './components/pacientes/pacientes';
+import { Servicios } from './components/servicios/servicios';
+import { Finanzas } from './components/finanzas/finanzas';
 
 export const routes: Routes = [
     { 
@@ -39,15 +43,13 @@ export const routes: Routes = [
     {
         path: 'doc',
         component: HomeDoc,
-        canActivate: [AuthGuard]
-        /*
+        canActivate: [AuthGuard],
         children: [
-            { path: 'mi-agenda', component: FormLoginPaciente },
-            { path: 'finanzas', component: FormLogin },
-            { path: 'forgot-password', component: FormRestorePassw },
-            { path: 'restore-password', component: FormNewPassw }
+            { path: 'mi-agenda', component: AgendaDoc },
+            { path: 'pacientes', component: Pacientes },
+            { path: 'servicios', component: Servicios },
+            { path: 'finanzas', component: Finanzas }
         ]
-        */
     },
     
     {

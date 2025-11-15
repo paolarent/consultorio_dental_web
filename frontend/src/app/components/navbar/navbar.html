@@ -64,29 +64,29 @@
             <!-- ---------------------- DENTISTA ---------------------- -->
             @if (usuario.rol === Rol.DENTISTA) {
 
-                <a [routerLink]="['/home']"
+                <a [routerLink]="['pacientes']"
                 routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
-                [routerLinkActiveOptions]="{ exact: true }"
-                (click)="goHome()"
                 class="flex items-center text-neutral-600 text-lg xl:text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition">
                     <img src="assets/icons/pacientes.svg" class="w-6 h-6 xl:w-8 xl:h-8" />
                     <span>Pacientes</span>
                 </a>
 
-                <a [routerLink]="['citas']"
+                <a [routerLink]="['mi-agenda']"
                 routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
                 class="flex items-center text-neutral-600 text-lg xl:text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition">
                     <img src="assets/icons/citas.svg" class="w-6 h-6 xl:w-8 xl:h-8" />
                     <span>Agenda</span>
                 </a>
 
-                <a [routerLink]="['mis-adeudos']"
+                <a [routerLink]="['servicios']"
+                routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
                 class="flex items-center text-neutral-600 text-lg xl:text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition">
                     <img src="assets/icons/servicios.svg" class="w-6 h-6 xl:w-8 xl:h-8" />
                     <span>Servicios</span>
                 </a>
 
-                <a [routerLink]="['mis-adeudos']"
+                <a [routerLink]="['finanzas']"
+                routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
                 class="flex items-center text-neutral-600 text-lg xl:text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition">
                     <img src="assets/icons/finanzas.svg" class="w-6 h-6 xl:w-8 xl:h-8" />
                     <span>Finanzas</span>
