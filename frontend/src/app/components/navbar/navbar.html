@@ -1,78 +1,303 @@
-<nav class="sticky top-0 z-50 w-full flex items-center justify-between bg-white shadow-md h-24 px-6 relative">
+<nav class="sticky top-0 z-50 w-full bg-white shadow-md h-24 px-2 relative flex items-center justify-between">
 
+    <!-- Fondo -->
     <div class="absolute left-0 top-0 w-full h-full bg-[#dde0eb]"></div>
 
     @if (auth.usuario(); as usuario) {
+
+        <!-- LOGO (SIEMPRE VISIBLE) -->
         <div class="flex items-center z-10">
-            <img [src]="usuario.consultorio.logo_url" alt="Logo del consultorio" class="w-120 h-24 rounded-xl" />
+            <img [src]="usuario.consultorio.logo_url"
+                alt="Logo del consultorio"
+                class="h-24 max-w-[240px] object-contain rounded-xl" />
         </div>
 
-        <!-- Menú principal -->
-        <div class="flex items-center space-x-10 z-10">
-            <a 
-            [routerLink]="['/home']"
-            routerLinkActive="p-2 rounded-xl text-teal-700 shadow-sm scale-105"
-            [routerLinkActiveOptions]="{ exact: true }"
-            (click)="goHome()"
-                class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <img src="assets/icons/home.svg" alt="Inicio" title="Inicio" class="w-8 h-8" />
-                <span>Inicio</span>
-            </a>
+        <!--  NAVBAR DESKTOP  -->
+        <div class="hidden lg:flex items-center space-x-10 z-10">
+            <!-- ---------------------- PACIENTE ---------------------- -->
+            @if (usuario.rol === Rol.PACIENTE) {
 
-            <a [routerLink]="['citas']" 
-            routerLinkActive="p-2 rounded-xl text-teal-700 shadow-sm scale-105"
-            [routerLinkActiveOptions]="{ exact: true }"
-            class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <img src="assets/icons/citas.svg" alt="Citas" title="Citas" class="w-7 h-7" />
-                <span>Citas</span>
-            </a>
+                <a [routerLink]="['/home']"
+                routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="goHome()"
+                class="flex flex-row items-center text-neutral-600 text-lg xl:text-xl font-bold
+                        hover:text-teal-700 space-x-2 hover:scale-105 transition">
+                    <img src="assets/icons/home.svg" class="w-8 h-8" />
+                    <span>Inicio</span>
+                </a>
 
-            <a [routerLink]="['mis-adeudos']" 
-            routerLinkActive="p-2 rounded-xl text-teal-700 shadow-sm scale-105"
-            [routerLinkActiveOptions]="{ exact: true }"
-            class="flex flex-row items-center text-neutral-600 text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <img src="assets/icons/signo-pesos.svg" alt="Mis Adeudos" title="Adeudos" class="w-7 h-6" />
-                <span>Mis Adeudos</span>
-            </a>
+                <a [routerLink]="['citas']"
+                routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex flex-row items-center text-neutral-600 text-lg xl:text-xl font-bold
+                        hover:text-teal-700 space-x-2 hover:scale-105 transition">
+                    <img src="assets/icons/citas.svg" class="w-7 h-7" />
+                    <span>Citas</span>
+                </a>
 
+                <a [routerLink]="['mis-adeudos']"
+                routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex flex-row items-center text-neutral-600 text-lg xl:text-xl font-bold
+                        hover:text-teal-700 space-x-2 hover:scale-105 transition">
+                    <img src="assets/icons/signo-pesos.svg" class="w-7 h-6" />
+                    <span>Mis Adeudos</span>
+                </a>
 
-            <!-- Botón de usuario -->
-            <div class="relative flex items-center space-x-2 bg-[#115153] rounded-xl px-4 py-2 text-white ml-8 cursor-pointer select-none hover:scale-105 transition-transform duration-300" 
-                (click)="menuDesplegable()"
-            >
-                <div class="w-10 h-10 rounded-full flex items-center justify-center">
-                    <img src="assets/icons/user.svg" alt="icono de usuario" title="usuario" class="w-10 h-10" />
+                <!-- Botón Usuario -->
+                <div class="relative flex items-center space-x-2 bg-[#115153] rounded-xl px-4 py-2
+                            text-white ml-8 cursor-pointer select-none hover:scale-105 transition"
+                    (click)="menuDesplegable()">
+
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center">
+                        <img src="assets/icons/user.svg" class="w-10 h-10" />
+                    </div>
+
+                    <span class="text-lg xl:text-xl font-semibold tracking-widest">
+                        {{ usuario.paciente?.nombre }}
+                    </span>
                 </div>
-                <span class="text-lg font-semibold text-[#ffffff] tracking-widest">{{ usuario.paciente?.nombre }}</span>
+            }
 
-            </div>
 
+            <!-- ---------------------- DENTISTA ---------------------- -->
+            @if (usuario.rol === Rol.DENTISTA) {
+
+                <a [routerLink]="['/home']"
+                routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="goHome()"
+                class="flex items-center text-neutral-600 text-lg xl:text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition">
+                    <img src="assets/icons/pacientes.svg" class="w-6 h-6 xl:w-8 xl:h-8" />
+                    <span>Pacientes</span>
+                </a>
+
+                <a [routerLink]="['citas']"
+                routerLinkActive="p-2 rounded-xl text-teal-700 scale-105"
+                class="flex items-center text-neutral-600 text-lg xl:text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition">
+                    <img src="assets/icons/citas.svg" class="w-6 h-6 xl:w-8 xl:h-8" />
+                    <span>Agenda</span>
+                </a>
+
+                <a [routerLink]="['mis-adeudos']"
+                class="flex items-center text-neutral-600 text-lg xl:text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition">
+                    <img src="assets/icons/servicios.svg" class="w-6 h-6 xl:w-8 xl:h-8" />
+                    <span>Servicios</span>
+                </a>
+
+                <a [routerLink]="['mis-adeudos']"
+                class="flex items-center text-neutral-600 text-lg xl:text-xl font-bold hover:text-teal-700 space-x-2 hover:scale-105 transition">
+                    <img src="assets/icons/finanzas.svg" class="w-6 h-6 xl:w-8 xl:h-8" />
+                    <span>Finanzas</span>
+                </a>
+
+                <!-- Botón Usuario -->
+                <div class="relative flex items-center bg-[#115153] rounded-[20px] px-4 py-2 h-16 shadow-md">
+
+                    <div class="flex items-center justify-center">
+                        <img src="assets/icons/user.svg" class="w-10 h-10" />
+                    </div>
+
+                    <span class="text-white font-bold hidden xl:block text-xl tracking-wider ml-3 mr-3">
+                        Dr. {{ usuario.consultorio?.titular_nombre }}
+                    </span>
+
+                </div>
+
+                <!-- Logout -->
+                <div class="group w-12 h-12 xl:w-14 xl:h-14 flex items-center justify-center rounded-xl cursor-pointer relative
+                            hover:bg-[#8E0F0F] hover:shadow-md transition duration-300"
+                    (click)="cerrarSesionDoc()">
+
+                    <img src="assets/icons/logout_vg.svg"
+                        class="w-12 h-12 absolute opacity-100 transition group-hover:opacity-0" />
+
+                    <img src="assets/icons/logout_vb.svg"
+                        class="w-10 h-10 absolute opacity-0 transition group-hover:opacity-100" />
+                </div>
+            }
         </div>
 
-        @if (menuAbierto()) {
+
+
+        <!--  NAVBAR MOBILE  -->
+        <div class="flex lg:hidden z-20 w-full justify-end pr-3">
+            <button class="p-3 rounded-lg hover:bg-gray-200 transition"
+                    (click)="menuMovilAbierto.set(true)">
+                <img src="assets/icons/menu-hamburguesa.svg" class="w-12 h-12" alt="Menu" />
+            </button>
+        </div>
+
+
+        <!--  OVERLAY MÓVIL  -->
+        @if (menuMovilAbierto()) {
+        <div class="fixed inset-0 bg-black/40 z-40" (click)="menuMovilAbierto.set(false)"></div>
+    }
+
+
+        <!--  DRAWER MÓVIL  -->
+        @if (menuMovilAbierto()) {
             <div
-                class="fixed inset-0 z-40"
-                (click)="menuAbierto.set(false)"
-            ></div>
+                class="fixed top-0 right-0 w-80 h-full bg-[#C3F2F3] shadow-2xl z-50 animate-slideInRight px-6 py-6 rounded-l-3xl flex flex-col">
+
+                @if (usuario.rol === Rol.PACIENTE) {
+                    <!-- PERFIL -->
+                    <div class="flex items-center space-x-4 mb-8 mt-6">
+                        <div class="w-16 h-16 bg-[#1D8E92] rounded-full flex items-center justify-center shadow-inner">
+                            <img src="assets/icons/user.svg" class="w-10 h-10" />
+                        </div>
+
+                        <div class="flex flex-col">
+                            <span class="text-black font-bold text-xl">
+                                {{ usuario.paciente?.nombre }}
+                            </span>
+                            <span class="text-black font-light text-lg">Paciente</span>
+                        </div>
+                    </div>
+
+                    <hr class="border-[#1D8F93] border-1 my-6" />
+
+                    <!-- OPCIONES DEL MENÚ -->
+                    <div class="flex flex-col space-y-8 text-gray-700 text-xl font-semibold">
+
+                        <button class="flex items-center space-x-4" (click)="goHome(); menuMovilAbierto.set(false)">
+                            <img src="assets/icons/home.svg" class="w-8 h-8" />
+                            <span class="text-[#545454]">Inicio</span>
+                        </button>
+
+                        <a [routerLink]="['citas']" (click)="menuMovilAbierto.set(false)" class="flex items-center space-x-4">
+                            <img src="assets/icons/citas.svg" class="w-7 h-7" />
+                            <span class="text-[#545454]">Citas</span>
+                        </a>
+
+                        <a [routerLink]="['mis-adeudos']" (click)="menuMovilAbierto.set(false)" class="flex items-center space-x-4">
+                            <img src="assets/icons/signo-pesos.svg" class="w-7 h-6" />
+                            <span class="text-[#545454]">Mis Adeudos</span>
+                        </a>
+
+                        <button class="flex items-center space-x-4" (click)="verPerfil(); menuMovilAbierto.set(false)">
+                            <img src="assets/icons/perfil-paciente.svg" class="w-7 h-7" />
+                            <span class="text-[#545454]">Mi Perfil</span>
+                        </button>
+                    </div>
+
+                    <hr class="border-[#1D8F93] border-1 my-6" />
+
+
+                    <button
+                        (click)="cerrarSesion()"
+                        class="group mt-auto flex items-center space-x-4 w-full px-4 py-3 rounded-xl cursor-pointer relative
+                                hover:bg-[#8E0F0F] hover:shadow-md transition duration-300">
+
+                        <!-- ICONOS SUPERPUESTOS (gris → blanco) -->
+                        <div class="relative w-8 h-8 flex items-center justify-center">
+                            <!-- Icono normal (gris) -->
+                            <img src="assets/icons/logout_vg.svg"
+                                class="absolute w-8 h-8 opacity-100 transition duration-300 group-hover:opacity-0" />
+                            
+                            <!-- Icono hover (blanco) -->
+                            <img src="assets/icons/logout_vb.svg"
+                                class="absolute w-8 h-8 opacity-0 transition duration-300 group-hover:opacity-100" />
+                        </div>
+
+                        <span class="text-xl font-semibold text-[#545454] transition duration-300 group-hover:text-white">
+                            Cerrar Sesión
+                        </span>
+
+                    </button>
+                }
+
+                @if (usuario.rol === Rol.DENTISTA) {
+                    <!-- PERFIL -->
+                    <div class="flex items-center space-x-4 mb-8 mt-6">
+                        <div class="w-16 h-16 bg-[#1D8E92] rounded-full flex items-center justify-center shadow-inner">
+                            <img src="assets/icons/user.svg" class="w-10 h-10" />
+                        </div>
+
+                        <div class="flex flex-col">
+                            <span class="text-black font-bold text-xl">
+                                Dr. {{ usuario.consultorio?.titular_nombre }}
+                            </span>
+                            <span class="text-black font-light text-lg">Dentista</span>
+                        </div>
+                    </div>
+
+                    <hr class="border-[#1D8F93] border-1 my-6" />
+
+                    <!-- OPCIONES DEL MENÚ -->
+                    <div class="flex flex-col space-y-8 text-gray-700 text-xl font-semibold">
+
+                        <button class="flex items-center space-x-4" (click)="goHome(); menuMovilAbierto.set(false)">
+                            <img src="assets/icons/pacientes.svg" class="w-8 h-8" />
+                            <span class="text-[#545454]">Pacientes</span>
+                        </button>
+
+                        <a [routerLink]="['citas']" (click)="menuMovilAbierto.set(false)" class="flex items-center space-x-4">
+                            <img src="assets/icons/citas.svg" class="w-8 h-8" />
+                            <span class="text-[#545454]">Agenda</span>
+                        </a>
+
+                        <a [routerLink]="['mis-adeudos']" (click)="menuMovilAbierto.set(false)" class="flex items-center space-x-4">
+                            <img src="assets/icons/servicios.svg" class="w-8 h-8" />
+                            <span class="text-[#545454]">Servicios</span>
+                        </a>
+
+                        <button class="flex items-center space-x-4" (click)="verPerfil(); menuMovilAbierto.set(false)">
+                            <img src="assets/icons/finanzas.svg" class="w-8 h-8" />
+                            <span class="text-[#545454]">Finanzas</span>
+                        </button>
+                    </div>
+
+                    <hr class="border-[#1D8F93] border-1 my-6" />
+
+
+                    <button
+                        (click)="cerrarSesionDoc()"
+                        class="group mt-auto flex items-center space-x-4 w-full px-4 py-3 rounded-xl cursor-pointer relative
+                                hover:bg-[#8E0F0F] hover:shadow-md transition duration-300">
+
+                        <!-- ICONOS SUPERPUESTOS (gris → blanco) -->
+                        <div class="relative w-8 h-8 flex items-center justify-center">
+                            <!-- Icono normal (gris) -->
+                            <img src="assets/icons/logout_vg.svg"
+                                class="absolute w-8 h-8 opacity-100 transition duration-300 group-hover:opacity-0" />
+                            
+                            <!-- Icono hover (blanco) -->
+                            <img src="assets/icons/logout_vb.svg"
+                                class="absolute w-8 h-8 opacity-0 transition duration-300 group-hover:opacity-100" />
+                        </div>
+                        
+                        <span class="text-xl font-semibold text-[#545454] transition duration-300 group-hover:text-white">
+                            Cerrar Sesión
+                        </span>
+
+                    </button>
+                }
+            </div>
+        }
+
+
+
+        <!--  MENÚ DESPLEGABLE PACIENTE (DESKTOP)  -->
+        @if (menuAbierto()) {
+            <div class="fixed inset-0 z-40" (click)="menuAbierto.set(false)"></div>
         }
 
         @if (menuAbierto()) {
-            <div
-                class="absolute right-8 top-full translate-y-0 w-72 h-48 bg-[#C3F2F3] rounded-[20px] shadow-xl overflow-hidden z-50 animate-fadeIn"
-            >
-                <div
-                    class="w-60 h-16 bg-[#1D8F93] rounded-[20px] mx-auto mt-6 flex items-center px-6 cursor-pointer hover:bg-[#545454] transition shadow-lg"
-                    (click)="verPerfil()"
-                >
-                    <img src="assets/icons/perfil-paciente_vb.svg" alt="perfil" class="w-8 h-8 mr-4">
+            <div class="absolute top-full right-0 w-72 h-48 bg-[#C3F2F3] rounded-[20px] shadow-xl overflow-hidden z-50 animate-fadeIn">
+
+                <div class="w-60 h-16 bg-[#1D8F93] rounded-[20px] mx-auto mt-6 flex items-center px-6
+                            cursor-pointer hover:bg-[#545454] transition shadow-lg"
+                    (click)="verPerfil()">
+                    <img src="assets/icons/perfil-paciente_vb.svg" class="w-8 h-8 mr-4">
                     <span class="text-white text-lg font-semibold tracking-wide">Mi Perfil</span>
                 </div>
 
-                <div
-                    class="w-60 h-16 bg-[#BC0E0E] rounded-[20px] mx-auto mt-4 flex items-center px-6 cursor-pointer hover:bg-[#8F1010] transition shadow-lg"
-                    (click)="cerrarSesion()"
-                >
-                    <img src="assets/icons/logout_vb.svg" alt="logout" class="w-8 h-8 mr-4" />
+                <div class="w-60 h-16 bg-[#BC0E0E] rounded-[20px] mx-auto mt-4 flex items-center px-6
+                            cursor-pointer hover:bg-[#8F1010] transition shadow-lg"
+                    (click)="cerrarSesion()">
+                    <img src="assets/icons/logout_vb.svg" class="w-8 h-8 mr-4" />
                     <span class="text-white text-lg font-semibold tracking-wide">Cerrar Sesión</span>
                 </div>
 
@@ -81,6 +306,3 @@
     }
 
 </nav>
-
-
-

@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Rol } from '../../../../../backend/src/common/enums';
 
 @Component({
   selector: 'app-navbar',
@@ -14,6 +15,8 @@ export class Navbar {
   private router = inject(Router);
 
   menuAbierto = signal(false);  //estado del menu reactivo
+  menuMovilAbierto = signal(false);
+  Rol = Rol;
 
   menuDesplegable() {
     this.menuAbierto.update(v => !v);
@@ -38,6 +41,16 @@ export class Navbar {
       next: () => {
         this.menuAbierto.set(false);
         this.router.navigate(['/login/paciente'], {replaceUrl: true});
+      },
+        error: (err) => console.error('Error al cerrar sesion', err)
+    });
+  }
+
+  cerrarSesionDoc() {
+    this.auth.logout().subscribe({
+      next: () => {
+        this.menuAbierto.set(false);
+        this.router.navigate(['/login'], {replaceUrl: true});
       },
         error: (err) => console.error('Error al cerrar sesion', err)
     });

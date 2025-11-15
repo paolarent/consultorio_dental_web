@@ -6,7 +6,7 @@ import { FormRestorePassw } from './components/form-restore-passw/form-restore-p
 import { FormNewPassw } from './components/form-new-passw/form-new-passw';
 import { Home } from './pages/home/home';
 import { AuthGuard } from './auth/auth.guard';
-import { AgendaDoc } from './pages/agenda-doc/agenda-doc';
+import { HomeDoc } from './pages/home-doc/home-doc';
 import { LandingPage } from './components/landing-page/landing-page';
 import { CitasPaciente } from './components/citas-paciente/citas-paciente';
 import { AdeudosPaciente } from './components/adeudos-paciente/adeudos-paciente';
@@ -38,7 +38,7 @@ export const routes: Routes = [
 
     {
         path: 'doc',
-        component: AgendaDoc,
+        component: HomeDoc,
         canActivate: [AuthGuard]
         /*
         children: [
