@@ -1,1 +1,91 @@
-<p>servicios works!</p>
+<section class="w-full max-w-8xl mx-auto px-8 py-6 md:py-10">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
+        
+        <!-- TITULO -->
+        <div>
+        <h1 class="text-[#1D8F93] text-5xl font-extrabold leading-none">
+            Servicios
+        </h1>
+
+        <p class="text-black text-3xl font-light mt-2">
+            Gestión de Servicios que ofrecemos
+        </p>
+        </div>
+
+        <!-- BOTON -->
+        <button class="bg-[#C3F2F3] text-[#545454] text-xl md:text-2xl font-semibold tracking-wider rounded-xl shadow-lg 
+                    px-16 py-4 hover:scale-105 transition-transform duration-300"
+        >
+            Nuevo Servicio
+        </button>
+    </div>
+</section>
+
+<!-- CONTENEDOR PRINCIPAL -->
+<section class="w-full min-h-screen bg-[#C3F2F3] p-10 rounded-xl shadow-md">
+
+    <!-- HEADER CON TÍTULO + BUSCADOR -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
+
+        <!-- Título -->
+        <h2 class="text-4xl font-bold text-[#545454] tracking-wide">
+            Servicios Disponibles
+        </h2>
+
+        <!-- Barra de búsqueda -->
+        <div class="relative w-full md:w-96">
+            <input 
+                type="text"
+                placeholder="Buscar servicio..."
+                class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 shadow-sm text-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
+                (input)="buscarServicios($event)"
+            />
+            <img src="assets/icons/buscar.svg" class="w-6 h-6 absolute left-4 top-4 opacity-70" />
+        </div>
+    </div>
+
+    <!-- GRID DE TARJETAS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+        @for (servicio of serviciosFiltrados(); track servicio.id_servicio; let i = $index) {
+            <div class="bg-neutral-700 rounded-2xl shadow-lg overflow-hidden">
+            <img [src]="servicio.url_imagen || ''" class="w-full h-48 object-cover" />
+                <div class="p-5">
+                    <h3 class="text-2xl font-bold text-white uppercase tracking-wide">{{ servicio.nombre }}</h3>
+
+                    <p class="text-white/80 mt-3 text-base leading-relaxed">{{ servicio.descripcion }}</p>
+
+                    <div class="flex justify-between items-center text-white font-medium mt-5">
+                        <!-- Precio -->
+                        <span class="flex items-center gap-2 text-lg">
+                            <img src="assets/icons/signo-pesos-vb.svg" alt="Precio" class="w-5 h-5">
+                            ${{ servicio.precio_base_str }}
+                        </span>
+                        
+                        <span class="flex items-center gap-2 text-lg">
+                            <img src="assets/icons/duracion.svg" alt="Duracion" class="w-5 h-5">
+                            {{ servicio.duracion_base_str }}
+                        </span>
+                    </div>
+
+                    <!-- BOTONES -->
+                    <div class="flex gap-3 mt-6 text-lg">
+                        <button 
+                            class="flex-1 py-3 bg-[#1D8F93] hover:bg-teal-700 rounded-xl shadow-md text-white font-semibold text-center transition flex items-center justify-center gap-3">
+                            <img src="assets/icons/edit.svg" alt="Editar" class="w-5 h-5" />
+                            Editar
+                        </button>
+                        
+                        <button 
+                            class="flex-1 py-3 bg-red-700 hover:bg-[#8E0F0F] rounded-xl shadow-md text-white font-semibold text-center transition flex items-center justify-center gap-3">
+                            <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-5 h-5" />
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+
+</section>
+

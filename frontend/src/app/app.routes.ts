@@ -15,6 +15,7 @@ import { AgendaDoc } from './components/agenda-doc/agenda-doc';
 import { Pacientes } from './components/pacientes/pacientes';
 import { Servicios } from './components/servicios/servicios';
 import { Finanzas } from './components/finanzas/finanzas';
+import { Eventos } from './components/eventos/eventos';
 
 export const routes: Routes = [
     { 
@@ -45,7 +46,9 @@ export const routes: Routes = [
         component: HomeDoc,
         canActivate: [AuthGuard],
         children: [
-            { path: 'mi-agenda', component: AgendaDoc },
+            { path: '', redirectTo: 'mi-agenda/citas', pathMatch: 'full' }, // redirección automática
+            { path: 'mi-agenda/citas', component: AgendaDoc },
+            { path: 'mi-agenda/eventos', component: Eventos },
             { path: 'pacientes', component: Pacientes },
             { path: 'servicios', component: Servicios },
             { path: 'finanzas', component: Finanzas }

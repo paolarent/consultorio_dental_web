@@ -25,6 +25,8 @@ export class ServicioService {
                 nombre: true,
                 descripcion: true,
                 url_imagen: true,
+                precio_base: true,
+                duracion_base: true,
                 id_consultorio: true
             },
         });
