@@ -39,12 +39,27 @@ export class EgresoController {
     return this.egresoService.create(dto, id_consultorio);
     }
 
-
-
     @Patch(':id/anular')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     updateStatus(@Param('id') id: string) {
         return this.egresoService.updateEgreso(Number(id), StatusEgreso.ANULADO);
     }
+
+    @Get('total')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+        async totalGastos(@Req() req) {
+        const id_consultorio = req.user.id_consultorio;
+        return { total: await this.egresoService.calcularTotalGastos(id_consultorio) };
+    }
+
+    @Get('total-mes')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+    totalMes(@Req() req) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.egresoService.totalGastosMensuales(id_consultorio);
+    }
+
 }

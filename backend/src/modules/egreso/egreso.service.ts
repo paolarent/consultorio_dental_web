@@ -72,4 +72,39 @@ export class EgresoService {
             data: { status: nuevoStatus },
         });
     }
+
+    async calcularTotalGastos(id_consultorio: number) {
+        const result = await this.prisma.egreso.aggregate({
+            _sum: { monto: true },
+            where: {
+            id_consultorio,
+            status: StatusEgreso.REGISTRADO, // solo gastos activos, tecnicamente son los que cuentan
+            },
+        });
+
+        // _sum.monto puede ser null si no hay registros
+        return result._sum.monto ?? 0;
+    }
+
+    async totalGastosMensuales(id_consultorio: number) {
+        const inicioMes = new Date();
+        inicioMes.setDate(1); // primer día del mes
+        inicioMes.setHours(0,0,0,0);
+
+        const finMes = new Date(inicioMes);
+        finMes.setMonth(finMes.getMonth() + 1); 
+        finMes.setMilliseconds(-1); // último instante del mes
+
+        const total = await this.prisma.egreso.aggregate({
+            _sum: { monto: true },
+            where: {
+            id_consultorio,
+            fecha: { gte: inicioMes, lte: finMes },
+            status: StatusEgreso.REGISTRADO,
+            },
+        });
+
+        return { total: total._sum.monto || 0 };
+    }
+
 }

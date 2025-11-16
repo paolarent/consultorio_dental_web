@@ -44,7 +44,7 @@
         <div class="bg-white rounded-xl shadow-md p-4 flex justify-between items-center">
             <div class="flex flex-col gap-6">
                 <span class="text-black text-2xl font-semibold">Gastos Totales</span>
-                <span class="text-[#530E0E] text-2xl font-bold">$2,030.00</span>
+                <span class="text-[#530E0E] text-2xl font-bold">${{ totalGastos | number:'1.2-2' }}</span>
             </div>
             <div class="bg-red-200 w-24 h-24 rounded-full flex justify-center items-center">
                 <img src="assets/icons/egreso.svg" alt="Gastos" class="w-14 h-14">
@@ -67,7 +67,10 @@
             <div class="flex flex-col gap-4">
                 <span class="text-black text-2xl font-semibold">Este Mes</span>
                 <span class="text-[#0B184B] text-2xl font-bold">$470.00</span>
-                <span class="text-black text-base font-semibold">Ing: $500.00 | Gas: $30.00</span>
+                <span class="text-black text-base font-semibold">
+                    Ing: ${{ 0 | number:'1.2-2' }} | Gas: ${{ totalGastosMes | number:'1.2-2' }}
+                </span>
+
             </div>
             <div class="bg-[#C3F2F3] w-24 h-24 rounded-full flex justify-center items-center">
                 <img src="assets/icons/ganancia-mensual.svg" alt="Mes" class="w-14 h-14">

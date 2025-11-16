@@ -18,4 +18,14 @@ export class EgresoService {
     crearEgreso(dto: CreateEgresoDto): Observable<any> {
         return this.http.post<any>(this.baseUrl, dto, { withCredentials: true });
     }
+
+    totalGastos(): Observable<{ total: number }> {
+        return this.http.get<{ total: number }>(`${this.baseUrl}/total`, { withCredentials: true } // necesario si para las cookies para auth
+        );
+    }
+
+    totalGastosMes(): Observable<{ total: number }> {
+        return this.http.get<{ total: number }>(`${this.baseUrl}/total-mes`, { withCredentials: true });
+    }
+
 }
