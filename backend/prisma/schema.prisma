@@ -97,6 +97,7 @@ model consultorio {
   servicio            servicio[]
   tipo_evento         tipo_evento[]
   usuario             usuario[]
+  corte_caja          corte_caja[]
 }
 
 model detalle_ingreso {
@@ -400,6 +401,23 @@ model sesion {
   // user_agent       String?  // a lo mejor a futuro, para auditoría
 
   usuario             usuario     @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+}
+
+model corte_caja {
+  id_corte        Int       @id @default(autoincrement())
+  id_consultorio   Int
+  fecha_apertura  DateTime
+  usuario_apertura Int
+  monto_apertura  Decimal   @db.Decimal(10,2)
+  fecha_cierre    DateTime?
+  usuario_cierre  Int?
+  monto_cierre    Decimal?  @db.Decimal(10,2)
+  ingresos_totales Decimal? @db.Decimal(12,2)
+  pagos_totales    Decimal? @db.Decimal(12,2)
+  diferencia       Decimal? @db.Decimal(12,2)
+  notas            String?
+
+  consultorio        consultorio     @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
 }
 
 enum clasificacion_a_cm {
