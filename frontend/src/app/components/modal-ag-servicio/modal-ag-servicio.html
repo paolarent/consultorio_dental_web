@@ -54,6 +54,7 @@
                 type="number"
                 placeholder="Precio"
                 required
+                min="50"
                 [(ngModel)]="precio"
                 class="flex-1 h-full border-none bg-transparent outline-none p-2"
             />
@@ -67,6 +68,7 @@
             type="number"
             placeholder="Duración"
             required
+            min="15"
             [(ngModel)]="duracion"
             class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
             />

@@ -1,19 +1,25 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ServicioService } from '../../services/servicio.service';
 import { AuthService } from '../../auth/auth.service';
-import { DecimalPipe } from '@angular/common';
 import { ModalAgServicio } from "../modal-ag-servicio/modal-ag-servicio";
 import { Servicio, ServicioConFormato } from '../../models/servicio';
+import { ModalLogDelete } from '../modal-confirmar-logdelete/modal-confirmar-logdelete';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-servicios',
-  imports: [ModalAgServicio],
+  imports: [ModalAgServicio, ModalLogDelete],
   templateUrl: './servicios.html',
   styleUrl: './servicios.css'
 })
 export class Servicios implements OnInit {
   auth = inject(AuthService);
   servicioService = inject(ServicioService);
+  private notify = inject(NotificationService);
+
+  //modal para el softdelete
+  modalConfirmacion = signal(false);
+  servicioAEliminar: number | null = null;
 
   // Modal
   ModalAgServicio = signal(false);
@@ -76,4 +82,31 @@ export class Servicios implements OnInit {
       error: (err) => console.error(err)
     });
   }
+
+  abrirModalEliminar(id: number) {
+    this.servicioAEliminar = id;
+    this.modalConfirmacion.set(true);
+  }
+
+  cerrarModalSD() {
+    this.modalConfirmacion.set(false);
+    this.servicioAEliminar = null;
+  }
+
+  confirmarEliminacion() {
+    if (!this.servicioAEliminar) return;
+
+    this.servicioService.softDelete(this.servicioAEliminar).subscribe({
+      next: () => {
+        this.recargarServicios();   // recarga la lista
+        this.cerrarModalSD();       // cierra el modal correctamente
+
+        this.notify.success("Servicio dado de baja correctamente");
+      },
+      error: () => {
+        this.notify.error("Ocurrió un error al dar de baja el servicio");
+      }
+    });
+  }
+
 }

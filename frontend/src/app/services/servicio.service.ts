@@ -23,7 +23,10 @@ export class ServicioService {
         return this.http.patch<Servicio>(`${this.baseUrl}/${id}`, formData, { withCredentials: true });
     }
 
-    
+    softDelete(id: number) {
+        return this.http.patch(`${this.baseUrl}/soft-delete/${id}`, {}, { withCredentials: true });
+    }
+
 }
 
 

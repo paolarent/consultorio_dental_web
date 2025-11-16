@@ -76,7 +76,7 @@
                             Editar
                         </button>
                         
-                        <button 
+                        <button (click)="abrirModalEliminar(servicio.id_servicio!)"
                             class="flex-1 py-3 bg-red-700 hover:bg-[#8E0F0F] rounded-xl shadow-md text-white font-semibold text-center transition flex items-center justify-center gap-3">
                             <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-5 h-5" />
                             Eliminar
@@ -92,9 +92,19 @@
 
 <!-- Modal Servicio -->
 @if(ModalAgServicio()) {
-  <app-modal-ag-servicio
-    [servicioEditar]="servicioSeleccionado()"
-    (cerrar)="cerrarModal()"
-  ></app-modal-ag-servicio>
+    <app-modal-ag-servicio
+        [servicioEditar]="servicioSeleccionado()"
+        (cerrar)="cerrarModal()"
+    ></app-modal-ag-servicio>
 }
+
+@if(modalConfirmacion()) {
+    <app-modal-confirmar-logdelete
+    [visible]="modalConfirmacion()"
+    (confirm)="confirmarEliminacion()"
+    (cancel)="cerrarModalSD()"
+    ></app-modal-confirmar-logdelete>
+}
+
+
 
