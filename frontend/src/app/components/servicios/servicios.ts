@@ -2,10 +2,11 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ServicioService } from '../../services/servicio.service';
 import { AuthService } from '../../auth/auth.service';
 import { DecimalPipe } from '@angular/common';
+import { ModalAgServicio } from "../modal-ag-servicio/modal-ag-servicio";
 
 @Component({
   selector: 'app-servicios',
-  imports: [],
+  imports: [ModalAgServicio],
   templateUrl: './servicios.html',
   styleUrl: './servicios.css'
 })
@@ -15,6 +16,9 @@ export class Servicios implements OnInit {
   servicioService = inject(ServicioService);
 
   decimalPipe = new DecimalPipe('es-MX');
+
+  //Modales
+  ModalAgServicio = signal(false);
 
   // Signals
   servicios = signal<any[]>([]);          // Todos los servicios
@@ -51,5 +55,9 @@ export class Servicios implements OnInit {
       servicio.nombre.toLowerCase().includes(valor)
     );
     this.serviciosFiltrados.set(filtrados);
+  }
+
+  cerrarModal() {
+    this.ModalAgServicio.set(false);
   }
 }

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { Calendario } from '../calendario/calendario';
 
 @Component({
   selector: 'app-eventos',
-  imports: [RouterModule],
+  imports: [RouterModule, Calendario],
   templateUrl: './eventos.html',
   styleUrl: './eventos.css'
 })

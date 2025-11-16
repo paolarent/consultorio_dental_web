@@ -15,6 +15,7 @@
         <!-- BOTON -->
         <button class="bg-[#C3F2F3] text-[#545454] text-xl md:text-2xl font-semibold tracking-wider rounded-xl shadow-lg 
                     px-16 py-4 hover:scale-105 transition-transform duration-300"
+            (click)="ModalAgServicio.set(true)"
         >
             Nuevo Servicio
         </button>
@@ -88,4 +89,11 @@
 
 
 </section>
+
+<!-- Modal Agregar Servicio -->
+@if(ModalAgServicio()) {
+    <app-modal-ag-servicio
+        (cerrar)="ModalAgServicio.set(false)"
+    ></app-modal-ag-servicio>
+}
 

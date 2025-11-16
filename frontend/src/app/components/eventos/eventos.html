@@ -1,37 +1,50 @@
 <section class="relative rounded-2xl py-8 px-10 w-full max-w-8xl bg-white mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-10 items-start">
 
-        <div class="md:col-span-2 flex flex-col items-start">
-            <h1 class="text-[#1D8F93] text-5xl font-extrabold leading-tight">
-                Mi Agenda
-            </h1>
-            <p class="text-black text-3xl font-light mt-2">
-                Eventos
-            </p>
+        <!-- Columna izquierda (1/4) -->
+        <div class="md:col-span-1 flex flex-col h-full">
 
-            <button
-                class="bg-[#C3F2F3] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider rounded-xl shadow-md px-16 py-4 hover:scale-105 transition-transform duration-300 mt-6"
-            >
-                Agregar Evento
-            </button>
+            <!-- Parte superior: títulos y botón Agendar Cita -->
+            <div class="flex flex-col items-start space-y-6">
+                <h1 class="text-[#1D8F93] text-5xl font-extrabold leading-tight">
+                    Mi Agenda
+                </h1>
+
+                <p class="text-black text-3xl font-light">
+                    Eventos
+                </p>
+
+                <button
+                class="bg-[#C3F2F3] text-[#545454] text-lg md:text-xl font-bold tracking-wider rounded-xl shadow-md px-16 py-4 hover:scale-105 transition-transform duration-300"
+                >
+                    Agregar Evento
+                </button>
+            </div>
+
+            <!-- Parte inferior: botones Ir a Eventos y engranaje -->
+            <div class="mt-72 flex items-center w-full gap-16">
+            
+                <button
+                    (click)="irACitas()"
+                    class="flex items-center gap-2 bg-[#1D8E92] text-white text-lg md:text-xl font-bold tracking-wider px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition"
+                >
+                    <img src="assets/icons/ic-citas.svg" alt="Ir a Citas" class="w-8 h-8">
+                    Ir a Citas
+                </button>
+
+                <!-- Engranaje -->
+                <button class="bg-gray-200 p-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer">
+                    <img src="assets/icons/settings.svg" alt="Configuración" title="Configuración" class="w-10 h-10"/>
+                </button>
+
+            </div>
+
         </div>
 
-        <!-- Columna derecha (2/4) -->
-        <div class="md:col-span-2 flex flex-col justify-between items-end h-full space-y-4">
 
-        <!-- Botón Ir a Eventos arriba -->
-        <button
-            (click)="irACitas()"
-            class="flex items-center gap-6 bg-[#1D8E92] text-white text-lg md:text-xl font-bold px-8 py-3 rounded-xl shadow hover:scale-105 transition">
-            <img src="assets/icons/ic-citas.svg" alt="Ir a Eventos" class="w-8 h-8">
-            Ir a Citas
-        </button>
-
-        <!-- Icono de engranaje abajo -->
-        <button class="bg-gray-200 p-2 rounded-full shadow-md hover:scale-105 transition-transform duration-300 cursor-pointer">
-            <img src="assets/icons/settings.svg" alt="Configuración" title="Configuracion" class="w-12 h-12"/>
-        </button>
-
+        <!-- Columna derecha (3/4) - Calendario -->
+        <div class="md:col-span-3 rounded-2xl">
+            <app-calendario></app-calendario>
         </div>
 
     </div>

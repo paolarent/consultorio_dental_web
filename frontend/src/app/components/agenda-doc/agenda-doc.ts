@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { Calendario } from '../calendario/calendario';
 
 @Component({
   selector: 'app-agenda-doc',
-  imports: [RouterModule],
+  imports: [RouterModule, Calendario],
   templateUrl: './agenda-doc.html',
   styleUrl: './agenda-doc.css'
 })

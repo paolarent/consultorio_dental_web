@@ -39,13 +39,15 @@ export class ServicioService {
         const result: any = await this.cloudinaryService.uploadImage(file, 'servicios');
 
         return this.prisma.servicio.create({
-            data: {
-                ...dto,
-                url_imagen: result.secure_url,
-                imagen_public_id: result.public_id,
-                status: Status.ACTIVO,
-            },
-        });
+        data: {
+            ...dto,
+            precio_base: Number(dto.precio_base),       //convertir a number
+            duracion_base: Number(dto.duracion_base),   //convertir a number
+            url_imagen: result.secure_url,
+            imagen_public_id: result.public_id,
+            status: Status.ACTIVO,
+        },
+    });
     }
 
     async updateServicio(id: number, dto: UpdateServicioDto, file?: Express.Multer.File) {

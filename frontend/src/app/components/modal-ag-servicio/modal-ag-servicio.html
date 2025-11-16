@@ -1,0 +1,120 @@
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[500px]">
+        <div class="grid gap-4">
+        <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
+            Agregar Nuevo Servicio
+        </h2>
+
+        <!-- Nombre del servicio -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454]">Nombre del servicio</label>
+            <input
+            type="text"
+            placeholder="Servicio"
+            required
+            [(ngModel)]="nombre"
+            class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+            />
+        </div>
+
+        <!-- Descripción -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454] mb-1">Descripción</label>
+            <textarea
+            placeholder="Descripción del servicio"
+            rows="3"
+            [(ngModel)]="descripcion"
+            class="w-full border border-gray-300 bg-zinc-300/30 rounded-lg p-3 focus:ring-2 focus:ring-[#105053] focus:outline-none resize-none"
+            ></textarea>
+        </div>
+
+        <!-- Tipo de cobro -->
+        <div>
+            <label class="block text-base font-medium text-[#545454] mb-1">Tipo de cobro</label>
+            <mat-form-field appearance="outline" class="w-full">
+            <mat-select
+                placeholder="Seleccione el tipo de cobro"
+                required
+                [(ngModel)]="tipoCobro"
+            >
+                <mat-option [value]="TipoCobro.UNIDAD_ANATOMICA">Unidad Anatómica</mat-option>
+                <mat-option [value]="TipoCobro.PLAN_TERAPEUTICO">Plan Terapéutico</mat-option>
+            </mat-select>
+            </mat-form-field>
+        </div>
+
+        <!-- Precio Base con $ -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454] mb-1">Precio Base</label>
+            <div class="flex items-center border border-gray-300 bg-zinc-300/30 rounded-lg overflow-hidden h-12 focus-within:ring-2 focus-within:ring-[#545454]">
+            <span class="px-3 text-gray-500 select-none">$</span>
+            <input
+                type="number"
+                placeholder="Precio"
+                required
+                [(ngModel)]="precio"
+                class="flex-1 h-full border-none bg-transparent outline-none p-2"
+            />
+            </div>
+        </div>
+
+        <!-- Duración Base -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454] mb-1">Duración Base (Minutos)</label>
+            <input
+            type="number"
+            placeholder="Duración"
+            required
+            [(ngModel)]="duracion"
+            class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+            />
+        </div>
+
+        <!-- Imagen del Servicio -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454] mb-1">Imagen del Servicio</label>
+            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-zinc-300/30 hover:bg-zinc-300/50 transition">
+            
+            <!-- Preview -->
+            @if(preview()) {
+                <img [src]="preview()" class="w-20 h-20 object-cover mb-2 rounded-md" />
+            }
+
+            <span class="text-gray-500 text-sm">
+                @if(preview()) {
+                Cambiar imagen
+                } @else {
+                Selecciona una imagen
+                }
+            </span>
+
+            <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                (change)="onFileSelected($event)"
+            />
+            </label>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 mt-6">
+            <button
+            class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+            (click)="cerrar.emit()"
+            >
+            <span class="text-white text-lg font-semibold tracking-wider">Cancelar</span>
+            </button>
+
+            <button
+            class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+            (click)="agregarServicio()"
+            >
+            <span class="text-white text-lg font-semibold tracking-wider">Agregar</span>
+            </button>
+        </div>
+
+        </div>
+    </div>
+</div>
+

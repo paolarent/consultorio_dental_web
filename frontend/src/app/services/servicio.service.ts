@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Servicio } from '../models/servicio';
 
 @Injectable({ providedIn: 'root' })
 export class ServicioService {
@@ -13,6 +14,12 @@ export class ServicioService {
         withCredentials: true
         });
     }
+
+    createServicio(formData: FormData): Observable<Servicio> {
+        return this.http.post<Servicio>(this.baseUrl, formData, { withCredentials: true });
+    }
+
+
 
 }
 
