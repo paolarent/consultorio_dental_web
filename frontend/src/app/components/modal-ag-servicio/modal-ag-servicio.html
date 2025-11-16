@@ -1,9 +1,11 @@
 <div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
     <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[500px]">
         <div class="grid gap-4">
-        <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
-            Agregar Nuevo Servicio
+    
+        <h2 class="text-4xl font-bold mt-2 mb-2 text-[#105053]">
+            Gestión de Servicios
         </h2>
+
 
         <!-- Nombre del servicio -->
         <div class="mb-4">
@@ -108,9 +110,11 @@
 
             <button
             class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
-            (click)="agregarServicio()"
+            (click)="guardarServicio()"
             >
-            <span class="text-white text-lg font-semibold tracking-wider">Agregar</span>
+            <span class="text-white text-lg font-semibold tracking-wider">
+                Continuar
+            </span>
             </button>
         </div>
 

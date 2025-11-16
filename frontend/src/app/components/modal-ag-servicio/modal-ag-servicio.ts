@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -7,6 +7,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { TipoCobro } from '../../../../../backend/src/common/enums';
 import { ServicioService } from '../../services/servicio.service';
 import { NotificationService } from '../../services/notification.service';
+import { Servicio } from '../../models/servicio';
 
 @Component({
   selector: 'app-modal-ag-servicio',
@@ -25,27 +26,52 @@ export class ModalAgServicio {
   precio = signal<number | null>(null);
   duracion = signal<number | null>(null);
   tipoCobro = signal<TipoCobro | null>(null);
-  file: File | null = null; // <-- Archivo seleccionado
+  file: File | null = null;
 
   private servicioService = inject(ServicioService);
   private notify = inject(NotificationService);
 
+  private _servicioEditar: Servicio | null = null;
+
+  @Input() set servicioEditar(servicio: Servicio | null) {
+    this._servicioEditar = servicio;
+    if (servicio) {
+      this.nombre.set(servicio.nombre);
+      this.descripcion.set(servicio.descripcion);
+      this.tipoCobro.set(servicio.tipo_cobro);
+      this.precio.set(servicio.precio_base);
+      this.duracion.set(servicio.duracion_base);
+      this.preview.set(servicio.url_imagen || null);
+      this.file = null; // si quiere cambiar la imagen, seleccionará un archivo
+    } else {
+      this.limpiar();
+    }
+  }
+
+  get servicioEditar() {
+    return this._servicioEditar;
+  }
+
+  get esEdicion(): boolean {
+    return !!this.servicioEditar;
+  }
+
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      this.file = input.files[0]; // <-- Guardar archivo real
+      this.file = input.files[0];
       const reader = new FileReader();
       reader.onload = () => this.preview.set(reader.result as string);
       reader.readAsDataURL(this.file);
     }
   }
 
-  agregarServicio() {
-    // Validación de campos
+  guardarServicio() {
+    // Validación: el archivo solo obligatorio si es creación
     if (!this.nombre() || !this.descripcion() || !this.tipoCobro() || 
-        !this.precio() || !this.duracion() || !this.file) {
+        !this.precio() || !this.duracion() || (!this.file && !this.esEdicion)) { 
       this.notify.warning('Por favor completa todos los campos antes de continuar.');
-      return; // Salimos para que no haga la petición dioquis
+      return;
     }
 
     const formData = new FormData();
@@ -54,20 +80,27 @@ export class ModalAgServicio {
     formData.append('tipo_cobro', this.tipoCobro()!);
     formData.append('precio_base', this.precio()?.toString()!);
     formData.append('duracion_base', this.duracion()?.toString()!);
-    formData.append('imagen', this.file); // <-- archivo real
 
-    this.servicioService.createServicio(formData).subscribe({
-      next: (res) => {
-        this.notify.success('Servicio agregado correctamente.');
-        //console.log('Servicio creado', res);
-        this.limpiar();
-        this.cerrar.emit();
-      },
-      error: (err) => {
-        this.notify.error(err?.error?.message || 'Error. No se pudo agregar el servicio.');
-        console.error(err);
-      }
-    });
+    if (this.file) formData.append('imagen', this.file);
+
+    if (this.esEdicion) {
+      this.servicioService.updateServicio(this.servicioEditar!.id_servicio!, formData).subscribe({
+        next: () => {
+          this.notify.success('Servicio actualizado correctamente.');
+          this.cerrar.emit();
+        },
+        error: (err) => this.notify.error(err?.error?.message || 'Error al actualizar servicio.')
+      });
+    } else {
+      this.servicioService.createServicio(formData).subscribe({
+        next: () => {
+          this.notify.success('Servicio agregado correctamente.');
+          this.limpiar();
+          this.cerrar.emit();
+        },
+        error: (err) => this.notify.error(err?.error?.message || 'Error. No se pudo agregar el servicio.')
+      });
+    }
   }
 
   limpiar() {
@@ -78,5 +111,6 @@ export class ModalAgServicio {
     this.tipoCobro.set(null);
     this.preview.set(null);
     this.file = null;
+    this._servicioEditar = null;
   }
 }

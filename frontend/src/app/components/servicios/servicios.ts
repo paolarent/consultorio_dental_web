@@ -3,6 +3,7 @@ import { ServicioService } from '../../services/servicio.service';
 import { AuthService } from '../../auth/auth.service';
 import { DecimalPipe } from '@angular/common';
 import { ModalAgServicio } from "../modal-ag-servicio/modal-ag-servicio";
+import { Servicio, ServicioConFormato } from '../../models/servicio';
 
 @Component({
   selector: 'app-servicios',
@@ -11,44 +12,25 @@ import { ModalAgServicio } from "../modal-ag-servicio/modal-ag-servicio";
   styleUrl: './servicios.css'
 })
 export class Servicios implements OnInit {
-  // Inyectamos servicios
   auth = inject(AuthService);
   servicioService = inject(ServicioService);
 
-  decimalPipe = new DecimalPipe('es-MX');
-
-  //Modales
+  // Modal
   ModalAgServicio = signal(false);
 
   // Signals
-  servicios = signal<any[]>([]);          // Todos los servicios
-  serviciosFiltrados = signal<any[]>([]); // Servicios filtrados
-  searchTerm = signal('');                // Texto de búsqueda
+  servicios = signal<ServicioConFormato[]>([]);
+  serviciosFiltrados = signal<ServicioConFormato[]>([]);
+  searchTerm = signal('');
+  servicioSeleccionado = signal<Servicio | null>(null);
 
   ngOnInit() {
-    const usuario = this.auth.usuario(); // Obtenemos el usuario
-
-    if (usuario?.id_consultorio) {
-      this.servicioService.findAllActive(usuario.id_consultorio).subscribe({
-        next: (data) => {
-          const formateado = data.map(s => ({
-            ...s,
-            precio_base_str: Number(s.precio_base).toFixed(2), // siempre string tipo "800.00"
-            duracion_base_str: `${s.duracion_base} Min`        // Minutos en duracion
-          }));
-
-          this.servicios.set(formateado);           // Guardamos todos los servicios
-          this.serviciosFiltrados.set(formateado);  // Inicializamos filtrados
-        },
-        error: (err) => console.error(err)
-      });
-    }
+    this.recargarServicios();
   }
 
-  // Método para la barra de búsqueda
+  // Buscar servicios
   buscarServicios(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const valor = input.value.toLowerCase();
+    const valor = (event.target as HTMLInputElement).value.toLowerCase();
     this.searchTerm.set(valor);
 
     const filtrados = this.servicios().filter(servicio =>
@@ -57,7 +39,41 @@ export class Servicios implements OnInit {
     this.serviciosFiltrados.set(filtrados);
   }
 
+  // Nuevo servicio
+  nuevoServicio() {
+    this.servicioSeleccionado.set(null); // limpiar selección
+    this.ModalAgServicio.set(true);
+  }
+
+  // Editar servicio
+  editarServicio(servicio: Servicio) {
+    this.servicioSeleccionado.set(servicio);
+    this.ModalAgServicio.set(true);
+  }
+
+  // Cerrar modal
   cerrarModal() {
     this.ModalAgServicio.set(false);
+    this.servicioSeleccionado.set(null); // limpiar selección
+    this.recargarServicios();
+  }
+
+  // Recargar lista de servicios
+  recargarServicios() {
+    const usuario = this.auth.usuario();
+    if (!usuario?.id_consultorio) return;
+
+    this.servicioService.findAllActive(usuario.id_consultorio).subscribe({
+      next: (data) => {
+        const formateado: ServicioConFormato[] = data.map(s => ({
+          ...s,
+          precio_base_str: Number(s.precio_base).toFixed(2),
+          duracion_base_str: `${s.duracion_base} Min`
+        }));
+        this.servicios.set(formateado);
+        this.serviciosFiltrados.set(formateado);
+      },
+      error: (err) => console.error(err)
+    });
   }
 }

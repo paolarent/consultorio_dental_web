@@ -27,7 +27,8 @@ export class ServicioService {
                 url_imagen: true,
                 precio_base: true,
                 duracion_base: true,
-                id_consultorio: true
+                id_consultorio: true,
+                tipo_cobro: true
             },
         });
     }
@@ -61,11 +62,20 @@ export class ServicioService {
             imageData = { url_imagen: result.secure_url, imagen_public_id: result.public_id };
         }
 
+        // Convertir los campos numéricos a Int antes de actualizar pq ya dio error
+        const updatedData = {
+            ...dto,
+            precio_base: Number(dto.precio_base),
+            duracion_base: Number(dto.duracion_base),
+            ...imageData,
+        };
+
         return this.prisma.servicio.update({
             where: { id_servicio: id },
-            data: { ...dto, ...imageData },
+            data: updatedData,
         });
     }
+
 
     async softDelete(id: number) {
         const servicio = await this.prisma.servicio.findUnique({ where: { id_servicio: id } });

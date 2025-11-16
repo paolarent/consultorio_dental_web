@@ -10,3 +10,10 @@ export interface Servicio {
     url_imagen?: string;
     imagen_public_id?: string;
 }
+
+// Extender el modelo Servicio con propiedades formateadas para mostrar
+export interface ServicioConFormato extends Servicio {
+    precio_base_str: string;
+    duracion_base_str: string;
+}
+

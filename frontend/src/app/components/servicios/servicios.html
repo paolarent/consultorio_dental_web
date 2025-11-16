@@ -15,7 +15,7 @@
         <!-- BOTON -->
         <button class="bg-[#C3F2F3] text-[#545454] text-xl md:text-2xl font-semibold tracking-wider rounded-xl shadow-lg 
                     px-16 py-4 hover:scale-105 transition-transform duration-300"
-            (click)="ModalAgServicio.set(true)"
+            (click)="nuevoServicio()"
         >
             Nuevo Servicio
         </button>
@@ -70,7 +70,7 @@
 
                     <!-- BOTONES -->
                     <div class="flex gap-3 mt-6 text-lg">
-                        <button 
+                        <button (click)="editarServicio(servicio)"
                             class="flex-1 py-3 bg-[#1D8F93] hover:bg-teal-700 rounded-xl shadow-md text-white font-semibold text-center transition flex items-center justify-center gap-3">
                             <img src="assets/icons/edit.svg" alt="Editar" class="w-5 h-5" />
                             Editar
@@ -90,10 +90,11 @@
 
 </section>
 
-<!-- Modal Agregar Servicio -->
+<!-- Modal Servicio -->
 @if(ModalAgServicio()) {
-    <app-modal-ag-servicio
-        (cerrar)="ModalAgServicio.set(false)"
-    ></app-modal-ag-servicio>
+  <app-modal-ag-servicio
+    [servicioEditar]="servicioSeleccionado()"
+    (cerrar)="cerrarModal()"
+  ></app-modal-ag-servicio>
 }
 

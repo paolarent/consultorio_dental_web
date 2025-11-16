@@ -19,8 +19,11 @@ export class ServicioService {
         return this.http.post<Servicio>(this.baseUrl, formData, { withCredentials: true });
     }
 
+    updateServicio(id: number, formData: FormData): Observable<Servicio> {
+        return this.http.patch<Servicio>(`${this.baseUrl}/${id}`, formData, { withCredentials: true });
+    }
 
-
+    
 }
 
 
