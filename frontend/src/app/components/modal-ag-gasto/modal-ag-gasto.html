@@ -1,0 +1,60 @@
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-full max-w-md">
+        <h2 class="text-3xl font-bold mt-2 mb-4 text-[#105053]">Agregar Nuevo Gasto</h2>
+
+        <!-- Tipo de gasto -->
+        <div>
+            <label class="block text-base font-medium text-[#545454] mb-1">Tipo de gasto</label>
+            <mat-form-field appearance="outline" class="w-full">
+                <mat-select placeholder="Seleccione tipo de egreso" required [(ngModel)]="id_tipo_egreso">
+                    @for(tipo of tiposGasto; track tipo.id_tipo_egreso) {
+                        <mat-option [value]="tipo.id_tipo_egreso">{{ tipo.nombre }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <!-- Monto -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454]">Monto</label>
+            <div class="relative">
+                <span class="absolute left-3 top-3 text-gray-600">$</span>
+                <input type="number" placeholder="Monto del gasto" required [(ngModel)]="monto" min="1"
+                    class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg pl-7 p-2 focus:ring-2 focus:ring-[#545454] focus:outline-none" />
+            </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454] mb-1">Fecha</label>
+            <input #fechaInput type="text" placeholder="Selecciona la fecha" required [(ngModel)]="fecha"
+                class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none" />
+        </div>
+        
+        <!-- Descripción -->
+        <div class="mb-6">
+            <label class="block text-base font-medium text-[#545454] mb-1">Descripción</label>
+            <textarea placeholder="Descripción breve del gasto" rows="3" [(ngModel)]="descripcion"
+                        class="w-full border border-gray-300 bg-zinc-300/30 rounded-lg p-3 focus:ring-2 focus:ring-[#105053] focus:outline-none resize-none"></textarea>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4">
+            <button
+                class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                (click)="cancelar()"
+            >
+                <span class="text-center text-white text-lg font-semibold tracking-wider">Cancelar</span>
+            </button>
+
+            <button
+                class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                (click)="guardar()"
+            >
+                <span class="text-center text-white text-lg font-semibold tracking-wider">Agregar</span>
+            </button>
+        </div>
+
+    </div>
+</div>

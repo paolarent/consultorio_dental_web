@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Request } from '@nestjs/common';
 import { CreateEgresoDto } from './dto/create-egreso.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { StatusEgreso } from 'src/common/enums';
@@ -28,19 +28,32 @@ export class EgresoService {
         });
     }
 
-    async create(data: CreateEgresoDto) {
+    async listarTiposGasto() {
+        return this.prisma.tipo_egreso.findMany({
+            select: {
+            id_tipo_egreso: true,
+            nombre: true
+            }
+        });
+    }
+
+    async create(data: CreateEgresoDto, id_consultorio: number) {
         const tipoEgreso = await this.prisma.tipo_egreso.findUnique({
-            where: {id_tipo_egreso: data.id_tipo_egreso}
+            where: { id_tipo_egreso: data.id_tipo_egreso },
         });
 
-        if (!tipoEgreso) throw new Error('Tipo de egreso no encontrado');
-        if (!tipoEgreso) { throw new NotFoundException( `El tipo de egreso con ID ${data.id_tipo_egreso} no existe.`,);}
+        if (!tipoEgreso) {
+            throw new NotFoundException(
+                `El tipo de egreso con ID ${data.id_tipo_egreso} no existe.`,
+            );
+        }
 
         return this.prisma.egreso.create({
             data: {
                 ...data,
                 fecha: new Date(data.fecha),
                 status: StatusEgreso.REGISTRADO,
+                id_consultorio, // se manda directo
             },
         });
     }
