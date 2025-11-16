@@ -6,6 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { TipoCobro } from '../../../../../backend/src/common/enums';
 import { ServicioService } from '../../services/servicio.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-modal-ag-servicio',
@@ -27,6 +28,7 @@ export class ModalAgServicio {
   file: File | null = null; // <-- Archivo seleccionado
 
   private servicioService = inject(ServicioService);
+  private notify = inject(NotificationService);
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -39,8 +41,12 @@ export class ModalAgServicio {
   }
 
   agregarServicio() {
-    if (!this.tipoCobro()) return alert('Selecciona un tipo de cobro');
-    if (!this.file) return alert('Selecciona una imagen');
+    // Validación de campos
+    if (!this.nombre() || !this.descripcion() || !this.tipoCobro() || 
+        !this.precio() || !this.duracion() || !this.file) {
+      this.notify.warning('Por favor completa todos los campos antes de continuar.');
+      return; // Salimos para que no haga la petición dioquis
+    }
 
     const formData = new FormData();
     formData.append('nombre', this.nombre());
@@ -52,11 +58,15 @@ export class ModalAgServicio {
 
     this.servicioService.createServicio(formData).subscribe({
       next: (res) => {
-        console.log('Servicio creado', res);
+        this.notify.success('Servicio agregado correctamente.');
+        //console.log('Servicio creado', res);
         this.limpiar();
         this.cerrar.emit();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        this.notify.error(err?.error?.message || 'Error. No se pudo agregar el servicio.');
+        console.error(err);
+      }
     });
   }
 
