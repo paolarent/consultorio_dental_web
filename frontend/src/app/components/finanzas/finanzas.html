@@ -14,13 +14,26 @@
 
         <!-- BOTONES -->
         <button
-            class="flex items-center gap-4 bg-[#CAFFCF] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-16 py-4 rounded-xl shadow hover:scale-105 transition">
+            (click)="clickCaja()"
+            class="flex items-center gap-4 bg-[#C3F2F3] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition">
+
+            <img 
+                [src]="corteAbierto ? 'assets/icons/cerrarcaja.svg' : 'assets/icons/abrircaja.svg'" 
+                alt="Caja" class="w-8 h-8">
+
+            {{ btnCajaTexto }}
+        </button>
+
+        <button
+            [disabled]="ingresoDisabled"
+            class="flex items-center gap-4 bg-[#CAFFCF] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition
+                    disabled:opacity-40 disabled:cursor-not-allowed">
             <img src="assets/icons/agregar.svg" alt="Agregar Ingreso" class="w-8 h-8">
             Ingreso
         </button>
 
         <button (click)="abrirModalGasto()"
-            class="flex items-center gap-4 bg-[#FFC8C8] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-16 py-4 rounded-xl shadow hover:scale-105 transition">
+            class="flex items-center gap-4 bg-[#FFC8C8] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition">
             <img src="assets/icons/agregar.svg" alt="Agregar Ingreso" class="w-8 h-8">
             Gasto
         </button>
@@ -193,4 +206,13 @@
         (actualizar)="actualizarHistorial($event)">
     </app-modal-ag-gasto>
 }
+
+<!-- Modal para abrir la caja -->
+@if (modalMontoInicial()) {
+    <app-modal-monto-inicial
+        (aceptar)="abrirCaja($event)"
+        (cerrar)="modalMontoInicial.set(false)">
+    </app-modal-monto-inicial>
+}
+
 

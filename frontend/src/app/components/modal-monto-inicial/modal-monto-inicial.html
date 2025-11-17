@@ -1,0 +1,45 @@
+<div class="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+    <div class="w-[500px] bg-white rounded-[20px] relative p-6 shadow-xl">
+        <!-- Encabezado -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <img src="assets/icons/caja-mi.svg" alt="icono-eliminar" class="w-12 h-12" />
+            
+                <h2 class="text-3xl font-semibold text-black">Abrir Caja</h2>
+            </div>
+        </div>
+
+        <!-- Mensaje -->
+        <p class="text-left text-xl font-light mb-4">Por favor ingrese el monto inicial o fondo:</p>
+            
+        <div class="relative mb-10">
+            <span class="absolute left-3 top-3 text-gray-600 text-xl">$</span>
+            <input 
+                type="number" 
+                [(ngModel)] = "monto"
+                placeholder="Monto del gasto" 
+                required  
+                min="1"
+                class="w-full h-14 text-xl border border-gray-300 bg-zinc-300/30 rounded-lg pl-7 p-2 focus:ring-2 focus:ring-[#545454] focus:outline-none" 
+            />
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 mt-8">
+            <button
+                (click)="volver()"
+                class="w-36 h-12 bg-neutral-600 hover:bg-neutral-700 rounded-lg text-white text-xl font-semibold tracking-wider"
+            >
+                Volver
+            </button>
+
+            <button
+                (click)="continuar()"
+                class="w-44 h-12 bg-[#C3F2F3] hover:bg-[#B4DBDD] rounded-lg text-[#545454] text-xl font-semibold tracking-wider"
+            >
+                Continuar
+            </button>
+        </div>
+    </div>
+</div>
+
