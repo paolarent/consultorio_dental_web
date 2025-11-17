@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PrismaService } from 'prisma/prisma.service';
 import { CreatePacienteDto } from '../paciente/dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
+import { Status } from 'src/common/enums';
 
 @Injectable()
 export class PacienteService {
@@ -146,5 +147,32 @@ export class PacienteService {
             data: { ...data },
         });
     }
+
+    async buscarPacientes(id_consultorio: number, q: string) {
+        if (!q || q.trim() === '') {
+            // devolver lista vacía para evitar problemas
+            return [];
+        }
+
+        return this.prisma.paciente.findMany({
+            where: {
+                id_consultorio,
+                status: Status.ACTIVO,
+                OR: [
+                    { nombre: { contains: q, mode: 'insensitive' } },
+                    { apellido1: { contains: q, mode: 'insensitive' } },
+                    { apellido2: { contains: q, mode: 'insensitive' } },
+                ]
+            },
+            select: {
+                id_paciente: true,
+                nombre: true,
+                apellido1: true,
+                apellido2: true
+            },
+            orderBy: { apellido1: 'asc' }
+        });
+    }
+
 
 }

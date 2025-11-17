@@ -5,7 +5,7 @@ import { FilterIngresosDto } from './dto/filtro-ingreso.dto';
 import { AbonarIngresoDto } from './dto/abonar-ingreso.dto';
 import { CreateCorteDto } from './dto/create-corte-caja.dto';
 import { CloseCorteDto } from './dto/close-corte-caja.dto';
-import { StatusIngreso, StatusDetIngreso, StatusPagIngreso } from 'src/common/enums';
+import { StatusIngreso, StatusDetIngreso, StatusPagIngreso, Status } from 'src/common/enums';
 import { Decimal } from '@prisma/client/runtime/library';
 import { UpdateIngresoDto } from './dto/update-ingreso.dto';
 
@@ -15,6 +15,16 @@ export class IngresoService {
 
     private fechaHoyString() {
         return new Date().toISOString().slice(0, 10);
+    }
+
+    async listarFormasPago() {
+        return this.prisma.metodo_pago.findMany({
+            where: { status: Status.ACTIVO },
+            select: {
+                id_metodo_pago: true,
+                nombre: true
+            }
+        });
     }
 
     // ==========================

@@ -23,4 +23,14 @@ export class IngresoService {
     cerrarCorte(): Observable<any> {
         return this.http.post(`${this.baseUrl}/corte/cerrar`, {}, { withCredentials: true });
     }
+
+    // CREAR INGRESO
+    crearIngreso(dto: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}`, dto, { withCredentials: true });
+    }
+
+    listarMetodosPago(): Observable<{ id_metodo_pago: number; nombre: string }[]> {
+            return this.http.get<{ id_metodo_pago: number; nombre: string }[]>(`${this.baseUrl}/formas-de-pago`, { withCredentials: true }
+        );
+    }
 }

@@ -25,6 +25,7 @@
         </button>
 
         <button
+            (click)="abrirModalIngreso()"
             [disabled]="ingresoDisabled"
             class="flex items-center gap-4 bg-[#CAFFCF] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition
                     disabled:opacity-40 disabled:cursor-not-allowed">
@@ -214,5 +215,13 @@
         (cerrar)="modalMontoInicial.set(false)">
     </app-modal-monto-inicial>
 }
+
+@if (modalAgIngreso()) {
+    <app-modal-ag-ingreso
+        (cerrar)="cerrarModalIngreso()"
+        (crear)="crearIngreso($event)">
+    </app-modal-ag-ingreso>
+}
+
 
 

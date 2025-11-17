@@ -19,4 +19,9 @@ export class PacienteService {
     updatePaciente(id: number, data: UpdatePaciente): Observable<UpdatePaciente> {
         return this.http.patch<UpdatePaciente>(`${this.baseUrl}/${id}`, data, { withCredentials: true });
     }
+
+    buscarPacientes(q: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/buscar?q=${q}`, { withCredentials: true });
+    }
+
 }

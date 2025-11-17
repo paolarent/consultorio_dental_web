@@ -13,14 +13,20 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 
 
 @Controller('ingresos')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class IngresoController {
     constructor(private readonly ingresoService: IngresoService) {}
+
+    @Get('formas-de-pago')
+    //@Public()
+    listarTipos() {
+        return this.ingresoService.listarFormasPago();
+    }
 
     // ---------------------------------------------------------
     // CREATE INGRESO COMPLETO
     // ---------------------------------------------------------
     @Post()
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     create(@Body() dto: CreateIngresoDto, @Req() req) {
         return this.ingresoService.create(
@@ -37,6 +43,7 @@ export class IngresoController {
         return this.ingresoService.findAll(filtro);
     }*/
     @Get()
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     findAll(@Req() req) {
         return this.ingresoService.findAll(req.user.id_consultorio);
@@ -46,6 +53,7 @@ export class IngresoController {
     // OBTENER UN INGRESO
     // ---------------------------------------------------------
     @Get(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     findOne(@Param('id') id: number, @Req() req) {
         return this.ingresoService.findOne(+id, req.user.id_consultorio);
@@ -55,6 +63,7 @@ export class IngresoController {
     // ACTUALIZAR INGRESO (solo notas, paciente, consultorio)
     // ---------------------------------------------------------
     @Patch(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     update(@Param('id') id: number, @Body() dto: UpdateIngresoDto, @Req() req) {
         return this.ingresoService.update(+id, dto, req.user.id_consultorio);
@@ -64,6 +73,7 @@ export class IngresoController {
     // CANCELAR INGRESO
     // ---------------------------------------------------------
     @Patch(':id/cancelar')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     cancelar(
     @Param('id') id: string, @Req() req: any,) {
@@ -74,6 +84,7 @@ export class IngresoController {
     // ABONAR INGRESO
     // ---------------------------------------------------------
     @Post(':id/abonar')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     abonar(@Param('id') id: string, @Body() dto: AbonarIngresoDto, @Req() req: any) {
         return this.ingresoService.abonar(+id, dto, req.user.id_consultorio);
@@ -87,6 +98,7 @@ export class IngresoController {
     // ABRIR CORTE
     // ---------------------------------------------------------
     @Post('corte/abrir')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     abrirCorte(@Body() dto: CreateCorteDto, @Req() req) {
         return this.ingresoService.abrirCorte(
@@ -100,6 +112,7 @@ export class IngresoController {
     // CERRAR CORTE (PREGUNTARLE A MI MAMA SI SERIA BUENA IDEA CALCULARLO O PARA CONTROL INGRESARLO )
     // ---------------------------------------------------------
     @Post('corte/cerrar')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     cerrarCorte(@Req() req) {
         return this.ingresoService.cerrarCorte(
@@ -114,6 +127,7 @@ export class IngresoController {
     // OBTENER CORTE ABIERTO
     // ---------------------------------------------------------
     @Get('corte/abierto')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     obtenerCorteAbierto(@Req() req) {
         return this.ingresoService.obtenerCorteAbierto(req.user.id_consultorio);
@@ -123,6 +137,7 @@ export class IngresoController {
     // OBTENER CORTE DEL DÍA
     // ---------------------------------------------------------
     @Get('corte/dia')
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     obtenerCorteDelDia(@Req() req) {
         return this.ingresoService.obtenerCorteDelDia(req.user.id_consultorio);

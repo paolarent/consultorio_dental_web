@@ -4,15 +4,19 @@ import { EgresoService } from '../../services/gasto-egreso.service';
 import { DecimalPipe } from '@angular/common';
 import { IngresoService } from '../../services/ingreso.service';
 import { ModalMontoInicial } from '../modal-monto-inicial/modal-monto-inicial';
+import { ModalAgIngreso } from '../modal-ag-ingreso/modal-ag-ingreso';
+import { ModalAgAbono } from '../modal-ag-abono/modal-ag-abono';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-finanzas',
-  imports: [ModalAgGasto, DecimalPipe, ModalMontoInicial],
+  imports: [ModalAgGasto, DecimalPipe, ModalMontoInicial, ModalAgIngreso],
   templateUrl: './finanzas.html',
   styleUrl: './finanzas.css'
 })
 export class Finanzas implements OnInit{
   private egresoService = inject(EgresoService);
+  private notify = inject(NotificationService)
   constructor(private ingresoService: IngresoService) {}
 
   totalGastos: number = 0;
@@ -26,6 +30,7 @@ export class Finanzas implements OnInit{
   // Señales
   modalGastoAbierto = signal(false);
   modalMontoInicial = signal(false);
+  modalAgIngreso = signal(false);
 
 
   ngOnInit(): void {
@@ -129,4 +134,26 @@ export class Finanzas implements OnInit{
     this.cerrarModalGasto();
     // Aquí puedes actualizar la lista de gastos en tu historial
   }
+
+  abrirModalIngreso() {
+      this.modalAgIngreso.set(true);
+  }
+
+  cerrarModalIngreso() {
+      this.modalAgIngreso.set(false);
+  }
+
+  crearIngreso(dto: any) {
+    this.ingresoService.crearIngreso(dto).subscribe({
+        next: (resp) => {
+            this.notify.success("Ingreso registrado correctamente");
+            this.cerrarModalIngreso();
+            this.actualizarHistorial(resp); // si quieres refrescar datos
+        },
+        error: (err) => {
+            this.notify.error(err.error?.message ?? "Error al registrar ingreso");
+        }
+    });
+  }
+
 }

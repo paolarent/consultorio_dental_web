@@ -33,6 +33,21 @@ export class ServicioService {
         });
     }
 
+    async listarServicios(id_consultorio: number) {
+        return this.prisma.servicio.findMany({
+            where: {
+                status: Status.ACTIVO,
+                id_consultorio: id_consultorio
+            },
+            select: {
+                id_servicio: true,
+                nombre: true,
+                tipo_cobro: true
+            }
+        });
+    }
+
+
     //Creacion un servicio
     async createServicio(dto: CreateServicioDto, file: Express.Multer.File) {
         if (!file) throw new Error('La imagen es obligatoria');
