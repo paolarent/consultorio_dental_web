@@ -47,8 +47,8 @@ export class IngresoService {
         });
     }
 
-    async cerrarCorte(dto: CloseCorteDto) {
-        const corte = await this.obtenerCorteAbierto(dto.id_consultorio);
+    async cerrarCorte(id_consultorio: number, usuario_cierre: number) {
+        const corte = await this.obtenerCorteAbierto(id_consultorio);
         if (!corte) throw new BadRequestException('No hay corte abierto.');
 
         const fechaDesde = corte.fecha_apertura;
@@ -56,8 +56,9 @@ export class IngresoService {
 
         const ingresos = await this.prisma.ingreso.findMany({
             where: {
-                id_consultorio: dto.id_consultorio,
+                id_consultorio,
                 fecha: { gte: fechaDesde, lte: fechaHasta },
+                status: { notIn: [StatusIngreso.CANCELADO, StatusIngreso.REEMBOLSADO] }
             },
             include: { pago_ingreso: true },
         });
@@ -66,25 +67,26 @@ export class IngresoService {
         let pagosTot = new Decimal(0);
 
         for (const ing of ingresos) {
-            ingresosTot = ingresosTot.plus(new Decimal(ing.monto_total as any));
+            ingresosTot = ingresosTot.plus(new Decimal(ing.monto_total));
 
             const pagosConfirmados = ing.pago_ingreso
                 .filter((p) => p.status === StatusPagIngreso.CONFIRMADO)
-                .reduce((acc, p) => acc.plus(new Decimal(p.monto as any)), new Decimal(0));
+                .reduce((acc, p) => acc.plus(new Decimal(p.monto)), new Decimal(0));
 
             pagosTot = pagosTot.plus(pagosConfirmados);
         }
 
         // Si no viene monto_cierre, lo calculamos como la suma de ingresos
-        const montoCierre = dto.monto_cierre !== undefined ? new Decimal(dto.monto_cierre) : ingresosTot;
+        //const montoCierre = dto.monto_cierre !== undefined ? new Decimal(dto.monto_cierre) : ingresosTot;
+        const montoCierre = new Decimal(corte.monto_apertura).plus(pagosTot);
 
-        const diferencia = pagosTot.minus(new Decimal(corte.monto_apertura as any));
+        const diferencia = montoCierre.minus(new Decimal(corte.monto_apertura));
 
         return this.prisma.corte_caja.update({
             where: { id_corte: corte.id_corte },
             data: {
                 fecha_cierre: new Date(),
-                usuario_cierre: dto.usuario_cierre,
+                usuario_cierre,
                 monto_cierre: montoCierre,
                 ingresos_totales: ingresosTot,
                 pagos_totales: pagosTot,
@@ -119,18 +121,41 @@ export class IngresoService {
             throw new BadRequestException('Debe haber al menos un detalle.');
         }
 
-        // calcular monto_total seguro (sumar subtotales)
-        const monto_total_num = dto.detalles.reduce((acc, d) => acc + Number(d.subtotal), 0);
-        const monto_total = new Decimal(monto_total_num);
+        //VALIDACIONES IMPORTANTES
+        // Validar cada detalle
+        for (const d of dto.detalles) {
+            if (d.cantidad <= 0) throw new BadRequestException('La cantidad debe ser mayor a cero.');
+            if (d.precio_unitario <= 0) throw new BadRequestException('El precio unitario debe ser mayor a cero.');
+            const subtotalEsperado = d.cantidad * d.precio_unitario;
+            if (Math.abs(subtotalEsperado - d.subtotal) > 0.01) {
+            throw new BadRequestException('El subtotal no coincide con cantidad * precio unitario.');
+            }
+        }
+
+        // Calcular monto total como suma de subtotales de los detalles
+        const monto_total = new Decimal(
+            dto.detalles.reduce((acc, d) => acc + Number(d.subtotal), 0)
+        );
 
         // calcular total de pagos inicial
         const totalPagos = dto.pagos?.reduce((acc, p) => acc + Number(p.monto), 0) ?? 0;
+
+        if (totalPagos > monto_total.toNumber()) {
+            throw new BadRequestException('La suma de pagos no puede exceder el monto total.');
+        }
+
+        if (dto.pagos) {
+            for (const p of dto.pagos) {
+            if (p.monto <= 0) throw new BadRequestException('Cada pago debe tener un monto mayor a cero.');
+            if (!p.id_metodo_pago) throw new BadRequestException('Cada pago debe tener un método de pago.');
+            }
+        }
 
         // definir status
         let status: StatusIngreso = StatusIngreso.PENDIENTE;
         if (totalPagos >= monto_total.toNumber()) {
             status = StatusIngreso.PAGADO;
-        } else if (totalPagos > 0 && totalPagos < monto_total.toNumber()) {
+        } else if (totalPagos > 0) {
             status = StatusIngreso.PARCIAL;
         }
 
@@ -154,7 +179,7 @@ export class IngresoService {
                 },
 
                 pago_ingreso:
-                    dto.pagos?.length > 0
+                    dto.pagos?.length
                         ?   {
                                 create: dto.pagos.map((p) => ({
                                     id_metodo_pago: p.id_metodo_pago,
@@ -164,6 +189,7 @@ export class IngresoService {
                                 })),
                             }
                         : undefined,
+                        
             },
 
             include: {
@@ -232,12 +258,14 @@ export class IngresoService {
             throw new BadRequestException('No se puede abonar un ingreso ya pagado.');
         }
 
+        if (dto.monto <= 0) throw new BadRequestException('El monto del abono debe ser mayor a cero.');
+        if (!dto.id_metodo_pago) throw new BadRequestException('Debe seleccionar un método de pago.');
+
         const totalPagado = ingreso.pago_ingreso
             .filter((p) => p.status === StatusPagIngreso.CONFIRMADO)
             .reduce((acc, p) => acc + Number(p.monto), 0);
 
         const pendiente = Number(ingreso.monto_total) - totalPagado;
-
         if (dto.monto > pendiente) {
             throw new BadRequestException('El abono supera el pendiente.');
         }

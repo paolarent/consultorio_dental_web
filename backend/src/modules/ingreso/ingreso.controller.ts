@@ -101,13 +101,13 @@ export class IngresoController {
     // ---------------------------------------------------------
     @Post('corte/cerrar')
     @Roles(Rol.DENTISTA)
-    cerrarCorte(@Body('monto_cierre') monto_cierre: number, @Req() req) {
-        return this.ingresoService.cerrarCorte({
-            id_consultorio: req.user.id_consultorio,
-            usuario_cierre: req.user.id_usuario,
-            monto_cierre,
-        });
+    cerrarCorte(@Req() req) {
+        return this.ingresoService.cerrarCorte(
+            req.user.id_consultorio,
+            req.user.id_usuario
+        );
     }
+
 
 
     // ---------------------------------------------------------
