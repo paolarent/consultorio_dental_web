@@ -27,7 +27,17 @@ export class ModalAgIngreso implements AfterViewInit {
   @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
 
   tiposServicio: { id_servicio: number; nombre: string }[] = [];
+  metodosPago: { id_metodo_pago: number; nombre: string }[] = [];
+  // Toggle para dividir pago
+  dividirPago: boolean = false;
 
+  // Array dinámico de pagos divididos
+  pagosDivididos: { id_metodo_pago: number | null; monto: number | null }[] = [
+    { id_metodo_pago: null, monto: null },
+    { id_metodo_pago: null, monto: null }
+  ]; // inicial mínimo 2
+  
+  id_metodo_pago: number | null = null;
   id_servicio: number | null = null;
   servicioSeleccionado: any = null;
   cantidad: number | null = null;
@@ -44,6 +54,7 @@ export class ModalAgIngreso implements AfterViewInit {
 
   ngOnInit(): void {
     this.cargarServicios();
+    this.cargarMetodosPago();
   }
 
   ngAfterViewInit() {
@@ -132,9 +143,51 @@ export class ModalAgIngreso implements AfterViewInit {
       this.mostrarLista = false;
     }
   }
+  
+  cargarMetodosPago() {
+    this.ingresoService.listarMetodosPago().subscribe({
+      next: (res) => this.metodosPago = res,
+      error: (err) => console.error("Error al cargar métodos de pago", err)
+    });
+  }
 
   cancelar(): void {
     this.cerrar.emit();
+  }
+
+  //-----------------------DIVIDIR PAGO---------------------
+  toggleDividirPago() {
+    this.dividirPago = !this.dividirPago;
+
+    if (this.dividirPago) {
+      // Activando dividir pago: iniciar con mínimo 2 pagos vacíos
+      this.pagosDivididos = [
+        { id_metodo_pago: null, monto: null },
+        { id_metodo_pago: null, monto: null }
+      ];
+    } else {
+      // Desactivando dividir pago: resetear campos al estado inicial
+      this.id_metodo_pago = null;
+      this.monto = '';
+      
+      // Restaurar array de pagos divididos a estado inicial mínimo (opcional)
+      this.pagosDivididos = [
+        { id_metodo_pago: null, monto: null },
+        { id_metodo_pago: null, monto: null }
+      ];
+    }
+  }
+
+  agregarPago() {
+    if (this.pagosDivididos.length < 4) {
+      this.pagosDivididos.push({ id_metodo_pago: null, monto: null });
+    }
+  }
+
+  eliminarPago(index: number) {
+    if (this.pagosDivididos.length > 2) {
+      this.pagosDivididos.splice(index, 1);
+    }
   }
 
 }

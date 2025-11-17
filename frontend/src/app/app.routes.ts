@@ -18,7 +18,13 @@ import { Finanzas } from './components/finanzas/finanzas';
 import { Eventos } from './components/eventos/eventos';
 
 export const routes: Routes = [
-    { 
+    {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full'  // muy importante
+    },
+
+    {
         path: 'login', 
         component: Login, // layout/page
         children: [
@@ -57,7 +63,7 @@ export const routes: Routes = [
     
     {
         path: '**',
-        redirectTo: '' // fallback
+        redirectTo: 'login' // cualquier ruta inválida también va a login
     }
     
 ];

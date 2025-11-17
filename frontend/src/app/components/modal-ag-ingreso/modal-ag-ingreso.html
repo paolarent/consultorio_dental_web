@@ -126,6 +126,87 @@
                 </div>
             </div>
 
+            <!-- Toggle varios metodos de pago -->
+            <!-- Toggle dividir pago -->
+            <div class="flex items-center gap-4 mt-1 mb-4">
+                <label class="text-base font-medium text-[#545454]">
+                    Dividir pago en más de un método
+                </label>
+
+                <button
+                    (click)="toggleDividirPago()"
+                    class="relative rounded-full transition"
+                >
+                    @if (dividirPago) {
+                        <img src="assets/icons/on_switch.svg" class="w-16 h-10" />
+                    } @else {
+                        <img src="assets/icons/off_switch.svg" class="w-16 h-10" />
+                    }
+                </button>
+            </div>
+
+            <!-- Condicional: un solo método -->
+            @if (!dividirPago) {
+            <div>
+                <label class="block text-base font-medium text-[#545454] mb-1">
+                    Método de Pago
+                </label>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-select placeholder="Seleccione método de pago" [(ngModel)]="id_metodo_pago" required>
+                        @for (metodo of metodosPago; track metodo.id_metodo_pago) {
+                            <mat-option [value]="metodo.id_metodo_pago">
+                                {{ metodo.nombre }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            }
+
+            <!-- Condicional: pagos divididos -->
+            @if (dividirPago) {
+            <div class="mb-6 space-y-4">
+                @for (pago of pagosDivididos; track pago) {
+                <div class="flex gap-4 items-stretch">
+                    <!-- Select método -->
+                    <mat-form-field appearance="outline" class="flex-1 h-12">
+                        <mat-select placeholder="Método {{$index + 1}}" [(ngModel)]="pago.id_metodo_pago" required>
+                            @for (metodo of metodosPago; track metodo.id_metodo_pago) {
+                            <mat-option [value]="metodo.id_metodo_pago">
+                                {{ metodo.nombre }}
+                            </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+
+                    <!-- Input monto -->
+                    <div class="relative flex-1">
+                        <span class="absolute left-3 top-3 text-gray-600">$</span>
+                        <input type="number" placeholder="Monto" min="1" [(ngModel)]="pago.monto"
+                            class="w-40 h-12 border border-gray-300 bg-zinc-300/30 rounded-lg pl-7 p-2 focus:ring-2 focus:ring-[#0d9488] focus:outline-none" />
+                    </div>
+
+                    <!-- Botón eliminar -->
+                    @if (pagosDivididos.length > 2) {
+                        <button (click)="eliminarPago($index)"
+                            class="p-2 h-12 bg-red-600 rounded-xl text-white font-semibold hover:bg-red-700">
+                            <img src="assets/icons/trash.svg" class="w-8 h-8" />
+                        </button>
+                    }
+                </div>
+                }
+                    <!-- Botón agregar -->
+                    @if (pagosDivididos.length < 4) {
+                    <button (click)="agregarPago()"
+                        class="mt-2 px-4 py-2 bg-[#C3F2F3] rounded-lg shadow font-semibold text-[#545454] hover:bg-[#25BEC4] hover:text-white">
+                        + Agregar
+                    </button>
+                    }
+                    <div class="text-sm text-gray-600 mt-1">Min. 2, Max. 4</div>
+                </div>
+            }
+
 
             <!-- Fecha -->
             <div class="mb-6">
