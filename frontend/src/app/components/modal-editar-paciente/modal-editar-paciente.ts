@@ -217,6 +217,7 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
         this.notify.warning('Las contraseñas no coinciden.');
         return;
       }
+
       observables.push(
         this.usuarioService.updateContrasena(
           this.contrasenaActual,
@@ -237,6 +238,12 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
           })
         )
       );
+    }
+
+     // **Si no hay observables, igual emitimos el cambio de datos**
+    if (observables.length === 0) {
+      this.actualizar.emit({ ...this.paciente, id_paciente: this.paciente.id_paciente });
+      return;
     }
 
     // Ejecuta todos los cambios y solo si hay éxito, emite al componente padre
