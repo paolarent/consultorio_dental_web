@@ -5,9 +5,10 @@ import { FilterIngresosDto } from './dto/filtro-ingreso.dto';
 import { AbonarIngresoDto } from './dto/abonar-ingreso.dto';
 import { CreateCorteDto } from './dto/create-corte-caja.dto';
 import { CloseCorteDto } from './dto/close-corte-caja.dto';
-import { StatusIngreso, StatusDetIngreso, StatusPagIngreso, Status } from 'src/common/enums';
+import { StatusIngreso, StatusDetIngreso, StatusPagIngreso, Status, StatusEgreso } from 'src/common/enums';
 import { Decimal } from '@prisma/client/runtime/library';
 import { UpdateIngresoDto } from './dto/update-ingreso.dto';
+
 
 @Injectable()
 export class IngresoService {
@@ -44,7 +45,12 @@ export class IngresoService {
         const existe = await this.obtenerCorteAbierto(id_consultorio);
         if (existe) throw new BadRequestException('Ya existe un corte abierto.');
 
-        const fecha_apertura = dto.fecha_apertura ? new Date(dto.fecha_apertura) : new Date();
+        // --- AJUSTE DE FECHA SIN LIBRERÍAS ---
+        const ahora = new Date();
+        const offset = -6; // Ciudad de México UTC-6 (ajustar según horario real)
+        const fechaLocal = new Date(ahora.getTime() + offset * 60 * 60 * 1000);
+
+        const fecha_apertura = dto.fecha_apertura ? new Date(dto.fecha_apertura) : fechaLocal;
 
         return this.prisma.corte_caja.create({
             data: {
@@ -61,49 +67,23 @@ export class IngresoService {
         const corte = await this.obtenerCorteAbierto(id_consultorio);
         if (!corte) throw new BadRequestException('No hay corte abierto.');
 
-        const fechaDesde = corte.fecha_apertura;
-        const fechaHasta = new Date();
-
-        const ingresos = await this.prisma.ingreso.findMany({
-            where: {
-                id_consultorio,
-                fecha: { gte: fechaDesde, lte: fechaHasta },
-                status: { notIn: [StatusIngreso.CANCELADO, StatusIngreso.REEMBOLSADO] }
-            },
-            include: { pago_ingreso: true },
-        });
-
-        let ingresosTot = new Decimal(0);
-        let pagosTot = new Decimal(0);
-
-        for (const ing of ingresos) {
-            ingresosTot = ingresosTot.plus(new Decimal(ing.monto_total));
-
-            const pagosConfirmados = ing.pago_ingreso
-                .filter((p) => p.status === StatusPagIngreso.CONFIRMADO)
-                .reduce((acc, p) => acc.plus(new Decimal(p.monto)), new Decimal(0));
-
-            pagosTot = pagosTot.plus(pagosConfirmados);
-        }
-
-        // Si no viene monto_cierre, lo calculamos como la suma de ingresos
-        //const montoCierre = dto.monto_cierre !== undefined ? new Decimal(dto.monto_cierre) : ingresosTot;
-        const montoCierre = new Decimal(corte.monto_apertura).plus(pagosTot);
-
-        const diferencia = montoCierre.minus(new Decimal(corte.monto_apertura));
+        const montoCierre = new Decimal(corte.monto_apertura)
+            .plus(corte.pagos_totales || 0)
+            .minus(corte.egresos_totales || 0);
+        const diferencia = montoCierre.minus(corte.monto_apertura);
 
         return this.prisma.corte_caja.update({
             where: { id_corte: corte.id_corte },
             data: {
-                fecha_cierre: new Date(),
-                usuario_cierre,
-                monto_cierre: montoCierre,
-                ingresos_totales: ingresosTot,
-                pagos_totales: pagosTot,
-                diferencia,
-            },
+            fecha_cierre: new Date(),
+            usuario_cierre,
+            monto_cierre: montoCierre,
+            diferencia
+            }
         });
     }
+
+
 
     async obtenerCorteDelDia(id_consultorio: number) {
         const inicio = new Date();
@@ -169,44 +149,62 @@ export class IngresoService {
             status = StatusIngreso.PARCIAL;
         }
 
-        return this.prisma.ingreso.create({
-            data: {
-                id_paciente: dto.id_paciente,
-                id_consultorio,
-                monto_total,
-                fecha: new Date(),
-                notas: dto.notas ?? '',
-                status: status,
+        // --- AJUSTE DE FECHA SIN LIBRERÍAS ---
+        const ahora = new Date();
 
-                detalle_ingreso: {
-                    create: dto.detalles.map((d) => ({
-                        id_servicio: d.id_servicio,
-                        cantidad: d.cantidad,
-                        precio_unitario: new Decimal(d.precio_unitario),
-                        subtotal: new Decimal(d.subtotal),
-                        status: StatusDetIngreso.ACTIVO,
+        // Ajustar a Ciudad de México (UTC-6 estándar / UTC-5 horario de verano)
+        const offset = -6; // ajusta según horario real
+        const fechaLocal = new Date(
+            ahora.getTime() + offset * 60 * 60 * 1000
+        );
+
+        // Crear ingreso y guardar resultado
+        const ingresoCreado = await this.prisma.ingreso.create({
+        data: {
+            id_paciente: dto.id_paciente,
+            id_consultorio,
+            monto_total,
+            fecha: fechaLocal,
+            notas: dto.notas ?? '',
+            status,
+
+            detalle_ingreso: {
+            create: dto.detalles.map((d) => ({
+                id_servicio: d.id_servicio,
+                cantidad: d.cantidad,
+                precio_unitario: new Decimal(d.precio_unitario),
+                subtotal: new Decimal(d.subtotal),
+                status: StatusDetIngreso.ACTIVO,
+            })),
+            },
+
+            pago_ingreso:
+            dto.pagos?.length
+                ? {
+                    create: dto.pagos.map((p) => ({
+                    id_metodo_pago: p.id_metodo_pago,
+                    monto: new Decimal(p.monto),
+                    referencia: p.referencia ?? '',
+                    status: p.status ?? StatusPagIngreso.CONFIRMADO,
                     })),
-                },
-
-                pago_ingreso:
-                    dto.pagos?.length
-                        ?   {
-                                create: dto.pagos.map((p) => ({
-                                    id_metodo_pago: p.id_metodo_pago,
-                                    monto: new Decimal(p.monto),
-                                    referencia: p.referencia ?? '',
-                                    status: p.status ?? StatusPagIngreso.CONFIRMADO,
-                                })),
-                            }
-                        : undefined,
-                        
-            },
-
-            include: {
-                detalle_ingreso: true,
-                pago_ingreso: true,
-            },
+                }
+                : undefined,
+        },
+            include: { detalle_ingreso: true, pago_ingreso: true },
         });
+
+        // --- ACTUALIZAR CORTE ---
+        await this.prisma.corte_caja.update({
+        where: { id_corte: corte.id_corte },
+        data: {
+            ingresos_totales: new Decimal(corte.ingresos_totales || 0).plus(monto_total),
+            pagos_totales: new Decimal(corte.pagos_totales || 0).plus(totalPagos),
+            diferencia: new Decimal(corte.diferencia || 0).plus(totalPagos)
+        }
+        });
+
+        // --- RETORNAR EL INGRESO CREADO ---
+        return ingresoCreado;
     }
 
     async findAll(id_consultorio: number) {

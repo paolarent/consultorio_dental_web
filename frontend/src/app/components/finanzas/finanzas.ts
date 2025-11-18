@@ -25,6 +25,7 @@ export class Finanzas implements OnInit{
   corteAbierto: any = null;   // guarda el corte abierto
   btnCajaTexto: string = 'Abrir Caja';
   ingresoDisabled: boolean = true;
+  egresoDisabled: boolean = true;
 
   //MODALES
   // Señales
@@ -67,9 +68,11 @@ export class Finanzas implements OnInit{
     if (this.corteAbierto) {
       this.btnCajaTexto = 'Cerrar Caja';
       this.ingresoDisabled = false;
+      this.egresoDisabled = false;
     } else {
       this.btnCajaTexto = 'Abrir Caja';
       this.ingresoDisabled = true;
+      this.egresoDisabled =  true;
     }
   }
 
@@ -120,7 +123,19 @@ export class Finanzas implements OnInit{
 
   // Abrir modal
   abrirModalGasto() {
+    if (!this.corteAbierto) {
+      this.notify.error("Debes abrir la caja antes de registrar un gasto.");
+      return;
+    }
     this.modalGastoAbierto.set(true);
+  }
+
+  abrirModalIngreso() {
+    if (!this.corteAbierto) {
+      this.notify.error("Debes abrir la caja antes de registrar un ingreso.");
+      return;
+    }
+    this.modalAgIngreso.set(true);
   }
 
   // Cerrar modal
@@ -135,9 +150,6 @@ export class Finanzas implements OnInit{
     // Aquí puedes actualizar la lista de gastos en tu historial
   }
 
-  abrirModalIngreso() {
-      this.modalAgIngreso.set(true);
-  }
 
   cerrarModalIngreso() {
       this.modalAgIngreso.set(false);

@@ -34,8 +34,10 @@
         </button>
 
         <button (click)="abrirModalGasto()"
-            class="flex items-center gap-4 bg-[#FFC8C8] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition">
-            <img src="assets/icons/agregar.svg" alt="Agregar Ingreso" class="w-8 h-8">
+            [disabled]="egresoDisabled"
+            class="flex items-center gap-4 bg-[#FFC8C8] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition
+                    disabled:opacity-40 disabled:cursor-not-allowed">
+            <img src="assets/icons/agregar.svg" alt="Agregar Gasto" class="w-8 h-8">
             Gasto
         </button>
     </div>
