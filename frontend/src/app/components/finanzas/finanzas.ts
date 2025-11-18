@@ -1,16 +1,20 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ModalAgGasto } from "../modal-ag-gasto/modal-ag-gasto";
 import { EgresoService } from '../../services/gasto-egreso.service';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, DatePipe, CurrencyPipe } from '@angular/common';
 import { IngresoService } from '../../services/ingreso.service';
 import { ModalMontoInicial } from '../modal-monto-inicial/modal-monto-inicial';
 import { ModalAgIngreso } from '../modal-ag-ingreso/modal-ag-ingreso';
 import { ModalAgAbono } from '../modal-ag-abono/modal-ag-abono';
 import { NotificationService } from '../../services/notification.service';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-finanzas',
-  imports: [ModalAgGasto, DecimalPipe, ModalMontoInicial, ModalAgIngreso],
+  imports: [FormsModule, ModalAgGasto, DecimalPipe, ModalMontoInicial, ModalAgIngreso, DatePipe, MatFormFieldModule, MatSelectModule, MatOptionModule],
   templateUrl: './finanzas.html',
   styleUrl: './finanzas.css'
 })
@@ -21,6 +25,16 @@ export class Finanzas implements OnInit{
 
   totalGastos: number = 0;
   totalGastosMes: number = 0;
+  totalIngresos: number = 0;
+  totalIngresosMes: number = 0;
+  gananciaMes: number = 0;
+  gananciaTotal: number = 0;
+  
+  historial: any[] = [];
+  filtroTipo: string = 'todos';
+  busqueda: string = '';
+  historialFiltrado: any[] = [];
+
 
   corteAbierto: any = null;   // guarda el corte abierto
   btnCajaTexto: string = 'Abrir Caja';
@@ -37,16 +51,51 @@ export class Finanzas implements OnInit{
   ngOnInit(): void {
     this.verificarCorte();
 
-    // cargar total de egresos del consultorio
+    // TOTAL GASTOS CONSULTORIO
     this.egresoService.totalGastos().subscribe({
-      next: (res) => this.totalGastos = res.total,
+      next: (res) => {
+        this.totalGastos = res.total;
+        this.gananciaTotal = this.totalIngresos - this.totalGastos; //GANANCIA TOTAL
+      },
       error: (err) => console.error('Error al cargar total de gastos', err)
     });
 
+    // TOTAL GASTOS MES
     this.egresoService.totalGastosMes().subscribe({
-      next: res => this.totalGastosMes = res.total,
+      next: res => {
+        this.totalGastosMes = res.total;
+        this.gananciaMes = this.totalIngresosMes - this.totalGastosMes; //GANANCIA MES
+      },
       error: err => console.error('Error al cargar gastos del mes', err)
     });
+
+    // TOTAL INGRESOS
+    this.ingresoService.totalIngresos().subscribe({
+      next: (res) => {
+        this.totalIngresos = res.total;
+        this.gananciaTotal = this.totalIngresos - this.totalGastos; //recalcular si ya estaban los gastos
+      },
+      error: err => console.error('Error al cargar total de ingresos', err)
+    });
+
+    // TOTAL INGRESOS MES
+    this.ingresoService.totalIngresosMes().subscribe({
+      next: res => {
+        this.totalIngresosMes = res.total;
+        this.gananciaMes = this.totalIngresosMes - this.totalGastosMes; //recalcular si ya estaban los gastos del mes
+      },
+      error: err => console.error('Error al cargar ingresos del mes', err)
+    });
+
+    // HISTORIAL FINANZAS
+    this.ingresoService.historialFinanzas().subscribe({
+      next: (res) => {
+        this.historial = res;
+        this.aplicarFiltros();
+      },
+      error: (err) => console.error('Error al cargar historial:', err)
+    });
+
   }
 
   // Revisar si hay corte abierto
@@ -147,7 +196,10 @@ export class Finanzas implements OnInit{
   actualizarHistorial(nuevoGasto: any) {
     console.log('Gasto agregado:', nuevoGasto);
     this.cerrarModalGasto();
-    // Aquí puedes actualizar la lista de gastos en tu historial
+    
+    this.ingresoService.historialFinanzas().subscribe({
+    next: (res) => this.historial = res
+  });
   }
 
 
@@ -167,5 +219,28 @@ export class Finanzas implements OnInit{
         }
     });
   }
+
+  aplicarFiltros() {
+    const texto = this.busqueda.toLowerCase();
+
+    this.historialFiltrado = this.historial.filter(item => {
+      
+      // FILTRO DE TIPO
+      if (this.filtroTipo !== 'todos' && item.tipo !== this.filtroTipo) {
+        return false;
+      }
+
+      // FILTRO DE BÚSQUEDA EN TÍTULO Y SUBTÍTULO
+      const titulo = item.titulo.toLowerCase();
+      const subtitulo = item.subtitulo.toLowerCase();
+
+      if (texto && !titulo.includes(texto) && !subtitulo.includes(texto)) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
 
 }

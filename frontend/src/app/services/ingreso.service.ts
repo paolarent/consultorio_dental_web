@@ -33,4 +33,18 @@ export class IngresoService {
             return this.http.get<{ id_metodo_pago: number; nombre: string }[]>(`${this.baseUrl}/formas-de-pago`, { withCredentials: true }
         );
     }
+
+    totalIngresos(): Observable<{ total: number }> {
+        return this.http.get<{ total: number }>(`${this.baseUrl}/total`, { withCredentials: true } // necesario si para las cookies para auth
+        );
+    }
+
+    totalIngresosMes(): Observable<{ total: number }> {
+        return this.http.get<{ total: number }>(`${this.baseUrl}/total-mes`, { withCredentials: true });
+    }
+
+    historialFinanzas(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/historial`, { withCredentials: true });
+    }
+
 }

@@ -36,8 +36,11 @@ export class EgresoService {
     async listarTiposGasto() {
         return this.prisma.tipo_egreso.findMany({
             select: {
-            id_tipo_egreso: true,
-            nombre: true
+                id_tipo_egreso: true,
+                nombre: true
+            },
+                orderBy: {
+                id_tipo_egreso: 'asc'
             }
         });
     }

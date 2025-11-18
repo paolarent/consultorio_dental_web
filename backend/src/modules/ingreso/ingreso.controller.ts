@@ -16,6 +16,34 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 export class IngresoController {
     constructor(private readonly ingresoService: IngresoService) {}
 
+    @Get('historial')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+        async historial(@Req() req) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.ingresoService.historialFinanzas(id_consultorio);
+    }
+
+
+    // ---------------------------------------------------------
+    // DASHBOARD MINI EN FINANZAS
+    // ---------------------------------------------------------
+    @Get('total')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+    async totalIngresos(@Req() req) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.ingresoService.totalIngresos(id_consultorio);
+    }
+
+    @Get('total-mes')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+    async totalIngresosMes(@Req() req) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.ingresoService.totalIngresosMensuales(id_consultorio);
+    }
+
     @Get('formas-de-pago')
     //@Public()
     listarTipos() {
@@ -49,15 +77,6 @@ export class IngresoController {
         return this.ingresoService.findAll(req.user.id_consultorio);
     }
 
-    // ---------------------------------------------------------
-    // OBTENER UN INGRESO
-    // ---------------------------------------------------------
-    @Get(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.DENTISTA)
-    findOne(@Param('id') id: number, @Req() req) {
-        return this.ingresoService.findOne(+id, req.user.id_consultorio);
-    }
 
     // ---------------------------------------------------------
     // ACTUALIZAR INGRESO (solo notas, paciente, consultorio)
@@ -142,4 +161,5 @@ export class IngresoController {
     obtenerCorteDelDia(@Req() req) {
         return this.ingresoService.obtenerCorteDelDia(req.user.id_consultorio);
     }
+
 }

@@ -8,6 +8,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { IngresoService } from '../../services/ingreso.service';
 import { ServicioService } from '../../services/servicio.service';
 import { PacienteService } from '../../services/paciente.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-modal-ag-ingreso',
@@ -22,6 +23,7 @@ export class ModalAgIngreso implements AfterViewInit {
   private ingresoService = inject(IngresoService);
   private servicioService = inject(ServicioService);
   private pacienteService = inject(PacienteService);
+  private notify = inject(NotificationService);
   private elementRef = inject(ElementRef);
 
   @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
@@ -267,12 +269,12 @@ export class ModalAgIngreso implements AfterViewInit {
 
     this.ingresoService.crearIngreso(dto).subscribe({
       next: res => {
-        alert('Ingreso creado correctamente');
+        this.notify.success('Ingreso agregado correctamente');
         this.cancelar();
       },
       error: err => {
         console.error(err);
-        alert('Ocurrió un error al crear el ingreso');
+        this.notify.error('Ocurrió un error al crear el ingreso');
       }
     });
   }

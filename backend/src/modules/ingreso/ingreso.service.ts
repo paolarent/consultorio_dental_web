@@ -305,4 +305,111 @@ export class IngresoService {
             data: { status: nuevoStatus },
         });
     }
+
+    async totalIngresos(id_consultorio: number) {
+        const result = await this.prisma.pago_ingreso.aggregate({
+            _sum: { monto: true },
+            where: {
+                ingreso: {
+                    id_consultorio: id_consultorio
+                },
+                status: StatusPagIngreso.CONFIRMADO
+            }
+        });
+
+        return { total: result._sum.monto || 0 };
+
+    }
+
+    async totalIngresosMensuales(id_consultorio: number) {
+        const inicioMes = new Date();
+        inicioMes.setDate(1);
+        inicioMes.setHours(0,0,0,0);
+
+        const finMes = new Date(inicioMes);
+        finMes.setMonth(finMes.getMonth() + 1);
+        finMes.setMilliseconds(-1);
+
+        const result = await this.prisma.pago_ingreso.aggregate({
+            _sum: { monto: true },
+            where: {
+                status: StatusPagIngreso.CONFIRMADO,
+                fecha_pago: {
+                    gte: inicioMes,
+                    lte: finMes
+                },
+                ingreso: {   
+                    id_consultorio: id_consultorio
+                }
+            }
+        });
+
+        return { total: result._sum.monto || 0 };
+    }
+
+    async historialFinanzas(id_consultorio: number) {
+        const ingresos = await this.prisma.ingreso.findMany({
+            where: {
+                id_consultorio,
+                status: StatusIngreso.PAGADO
+            },
+            select: {
+                id_ingreso: true,
+                fecha: true,
+                notas: true,
+                monto_total: true,
+                paciente: {
+                    select: {
+                        nombre: true,
+                        apellido1: true
+                    }
+                },
+                detalle_ingreso: {
+                    select: {
+                        servicio: { select: { nombre: true } }
+                    }
+                }
+            }
+        });
+
+        const egresos = await this.prisma.egreso.findMany({
+            where: {
+                id_consultorio,
+                status: StatusEgreso.REGISTRADO
+            },
+            select: {
+                id_egreso: true,
+                fecha: true,
+                monto: true,
+                descripcion: true,
+                tipo_egreso: {
+                    select: { nombre: true }
+                }
+            }
+        });
+
+        const formateados = [
+            ...ingresos.map(i => ({
+                tipo: "ingreso",
+                fecha: i.fecha,
+                monto: i.monto_total,
+                titulo: `${i.detalle_ingreso[0]?.servicio.nombre || "Servicio"} - ${i.paciente.nombre} ${i.paciente.apellido1}`,
+                subtitulo: i.notas || ""
+            })),
+
+            ...egresos.map(e => ({
+                tipo: "egreso",
+                fecha: e.fecha,
+                monto: e.monto,
+                titulo: e.descripcion,
+                subtitulo: e.tipo_egreso.nombre
+            }))
+        ];
+
+        formateados.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+
+        return formateados;
+    }
+
+
 }
