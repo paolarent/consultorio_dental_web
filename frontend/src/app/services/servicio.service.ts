@@ -27,9 +27,15 @@ export class ServicioService {
         return this.http.patch(`${this.baseUrl}/soft-delete/${id}`, {}, { withCredentials: true });
     }
 
-    listarServicios(): Observable<{ id_servicio: number; nombre: string }[]> {
-        return this.http.get<{ id_servicio: number; nombre: string }[]>(`${this.baseUrl}/tipos`, { withCredentials: true });
+    listarServicios(): Observable<{ 
+        id_servicio: number; 
+        nombre: string; 
+        precio_base: number; 
+        tipo_cobro?: string 
+    }[]> {
+        return this.http.get<{ id_servicio: number; nombre: string; precio_base: number; tipo_cobro?: string }[]>(`${this.baseUrl}/tipos`, { withCredentials: true });
     }
+
 
 }
 

@@ -26,17 +26,16 @@ export class ModalAgIngreso implements AfterViewInit {
 
   @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
 
-  tiposServicio: { id_servicio: number; nombre: string }[] = [];
+  tiposServicio: { id_servicio: number; nombre: string; precio_base: number; tipo_cobro?: string }[] = [];
+  
   metodosPago: { id_metodo_pago: number; nombre: string }[] = [];
-  // Toggle para dividir pago
-  dividirPago: boolean = false;
 
-  // Array dinámico de pagos divididos
+  dividirPago: boolean = false;
   pagosDivididos: { id_metodo_pago: number | null; monto: number | null }[] = [
     { id_metodo_pago: null, monto: null },
     { id_metodo_pago: null, monto: null }
-  ]; // inicial mínimo 2
-  
+  ];
+
   id_metodo_pago: number | null = null;
   id_servicio: number | null = null;
   servicioSeleccionado: any = null;
@@ -49,6 +48,9 @@ export class ModalAgIngreso implements AfterViewInit {
   tipoPago: 'total' | 'parcial' | null = null;
   montoAbono: number | null = null;
 
+  // Errores para mostrar en tiempo real
+  errorMontoAbono: string = '';
+  errorPagosDivididos: string = '';
 
   private fpInstance: any;
 
@@ -69,14 +71,13 @@ export class ModalAgIngreso implements AfterViewInit {
       dateFormat: 'Y-m-d',
       locale: Spanish,
       allowInput: true,
-      defaultDate: this.fecha || undefined, // en lugar de null
+      defaultDate: this.fecha || undefined,
       maxDate: new Date(),
       onChange: (selectedDates, dateStr) => {
         this.fecha = dateStr;
       }
     });
 
-    // Detecta si el usuario borra manualmente la fecha
     this.fechaInput.nativeElement.addEventListener('input', (event: any) => {
       this.fecha = event.target.value;
     });
@@ -91,16 +92,18 @@ export class ModalAgIngreso implements AfterViewInit {
 
   onServicioChange(id: number) {
     this.servicioSeleccionado = this.tiposServicio.find(s => s.id_servicio === id) ?? null;
+    this.calcularMonto();
   }
 
   seleccionarServicio(servicio: any) {
     this.id_servicio = servicio.id_servicio;
     this.servicioSeleccionado = servicio;
 
-    // Reiniciar cantidad si cambiamos de servicio
     if (servicio.tipo_cobro !== 'unidad_anatomica') {
       this.cantidad = null;
     }
+
+    this.calcularMonto();
   }
 
   // ---------------- PACIENTES ----------------
@@ -109,7 +112,6 @@ export class ModalAgIngreso implements AfterViewInit {
   id_paciente: number | null = null;
   mostrarLista = false;
 
-  // Llamar mientras escribe
   buscarPaciente() {
     if (this.busquedaPaciente.trim().length < 2) {
       this.pacientesFiltrados = [];
@@ -128,22 +130,18 @@ export class ModalAgIngreso implements AfterViewInit {
 
   seleccionarPaciente(pac: any) {
     this.id_paciente = pac.id_paciente;
-
-    // Construir nombre completo
     this.busquedaPaciente = `${pac.nombre} ${pac.apellido1} ${pac.apellido2 ?? ''}`.trim();
-
     this.mostrarLista = false;
-    this.pacientesFiltrados = []; // cerrar dropdown
+    this.pacientesFiltrados = [];
   }
 
-  // Cerrar dropdown al hacer clic fuera
   @HostListener('document:click', ['$event'])
   clickFuera(event: Event) {
     if (!this.elementRef.nativeElement.contains(event.target)) {
       this.mostrarLista = false;
     }
   }
-  
+
   cargarMetodosPago() {
     this.ingresoService.listarMetodosPago().subscribe({
       next: (res) => this.metodosPago = res,
@@ -151,26 +149,36 @@ export class ModalAgIngreso implements AfterViewInit {
     });
   }
 
-  cancelar(): void {
-    this.cerrar.emit();
+
+  calcularMonto() {
+  if (!this.servicioSeleccionado) {
+    this.monto = '';
+    return;
   }
+
+  const precio = Number(this.servicioSeleccionado?.precio_base || 0);
+
+  if (this.servicioSeleccionado.tipo_cobro === 'unidad_anatomica') {
+    const cantidad = Number(this.cantidad || 1);
+    this.monto = (precio * cantidad).toFixed(2);
+  } else {
+    // Para servicios tipo plan_terapeutico solo se toma el precio_base
+    this.monto = precio.toFixed(2);
+  }
+}
+
 
   //-----------------------DIVIDIR PAGO---------------------
   toggleDividirPago() {
     this.dividirPago = !this.dividirPago;
-
     if (this.dividirPago) {
-      // Activando dividir pago: iniciar con mínimo 2 pagos vacíos
       this.pagosDivididos = [
         { id_metodo_pago: null, monto: null },
         { id_metodo_pago: null, monto: null }
       ];
     } else {
-      // Desactivando dividir pago: resetear campos al estado inicial
       this.id_metodo_pago = null;
       this.monto = '';
-      
-      // Restaurar array de pagos divididos a estado inicial mínimo (opcional)
       this.pagosDivididos = [
         { id_metodo_pago: null, monto: null },
         { id_metodo_pago: null, monto: null }
@@ -190,4 +198,86 @@ export class ModalAgIngreso implements AfterViewInit {
     }
   }
 
+  // ---------------- Validaciones en tiempo real ----------------
+  validarAbonoParcial(): boolean {
+    this.errorMontoAbono = '';
+
+    if (this.tipoPago === 'parcial') {
+      if (!this.montoAbono || this.montoAbono <= 0) {
+        this.errorMontoAbono = 'Ingresa un monto de abono válido';
+        return false;
+      }
+      if (this.montoAbono >= Number(this.monto)) {
+        this.errorMontoAbono = 'El abono no puede ser mayor o igual al monto total';
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  validarPagosDivididos(): boolean {
+    this.errorPagosDivididos = '';
+
+    if (this.dividirPago) {
+      const sumaPagos = this.pagosDivididos.reduce((acc, p) => acc + Number(p.monto || 0), 0);
+      const montoComparar = this.tipoPago === 'parcial' ? Number(this.montoAbono) : Number(this.monto);
+
+      if (sumaPagos !== montoComparar) {
+        this.errorPagosDivididos = `La suma de los pagos (${sumaPagos}) no coincide con el monto ${montoComparar}`;
+        return false;
+      }
+
+      for (const p of this.pagosDivididos) {
+        if (!p.id_metodo_pago || !p.monto || p.monto <= 0) {
+          this.errorPagosDivididos = 'Cada pago debe tener un método y monto mayor a cero';
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  // ---------------- Enviar DTO ----------------
+  validarYCrearIngreso() {
+    if (!this.validarAbonoParcial() || !this.validarPagosDivididos()) return;
+
+    const dto: any = {
+      id_paciente: this.id_paciente,
+      notas: this.notas,
+      detalles: [
+        {
+          id_servicio: this.id_servicio,
+          cantidad: this.cantidad || 1,
+          precio_unitario: Number(this.servicioSeleccionado?.precio_base || 0),
+          subtotal: Number(this.monto),
+        }
+      ],
+      pagos: this.dividirPago
+        ? this.pagosDivididos.map(p => ({ id_metodo_pago: p.id_metodo_pago, monto: Number(p.monto) || 0 }))
+        : [
+            {
+              id_metodo_pago: this.id_metodo_pago!,
+              //monto: this.tipoPago === 'parcial' ? this.montoAbono : Number(this.monto)
+              monto: Number(this.tipoPago === 'parcial' ? this.montoAbono : this.monto) || 0
+            }
+          ]
+    };
+
+    this.ingresoService.crearIngreso(dto).subscribe({
+      next: res => {
+        alert('Ingreso creado correctamente');
+        this.cancelar();
+      },
+      error: err => {
+        console.error(err);
+        alert('Ocurrió un error al crear el ingreso');
+      }
+    });
+  }
+
+  cancelar(): void {
+    this.cerrar.emit();
+  }
 }

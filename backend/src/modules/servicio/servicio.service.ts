@@ -42,7 +42,8 @@ export class ServicioService {
             select: {
                 id_servicio: true,
                 nombre: true,
-                tipo_cobro: true
+                tipo_cobro: true,
+                precio_base: true
             }
         });
     }
