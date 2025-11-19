@@ -16,6 +16,15 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 export class IngresoController {
     constructor(private readonly ingresoService: IngresoService) {}
 
+    @Get('historial/ingresos-pendientes')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+    async historialPendientes(@Req() req) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.ingresoService.historialIngresosPendientes(id_consultorio);
+    }
+
+
     @Get('historial')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)

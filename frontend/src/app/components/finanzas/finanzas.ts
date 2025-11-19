@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { ModalAgGasto } from "../modal-ag-gasto/modal-ag-gasto";
 import { EgresoService } from '../../services/gasto-egreso.service';
 import { DecimalPipe, DatePipe, CurrencyPipe } from '@angular/common';
@@ -14,14 +14,17 @@ import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-finanzas',
-  imports: [FormsModule, ModalAgGasto, DecimalPipe, ModalMontoInicial, ModalAgIngreso, DatePipe, MatFormFieldModule, MatSelectModule, MatOptionModule],
+  imports: [FormsModule, ModalAgGasto, DecimalPipe, ModalMontoInicial, ModalAgIngreso, DatePipe, MatFormFieldModule, MatSelectModule, MatOptionModule, ModalAgAbono],
   templateUrl: './finanzas.html',
   styleUrl: './finanzas.css'
 })
 export class Finanzas implements OnInit{
   private egresoService = inject(EgresoService);
   private notify = inject(NotificationService)
-  constructor(private ingresoService: IngresoService) {}
+  constructor(
+    private ingresoService: IngresoService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   totalGastos: number = 0;
   totalGastosMes: number = 0;
@@ -31,71 +34,34 @@ export class Finanzas implements OnInit{
   gananciaTotal: number = 0;
   
   historial: any[] = [];
+  ingresosPendientes: any[] = [];
+
   filtroTipo: string = 'todos';
   busqueda: string = '';
   historialFiltrado: any[] = [];
+  busquedaPendientes: string = '';
+  ingresosPendientesFiltrados: any[] = [];
 
 
   corteAbierto: any = null;   // guarda el corte abierto
   btnCajaTexto: string = 'Abrir Caja';
   ingresoDisabled: boolean = true;
   egresoDisabled: boolean = true;
+  ingresoSeleccionado: any = null;
 
   //MODALES
   // Señales
   modalGastoAbierto = signal(false);
   modalMontoInicial = signal(false);
   modalAgIngreso = signal(false);
+  modalAgAbono = signal(false);
 
 
   ngOnInit(): void {
     this.verificarCorte();
-
-    // TOTAL GASTOS CONSULTORIO
-    this.egresoService.totalGastos().subscribe({
-      next: (res) => {
-        this.totalGastos = res.total;
-        this.gananciaTotal = this.totalIngresos - this.totalGastos; //GANANCIA TOTAL
-      },
-      error: (err) => console.error('Error al cargar total de gastos', err)
-    });
-
-    // TOTAL GASTOS MES
-    this.egresoService.totalGastosMes().subscribe({
-      next: res => {
-        this.totalGastosMes = res.total;
-        this.gananciaMes = this.totalIngresosMes - this.totalGastosMes; //GANANCIA MES
-      },
-      error: err => console.error('Error al cargar gastos del mes', err)
-    });
-
-    // TOTAL INGRESOS
-    this.ingresoService.totalIngresos().subscribe({
-      next: (res) => {
-        this.totalIngresos = res.total;
-        this.gananciaTotal = this.totalIngresos - this.totalGastos; //recalcular si ya estaban los gastos
-      },
-      error: err => console.error('Error al cargar total de ingresos', err)
-    });
-
-    // TOTAL INGRESOS MES
-    this.ingresoService.totalIngresosMes().subscribe({
-      next: res => {
-        this.totalIngresosMes = res.total;
-        this.gananciaMes = this.totalIngresosMes - this.totalGastosMes; //recalcular si ya estaban los gastos del mes
-      },
-      error: err => console.error('Error al cargar ingresos del mes', err)
-    });
-
-    // HISTORIAL FINANZAS
-    this.ingresoService.historialFinanzas().subscribe({
-      next: (res) => {
-        this.historial = res;
-        this.aplicarFiltros();
-      },
-      error: (err) => console.error('Error al cargar historial:', err)
-    });
-
+    this.cargarTotales();
+    this.cargarHistorial();
+    this.cargarPendientes();
   }
 
   // Revisar si hay corte abierto
@@ -143,19 +109,6 @@ export class Finanzas implements OnInit{
     }
   }
 
-  // Modal para ingresar monto inicial
-  abrirModalCaja() {
-    // Usar tu modal existente para pedir monto_inicial
-    const montoInicial = prompt('Ingresa monto de apertura:') || '0';
-    /*this.ingresoService.abrirCorte({ monto_apertura: montoInicial }).subscribe({
-      next: (corte) => {
-        this.corteAbierto = corte;
-        this.actualizarBotones();
-        // opcional: mostrar toast "Caja abierta correctamente"
-      },
-      error: (err) => console.error(err)
-    });*/
-  }
 
   abrirCaja(monto: number) {
   this.ingresoService.abrirCorte({ monto_apertura: monto }).subscribe({
@@ -169,6 +122,66 @@ export class Finanzas implements OnInit{
   });
 }
 
+  //CARGAS
+  cargarPendientes() {
+    this.ingresoService.historialIngresosPendientes().subscribe({
+        next: (data) => {
+            this.ingresosPendientes = data;
+            this.ingresosPendientesFiltrados = [...data];
+            this.cdr.detectChanges(); //FORZAR REFRESH
+        },
+        error: (err) => console.error('Error al cargar ingresos pendientes', err)
+    });
+  }
+
+  cargarHistorial() {
+    this.ingresoService.historialFinanzas().subscribe({
+      next: (res) => {
+        this.historial = res;
+        this.aplicarFiltros();
+        this.cdr.detectChanges(); //FORZAR REFRESH
+      },
+      error: (err) => console.error('Error al cargar historial:', err)
+    });
+  }
+
+  cargarTotales() {
+    // TOTAL GASTOS CONSULTORIO
+    this.egresoService.totalGastos().subscribe({
+      next: (res) => {
+        this.totalGastos = res.total;
+        this.gananciaTotal = this.totalIngresos - this.totalGastos;
+        this.cdr.detectChanges(); //FORZAR REFRESH
+      }
+    });
+
+    // TOTAL GASTOS MES
+    this.egresoService.totalGastosMes().subscribe({
+      next: res => {
+        this.totalGastosMes = res.total;
+        this.gananciaMes = this.totalIngresosMes - this.totalGastosMes;
+        this.cdr.detectChanges(); //FORZAR REFRESH
+      }
+    });
+
+    // TOTAL INGRESOS
+    this.ingresoService.totalIngresos().subscribe({
+      next: (res) => {
+        this.totalIngresos = res.total;
+        this.gananciaTotal = this.totalIngresos - this.totalGastos;
+        this.cdr.detectChanges(); //FORZAR REFRESH
+      }
+    });
+
+    // TOTAL INGRESOS MES
+    this.ingresoService.totalIngresosMes().subscribe({
+      next: res => {
+        this.totalIngresosMes = res.total;
+        this.gananciaMes = this.totalIngresosMes - this.totalGastosMes;
+        this.cdr.detectChanges(); //FORZAR REFRESH
+      }
+    });
+  }
 
   // Abrir modal
   abrirModalGasto() {
@@ -194,12 +207,10 @@ export class Finanzas implements OnInit{
 
   // Ejemplo de callback cuando se agrega un gasto
   actualizarHistorial(nuevoGasto: any) {
-    console.log('Gasto agregado:', nuevoGasto);
     this.cerrarModalGasto();
-    
-    this.ingresoService.historialFinanzas().subscribe({
-    next: (res) => this.historial = res
-  });
+    this.cargarTotales();
+    this.cargarHistorial();
+    this.cargarPendientes();
   }
 
 
@@ -212,7 +223,10 @@ export class Finanzas implements OnInit{
         next: (resp) => {
             this.notify.success("Ingreso registrado correctamente");
             this.cerrarModalIngreso();
-            this.actualizarHistorial(resp); // si quieres refrescar datos
+            //refrescar datos
+            this.cargarTotales();
+            this.cargarHistorial();
+            this.cargarPendientes();
         },
         error: (err) => {
             this.notify.error(err.error?.message ?? "Error al registrar ingreso");
@@ -242,5 +256,42 @@ export class Finanzas implements OnInit{
     });
   }
 
+  filtrarPendientes() {
+    const texto = this.busquedaPendientes.trim().toLowerCase();
+
+    if (!texto) {
+      this.ingresosPendientesFiltrados = [...this.ingresosPendientes];
+      return;
+    }
+
+    this.ingresosPendientesFiltrados = this.ingresosPendientes.filter(item => 
+      item.paciente.toLowerCase().includes(texto) ||
+      item.servicio.toLowerCase().includes(texto) ||
+      String(item.monto_total).includes(texto) ||
+      String(item.totalPagado).includes(texto) ||
+      String(item.saldoPendiente).includes(texto)
+    );
+  }
+
+  //MODAL DE ABONO INGRESO
+  abrirModalAbono(ingreso: any) {
+    if (!this.corteAbierto) return; // seguridad extra
+    this.ingresoSeleccionado = ingreso;
+    this.modalAgAbono.set(true);
+  }
+
+  // Cerrar modal
+  cerrarModalAbono() {
+    this.modalAgAbono.set(false);
+    this.ingresoSeleccionado = null;
+  }
+
+  // Procesar el abono (ya tú conectas al servicio)
+  procesarAbono(monto: number) {
+    // Aquí actualizas backend
+    // Luego refrescas pendientes
+    this.cargarPendientes();
+    this.cerrarModalAbono();
+  }
 
 }

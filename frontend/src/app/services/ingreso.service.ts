@@ -47,4 +47,12 @@ export class IngresoService {
         return this.http.get<any[]>(`${this.baseUrl}/historial`, { withCredentials: true });
     }
 
+    historialIngresosPendientes(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/historial/ingresos-pendientes`, { withCredentials: true });
+    }
+
+    abonarIngreso(id_ingreso: number, dto: { monto: number; id_metodo_pago: number; referencia?: string }): Observable<any> {
+        return this.http.post(`${this.baseUrl}/${id_ingreso}/abonar`, dto, { withCredentials: true }
+    );
+}
 }

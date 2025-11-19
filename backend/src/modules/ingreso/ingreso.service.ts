@@ -8,6 +8,7 @@ import { CloseCorteDto } from './dto/close-corte-caja.dto';
 import { StatusIngreso, StatusDetIngreso, StatusPagIngreso, Status, StatusEgreso } from 'src/common/enums';
 import { Decimal } from '@prisma/client/runtime/library';
 import { UpdateIngresoDto } from './dto/update-ingreso.dto';
+import { formatFechaLocal } from 'src/utils/format-date';
 
 
 @Injectable()
@@ -75,10 +76,10 @@ export class IngresoService {
         return this.prisma.corte_caja.update({
             where: { id_corte: corte.id_corte },
             data: {
-            fecha_cierre: new Date(),
-            usuario_cierre,
-            monto_cierre: montoCierre,
-            diferencia
+                fecha_cierre: new Date(),
+                usuario_cierre,
+                monto_cierre: montoCierre,
+                diferencia
             }
         });
     }
@@ -391,7 +392,7 @@ export class IngresoService {
         const formateados = [
             ...ingresos.map(i => ({
                 tipo: "ingreso",
-                fecha: i.fecha,
+                fecha: formatFechaLocal(i.fecha),
                 monto: i.monto_total,
                 titulo: `${i.detalle_ingreso[0]?.servicio.nombre || "Servicio"} - ${i.paciente.nombre} ${i.paciente.apellido1}`,
                 subtitulo: i.notas || ""
@@ -399,16 +400,48 @@ export class IngresoService {
 
             ...egresos.map(e => ({
                 tipo: "egreso",
-                fecha: e.fecha,
+                fecha: formatFechaLocal(e.fecha),
                 monto: e.monto,
                 titulo: e.descripcion,
                 subtitulo: e.tipo_egreso.nombre
             }))
         ];
 
-        formateados.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+        return formateados.sort((a, b) => {
+            return new Date(b.fecha).getTime() - new Date(a.fecha).getTime();
+        });
+    }
 
-        return formateados;
+    async historialIngresosPendientes(id_consultorio: number) {
+        const ingresos = await this.prisma.ingreso.findMany({
+            where: {
+                id_consultorio,
+                status: { in: [StatusIngreso.PARCIAL, StatusIngreso.PENDIENTE] },
+            },
+            include: {
+                paciente: { select: { nombre: true, apellido1: true, apellido2: true } },
+                detalle_ingreso: { select: { servicio: { select: { nombre: true } } } },
+                pago_ingreso: { select: { monto: true, status: true } }
+            },
+            orderBy: { fecha: 'desc' }
+        });
+
+        return ingresos.map(i => {
+            const totalPagado = i.pago_ingreso
+                .filter(p => p.status === StatusPagIngreso.CONFIRMADO)
+                .reduce((acc, p) => acc + Number(p.monto), 0);
+
+            return {
+                id_ingreso: i.id_ingreso,
+                paciente: `${i.paciente.nombre} ${i.paciente.apellido1} ${i.paciente.apellido2 || ''}`,
+                servicio: i.detalle_ingreso[0]?.servicio.nombre || 'Servicio',
+                fecha: formatFechaLocal(i.fecha),
+                monto_total: Number(i.monto_total),
+                totalPagado,
+                saldoPendiente: Number(i.monto_total) - totalPagado,
+                status: i.status
+            }
+        });
     }
 
 

@@ -1,1 +1,226 @@
-<p>modal-ag-abono works!</p>
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[460px]">
+        <div class="grid gap-0"> 
+            <h2 class="text-3xl font-bold mt-2 mb-6 text-[#105053]">
+                Registro de Abono
+            </h2>
+
+            <!-- Servicio (solo lectura) -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454] mb-1">
+                    Servicio aplicado
+                </label>
+                <input
+                    type="text"
+                    [value]="servicioNombre"
+                    class="w-full h-12 border border-[#115153] bg-[#C3F2F3B2] rounded-lg px-3 p-2"
+                    readonly
+                />
+            </div>
+
+            <!-- Paciente (solo lectura) -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454] mb-1">
+                    Paciente
+                </label>
+                <input
+                    type="text"
+                    [value]="pacienteNombre"
+                    class="w-full h-12 border border-[#115153] bg-[#C3F2F3B2] rounded-lg px-3 p-2"
+                    readonly
+                />
+            </div>
+
+            <!-- Monto total -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454]">Monto Total</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-3 text-gray-600">$</span>
+                    <input
+                        type="number"
+                        class="w-full h-12 border border-[#115153] bg-[#C3F2F3B2] rounded-lg pl-7 p-2"
+                        [value]="montoTotal.toFixed(2)"
+                        readonly
+                    />
+                </div>
+            </div>
+
+            <!-- Pagado + Saldo en una fila -->
+            <div class="flex flex-col md:flex-row gap-6 w-full">
+
+                <!-- Pagado -->
+                <div class="flex-1 mb-4">
+                    <label class="block text-base font-medium text-[#545454]">Pagado</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-3 text-gray-600">$</span>
+                        <input
+                            type="number"
+                            class="w-full h-12 border border-[#0A430A] bg-[#C8FDCBB2] rounded-lg pl-7 p-2"
+                            [value]="pagado.toFixed(2)"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+                <!-- Saldo pendiente -->
+                <div class="flex-1 mb-4">
+                    <label class="block text-base font-medium text-[#545454]">Saldo pendiente</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-3 text-gray-600">$</span>
+                        <input
+                            type="number"
+                            class="w-full h-12 border border-[#530E0E] bg-[#FFC9C9A3] rounded-lg pl-7 p-2"
+                            [value]="saldoPendiente.toFixed(2)"
+                            readonly
+                        />
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Monto a abonar -->
+            <div class="mt-2">
+                <label class="block text-base font-medium text-[#545454] mb-1">Monto a Abonar</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-3 text-gray-600">$</span>
+                    <input 
+                        type="number" 
+                        placeholder="0.00" 
+                        [(ngModel)]="montoAbono"
+                        (ngModelChange)="validarMonto()"
+                        min="1"
+                
+                        class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg pl-7 p-2 focus:ring-2 focus:ring-teal-600"
+                    />
+                </div>
+
+                @if (errorMontoAbono) {
+                    <div class="text-red-600 text-sm mt-1">{{ errorMontoAbono }}</div>
+                }
+            </div>
+
+            <!-- Toggle dividir pago -->
+            <div class="flex items-center gap-4 mt-4 mb-4">
+                <label class="text-base font-medium text-[#545454]">
+                    Dividir pago en más de un método
+                </label>
+
+                <button
+                    (click)="toggleDividirPago()"
+                    class="relative rounded-full transition"
+                >
+                    @if (dividirPago) {
+                        <img src="assets/icons/on_switch.svg" class="w-16 h-10" />
+                    } @else {
+                        <img src="assets/icons/off_switch.svg" class="w-16 h-10" />
+                    }
+                </button>
+            </div>
+
+            <!-- Un solo método -->
+            @if (!dividirPago) {
+            <div>
+                <label class="block text-base font-medium text-[#545454] mb-1">Método de Pago</label>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-select placeholder="Seleccione método" [(ngModel)]="id_metodo_pago" required>
+                        @for (met of metodosPago; track met.id_metodo_pago) {
+                            <mat-option [value]="met.id_metodo_pago">{{ met.nombre }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            }
+
+            <!-- Pagos divididos -->
+            @if (dividirPago) {
+            <div class="mb-6 space-y-4">
+                @for (pago of pagosDivididos; track pago) {
+                <div class="flex gap-4 items-stretch">
+
+                    <!-- Método -->
+                    <mat-form-field appearance="outline" class="flex-1 h-12">
+                        <mat-select placeholder="Método {{$index + 1}}" [(ngModel)]="pago.id_metodo_pago">
+                            @for (met of metodosPago; track met.id_metodo_pago) {
+                                <mat-option [value]="met.id_metodo_pago">{{ met.nombre }}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+
+                    <!-- Monto -->
+                    <div class="relative flex-1">
+                        <span class="absolute left-3 top-3 text-gray-600">$</span>
+                        <input
+                            type="number"
+                            min="1"
+                            [(ngModel)]="pago.monto"
+                            (input)="validarPagosDivididos()"
+                            class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg pl-7 p-2 focus:ring-2 focus:ring-teal-600"
+                        />
+                    </div>
+
+                    <!-- Eliminar -->
+                    @if (pagosDivididos.length > 2) {
+                    <button (click)="eliminarPago($index)"
+                        class="p-2 h-12 bg-red-600 rounded-xl text-white font-semibold hover:bg-red-700">
+                        <img src="assets/icons/trash.svg" class="w-8 h-8" />
+                    </button>
+                    }
+                </div>
+                }
+
+                @if (errorPagos) {
+                    <div class="text-red-600 text-sm mt-1">{{ errorPagos }}</div>
+                }
+
+                @if (pagosDivididos.length < 4) {
+                <button
+                    (click)="agregarPago()"
+                    class="mt-2 px-4 py-2 bg-[#C3F2F3] rounded-lg shadow font-semibold text-[#545454] hover:bg-[#25BEC4] hover:text-white"
+                >
+                    + Agregar
+                </button>
+                }
+
+                <div class="text-sm text-gray-600 mt-1">Min. 2, Max. 4</div>
+            </div>
+            }
+
+            <!-- Fecha -->
+            <div class="mb-6">
+                <label class="block text-base font-medium text-[#545454] mb-1">Fecha</label>
+                <input
+                    #fechaInput
+                    type="text"
+                    placeholder="Selecciona la fecha"
+                    [(ngModel)]="fecha"
+                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg px-3 p-2"
+                />
+            </div>
+
+            <!-- Notas -->
+            <div class="mb-6">
+                <label class="block text-base font-medium text-[#545454] mb-1">Notas</label>
+                <textarea
+                    rows="3"
+                    [(ngModel)]="notas"
+                    class="w-full border border-gray-300 bg-zinc-300/30 rounded-lg p-3 resize-none focus:ring-2 focus:ring-[#105053]"
+                    placeholder="Notas administrativas"
+                ></textarea>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-4">
+                <button (click)="cancelar()"
+                    class="px-6 py-2 bg-neutral-600 text-lg rounded-lg text-white font-semibold hover:bg-neutral-700">
+                    Cancelar
+                </button>
+
+                <button class="px-6 py-2 bg-[#1D8E92] text-lg rounded-lg text-white font-semibold hover:bg-[#105053]">
+                    Abonar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
