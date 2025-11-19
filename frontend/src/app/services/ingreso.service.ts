@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { AbonarIngresoDto } from "../models/abono.model";
 
 @Injectable({
     providedIn: 'root'
@@ -51,8 +52,8 @@ export class IngresoService {
         return this.http.get<any[]>(`${this.baseUrl}/historial/ingresos-pendientes`, { withCredentials: true });
     }
 
-    abonarIngreso(id_ingreso: number, dto: { monto: number; id_metodo_pago: number; referencia?: string }): Observable<any> {
-        return this.http.post(`${this.baseUrl}/${id_ingreso}/abonar`, dto, { withCredentials: true }
-    );
-}
+    abonarIngreso(id_ingreso: number, dto: AbonarIngresoDto): Observable<any> {
+        return this.http.post(`${this.baseUrl}/${id_ingreso}/abonar`, dto, { withCredentials: true });
+    }
+
 }

@@ -9,6 +9,7 @@ import { StatusIngreso, StatusDetIngreso, StatusPagIngreso, Status, StatusEgreso
 import { Decimal } from '@prisma/client/runtime/library';
 import { UpdateIngresoDto } from './dto/update-ingreso.dto';
 import { formatFechaLocal } from 'src/utils/format-date';
+import { CreatePagoIngresoDto } from './dto/create-pago.dto';
 
 
 @Injectable()
@@ -259,53 +260,66 @@ export class IngresoService {
         });
     }
 
-    async abonar(id: number, dto: AbonarIngresoDto, id_consultorio: number) {
-        const ingreso = await this.findOne(id, id_consultorio);
-        if (!ingreso) throw new BadRequestException('Ingreso no encontrado.');
+    async abonar(id_ingreso: number, dto: AbonarIngresoDto, id_consultorio: number) {
+        const ingreso = await this.prisma.ingreso.findUnique({ where: { id_ingreso }, include: { pago_ingreso: true } });
+        if (!ingreso) throw new NotFoundException('Ingreso no encontrado');
 
-        if (ingreso.status === StatusIngreso.PAGADO) {
-            throw new BadRequestException('No se puede abonar un ingreso ya pagado.');
+        const totalPagos = ingreso.pago_ingreso.reduce((acc, p) => acc + Number(p.monto), 0);
+        let pagosNuevos: CreatePagoIngresoDto[] = [];
+
+        if (dto.pagosDivididos && dto.pagosDivididos.length > 0) {
+            pagosNuevos = dto.pagosDivididos;
+        } else {
+            if (!dto.id_metodo_pago) throw new BadRequestException('Debe especificar método de pago');
+            pagosNuevos = [{ monto: dto.monto, id_metodo_pago: dto.id_metodo_pago, referencia: dto.referencia }];
         }
 
-        if (dto.monto <= 0) throw new BadRequestException('El monto del abono debe ser mayor a cero.');
-        if (!dto.id_metodo_pago) throw new BadRequestException('Debe seleccionar un método de pago.');
+        
+        //const saldoPendiente = ingreso.monto_total - totalPagos;
+        const saldoPendiente = ingreso.monto_total.minus(new Decimal(totalPagos)).toNumber();
+        const sumaPagos = pagosNuevos.reduce((acc, p) => acc + Number(p.monto), 0);
+        
+        if (sumaPagos > saldoPendiente) throw new BadRequestException('Los pagos exceden el saldo pendiente');
 
-        const totalPagado = ingreso.pago_ingreso
-            .filter((p) => p.status === StatusPagIngreso.CONFIRMADO)
-            .reduce((acc, p) => acc + Number(p.monto), 0);
+        // Guardar pagos nuevos
+        await this.prisma.pago_ingreso.createMany({
+            data: pagosNuevos.map(p => ({
+                id_ingreso,
+                monto: new Decimal(p.monto),
+                id_metodo_pago: p.id_metodo_pago,
+                referencia: p.referencia ?? '',
+                status: p.status ?? StatusPagIngreso.CONFIRMADO,
+            }))
+        });
 
-        const pendiente = Number(ingreso.monto_total) - totalPagado;
-        if (dto.monto > pendiente) {
-            throw new BadRequestException('El abono supera el pendiente.');
+        // Recalcular estado del ingreso
+        const totalActualizado = totalPagos + sumaPagos;
+        let status: StatusIngreso = StatusIngreso.PENDIENTE;
+        //if (totalActualizado >= ingreso.monto_total) status = StatusIngreso.PAGADO;
+        if (new Decimal(totalActualizado).gte(ingreso.monto_total)) status = StatusIngreso.PAGADO;
+        else if (totalActualizado > 0) status = StatusIngreso.PARCIAL;
+
+        await this.prisma.ingreso.update({
+            where: { id_ingreso },
+            data: { status }
+        });
+
+        // Actualizar corte
+        const corte = await this.obtenerCorteAbierto(id_consultorio);
+        if (corte) {
+            await this.prisma.corte_caja.update({
+                where: { id_corte: corte.id_corte },
+                data: {
+                    pagos_totales: new Decimal(corte.pagos_totales || 0).plus(sumaPagos),
+                    diferencia: new Decimal(corte.diferencia || 0).plus(sumaPagos)
+                }
+            });
         }
 
-        await this.prisma.pago_ingreso.create({
-            data: {
-                id_ingreso: ingreso.id_ingreso,
-                id_metodo_pago: dto.id_metodo_pago,
-                monto: new Decimal(dto.monto),
-                referencia: dto.referencia ?? '',
-                status: StatusPagIngreso.CONFIRMADO,
-            },
-        });
-
-        const sumaPagos = await this.prisma.pago_ingreso.aggregate({
-            _sum: { monto: true },
-            where: { id_ingreso: ingreso.id_ingreso, status: StatusPagIngreso.CONFIRMADO },
-        });
-
-        const totalPagadoNuevo = Number(sumaPagos._sum.monto ?? 0);
-
-        const nuevoStatus =
-            totalPagadoNuevo >= Number(ingreso.monto_total)
-                ? StatusIngreso.PAGADO
-                : StatusIngreso.PARCIAL;
-
-        return this.prisma.ingreso.update({
-            where: { id_ingreso: ingreso.id_ingreso },
-            data: { status: nuevoStatus },
-        });
+        return { message: 'Abono registrado correctamente' };
     }
+
+
 
     async totalIngresos(id_consultorio: number) {
         const result = await this.prisma.pago_ingreso.aggregate({

@@ -187,7 +187,7 @@
             </div>
             }
 
-            <!-- Fecha -->
+            <!-- Fecha 
             <div class="mb-6">
                 <label class="block text-base font-medium text-[#545454] mb-1">Fecha</label>
                 <input
@@ -197,7 +197,7 @@
                     [(ngModel)]="fecha"
                     class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg px-3 p-2"
                 />
-            </div>
+            </div>-->
 
             <!-- Notas -->
             <div class="mb-6">
@@ -216,7 +216,8 @@
                     Cancelar
                 </button>
 
-                <button class="px-6 py-2 bg-[#1D8E92] text-lg rounded-lg text-white font-semibold hover:bg-[#105053]">
+                <button (click)="guardarAbono()" 
+                    class="px-6 py-2 bg-[#1D8E92] text-lg rounded-lg text-white font-semibold hover:bg-[#105053]">
                     Abonar
                 </button>
             </div>

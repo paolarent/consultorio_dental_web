@@ -8,6 +8,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { IngresoService } from '../../services/ingreso.service';
 import { NotificationService } from '../../services/notification.service';
 import { DecimalPipe } from '@angular/common';
+import { AbonarIngresoDto } from '../../models/abono.model';
 
 @Component({
   selector: 'app-modal-ag-abono',
@@ -55,17 +56,17 @@ export class ModalAgAbono implements OnChanges {
 
   montoAbono: number | null = null;
   notas: string = '';
-  fecha: string = '';
+  //fecha: string = '';
 
   //PARA MOSTRAR MIS ERRORES
   errorMontoAbono: string = '';
   errorPagos: string = '';
 
   //INPUT DE FECHA
-  @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
-  private fpInstance: any;
+  //@ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
+  //private fpInstance: any;
 
-  ngAfterViewInit() {
+  /*ngAfterViewInit() {
       this.initFlatpickr();
   }
   
@@ -87,12 +88,12 @@ export class ModalAgAbono implements OnChanges {
       this.fechaInput.nativeElement.addEventListener('input', (event: any) => {
         this.fecha = event.target.value;
       });
-    }
+    }*/
 
     //CARGAR LOS METODOS DE PAGO
     ngOnInit() {
       this.cargarMetodosPago();
-      this.fecha = new Date().toISOString().slice(0, 10);
+      //this.fecha = new Date().toISOString().slice(0, 10);
     }
 
     cargarMetodosPago() {
@@ -163,10 +164,10 @@ export class ModalAgAbono implements OnChanges {
       return;
     }
 
-    if (!this.fecha) {
+    /*if (!this.fecha) {
       this.notify.warning('Debe seleccionar una fecha.');
       return;
-    }
+    }*/
 
     if (this.dividirPago && !this.validarPagosDivididos()) return;
     if (!this.dividirPago && !this.id_metodo_pago) {
@@ -175,17 +176,19 @@ export class ModalAgAbono implements OnChanges {
     }
 
     // OBJETO COMPLETO PARA ENVIAR A BD
-    const data = {
-      id_ingreso: this.ingreso.id_ingreso,
-      monto_abono: this.montoAbono,
-      fecha: this.fecha,
-      notas: this.notas,
-      dividirPago: this.dividirPago,
-      id_metodo_pago: this.dividirPago ? null : this.id_metodo_pago,
-      pagosDivididos: this.dividirPago ? this.pagosDivididos : []
+    const dto: AbonarIngresoDto = {
+      monto: this.montoAbono,
+      id_metodo_pago: this.dividirPago ? undefined : this.id_metodo_pago!,
+      referencia: this.notas || undefined,
+      pagosDivididos: this.dividirPago
+        ? this.pagosDivididos.map(p => ({
+            id_metodo_pago: p.id_metodo_pago!,
+            monto: p.monto!
+          }))
+        : undefined
     };
 
-    this.guardar.emit(data);
+    this.guardar.emit(dto);
   }
 
   validarMonto() {

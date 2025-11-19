@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { AbonarIngresoDto } from '../../models/abono.model';
 
 @Component({
   selector: 'app-finanzas',
@@ -286,12 +287,23 @@ export class Finanzas implements OnInit{
     this.ingresoSeleccionado = null;
   }
 
-  // Procesar el abono (ya tú conectas al servicio)
-  procesarAbono(monto: number) {
-    // Aquí actualizas backend
-    // Luego refrescas pendientes
-    this.cargarPendientes();
-    this.cerrarModalAbono();
+  procesarAbono(dto: AbonarIngresoDto) {
+    if (!this.ingresoSeleccionado) return;
+
+    this.ingresoService.abonarIngreso(this.ingresoSeleccionado.id_ingreso, dto)
+      .subscribe({
+        next: () => {
+          this.notify.success("Abono registrado correctamente");
+          this.cargarPendientes();
+          this.cargarHistorial();
+          this.cargarTotales();
+          this.cerrarModalAbono();
+        },
+        error: (err) => {
+          this.notify.error(err.error?.message ?? "Error al registrar abono");
+        }
+      });
   }
+
 
 }
