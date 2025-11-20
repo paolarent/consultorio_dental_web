@@ -11,11 +11,19 @@ import { Rol } from 'src/common/enums';
 export class PacienteController {
     constructor(private readonly pacienteService: PacienteService) {}
 
+    @Get('consultorio/activos')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+    findActivosByConsultorio(@Req() req) {
+        const id_consultorio = req.user.consultorioId;
+        return this.pacienteService.findActivosByConsultorio(id_consultorio);
+    }
+
     @Get('buscar')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     buscarPacientes(@Query('q') q: string, @Req() req) {
-        console.log('QUERY', q); // <-- aquí solo 'q'
+        console.log('QUERY', q); //para calar q si busque
         const id_consultorio = req.user.consultorioId;
         return this.pacienteService.buscarPacientes(id_consultorio, q);
     }
@@ -25,14 +33,14 @@ export class PacienteController {
         return this.pacienteService.findAllActive();
     }
 
-    @Get(':id')
-    async getPacienteById(@Param('id') id: string) {
-        return this.pacienteService.getPacienteById(Number(id));
-    }
-
     @Post()
     create(@Body() createPacienteDto: CreatePacienteDto) {
         return this.pacienteService.create(createPacienteDto);
+    }
+
+    @Get(':id')
+    async getPacienteById(@Param('id') id: string) {
+        return this.pacienteService.getPacienteById(Number(id));
     }
 
     @Patch(':id')

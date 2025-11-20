@@ -13,10 +13,97 @@
         </div>
 
         <!-- BOTON -->
-        <button class="bg-[#C3F2F3] text-[#545454] text-xl md:text-2xl font-semibold tracking-wider rounded-xl shadow-lg 
+        <button class="bg-[#C3F2F3] text-[#545454] text-xl md:text-3xl font-semibold tracking-wider rounded-xl shadow-lg 
                     px-16 py-4 hover:scale-105 transition-transform duration-300"
         >
             Nuevo Paciente
         </button>
     </div>
+</section>
+
+<!-- CONTENEDOR DE PACIENTES VIGENTES -->
+<section class="w-full min-h-screen bg-[#C3F2F3] p-10 rounded-xl shadow-md">
+
+    <!-- HEADER CON TÍTULO + BUSCADOR -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
+
+        <h2 class="flex items-center gap-4 text-4xl font-bold text-[#545454] tracking-wide">
+            <img src="assets/icons/paciente.svg" alt="" class="w-10 h-12" />
+            Pacientes Vigentes
+        </h2>
+
+        <!-- Barra de búsqueda -->
+        <div class="relative w-full md:w-[40rem]">
+            <input 
+                type="text"
+                placeholder="Buscar Paciente.."
+                class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 shadow-sm text-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
+                (input)="busqueda.set($event.target.value)" 
+            />
+            <img src="assets/icons/buscar.svg" class="w-6 h-6 absolute left-4 top-4 opacity-70" />
+        </div>
+
+    </div>
+
+
+    <!-- GRID PARA LAS TARJETAS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-8 mt-8">
+
+        @if (pacientesFiltrados().length === 0) {
+            <p class="text-center text-2xl text-gray-600 col-span-full mt-10">
+                No hay pacientes vigentes registrados.
+            </p>
+        }
+
+        @for (paciente of pacientesFiltrados(); track paciente.id_paciente) {
+
+            <!-- TARJETA DINAMICA -->
+            <div class="bg-white border border-l-8 border-l-[#545454] rounded-2xl p-6 shadow-md hover:shadow-lg transition">
+                <!-- LAYOUT PRINCIPAL EN DOS COLUMNAS -->
+                <div class="flex justify-between items-stretch">
+
+                    <!-- COLUMNA IZQUIERDA (INFO DEL PACIENTE) -->
+                    <div class="flex flex-col gap-3 w-[80%]">
+
+                        <h3 class="text-3xl font-bold text-[#105053]">
+                            {{ paciente.nombre }} {{ paciente.apellido1 }} {{ paciente.apellido2 }}
+                        </h3>
+
+                        <p class="text-[#545454] text-lg">
+                            {{ calcularEdad(paciente.fecha_nacimiento) }} años
+                        </p>
+
+                        <p class="text-[#545454] text-lg flex items-center gap-2">
+                            <img src="assets/icons/correo.svg" class="w-6 h-6 opacity-80" />
+                            {{ paciente.usuario.correo }}
+                        </p>
+
+                        <p class="text-[#545454] text-lg flex items-center gap-2">
+                            <img src="assets/icons/telefono.svg" class="w-6 h-6 opacity-80" />
+                            {{ paciente.telefono | telefono }}
+                        </p>
+
+                    </div>
+
+                    <!-- COLUMNA DERECHA (BOTONES) -->
+                    <div class="flex flex-col justify-between items-end w-[20%]">
+
+                        <!-- Botón superior -->
+                        <div class="w-16 h-16 rounded-xl bg-[#545454] flex items-center justify-center shadow hover:bg-[#DDE0EB] transition">
+                            <img src="assets/icons/expediente.svg" class="w-12 h-12"/>
+                        </div>
+
+                        <!-- Botón inferior -->
+                        <div class="w-16 h-16 rounded-xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#F8636B] transition">
+                            <img src="assets/icons/baja-paciente.svg" class="w-12 h-12"/>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        }
+    </div>
+
 </section>

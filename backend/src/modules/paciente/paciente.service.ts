@@ -174,5 +174,32 @@ export class PacienteService {
         });
     }
 
+    async findActivosByConsultorio(id_consultorio: number) {
+        return this.prisma.paciente.findMany({
+            where: {
+                id_consultorio,
+                status: 'activo'
+            },
+            select: {
+                id_paciente: true,
+                nombre: true,
+                apellido1: true,
+                apellido2: true,
+                fecha_nacimiento: true,
+                telefono: true,
+                sexo: true,
+                //traemos el correo desde usuario
+                usuario: {
+                    select: {
+                        correo: true
+                    }
+                }
+            },
+            orderBy: {
+                apellido1: 'asc'
+            }
+        });
+    }
+
 
 }

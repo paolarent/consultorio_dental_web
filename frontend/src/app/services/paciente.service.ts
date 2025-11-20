@@ -24,4 +24,8 @@ export class PacienteService {
         return this.http.get<any[]>(`${this.baseUrl}/buscar?q=${q}`, { withCredentials: true });
     }
 
+    getPacientesActivosConsultorio(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.baseUrl}/consultorio/activos`, { withCredentials: true });
+    }
+
 }
