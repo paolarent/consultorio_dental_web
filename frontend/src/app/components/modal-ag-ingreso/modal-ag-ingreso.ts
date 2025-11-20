@@ -180,7 +180,7 @@ export class ModalAgIngreso implements AfterViewInit {
       ];
     } else {
       this.id_metodo_pago = null;
-      this.monto = '';
+      //this.monto = '';
       this.pagosDivididos = [
         { id_metodo_pago: null, monto: null },
         { id_metodo_pago: null, monto: null }

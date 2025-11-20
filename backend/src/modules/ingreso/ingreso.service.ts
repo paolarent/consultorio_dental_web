@@ -320,7 +320,6 @@ export class IngresoService {
     }
 
 
-
     async totalIngresos(id_consultorio: number) {
         const result = await this.prisma.pago_ingreso.aggregate({
             _sum: { monto: true },
