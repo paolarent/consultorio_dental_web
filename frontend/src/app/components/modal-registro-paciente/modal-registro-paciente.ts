@@ -180,7 +180,7 @@ export class ModalRegistroPaciente implements OnInit, AfterViewInit {
     this.registroService.registrarPacienteCompleto(payload).subscribe({
       next: (res: any) => {
         this.notify.success(res?.message || 'Paciente registrado correctamente');
-        this.registrar.emit(res);
+        this.registrar.emit(res.paciente);
         this.cerrar.emit();
       },
       error: (err: any) => {

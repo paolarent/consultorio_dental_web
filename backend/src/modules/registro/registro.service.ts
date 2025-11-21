@@ -63,8 +63,13 @@ export class RegistroService {
 
         return {
             message: 'Paciente y usuario creados correctamente',
-            usuario,
-            paciente,
+            paciente: {
+                ...paciente,
+                usuario: {
+                    correo: usuario.correo,
+                    id_usuario: usuario.id_usuario,
+                }
+            }
         };
     }
 
