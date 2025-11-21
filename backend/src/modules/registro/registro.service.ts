@@ -3,6 +3,7 @@ import { UsuarioService } from '../usuario/usuario.service';
 import { PacienteService } from '../paciente/paciente.service';
 import { CreateRegistroDto } from './dto/create-registro.dto';
 import { Rol, ProveedorLogin, Status } from '../../common/enums';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class RegistroService {
@@ -12,10 +13,16 @@ export class RegistroService {
     ) {}
 
     async registrarPacienteCompleto(data: CreateRegistroDto) {
+        // Generar contraseña temporal simple
+        const randomPassword = Math.random().toString(36).slice(-8);
+
+        // Hashear contraseña temporal
+        const tempPassword = await bcrypt.hash(randomPassword, 10);
+
         // Crear usuario
         const { usuario } = await this.usuarioService.create({
             correo: data.correo,
-            contrasena: data.contrasena,
+            contrasena: tempPassword,
             rol: Rol.PACIENTE,
             proveedor_login: ProveedorLogin.LOCAL,
             status: Status.ACTIVO,

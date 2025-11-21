@@ -55,7 +55,23 @@ export class FormLoginPaciente {
       },
       error: (err) => {
         console.error(err);
-        this.notify.error('Credenciales incorrectas o error del servidor');
+
+        const backendMsg = err?.error?.message;
+
+        if (backendMsg === 'Debes verificar tu correo para poder iniciar sesión') {
+          this.notify.warning('Correo no verificado. Revisa tu correo.');
+          this.loading.set(false);
+          return;
+        }
+
+        if (backendMsg === 'Correo o contraseña incorrectos') {
+          this.notify.error('Correo o contraseña incorrectos');
+          this.loading.set(false);
+          return;
+        }
+
+        this.notify.error('Error del servidor, intenta más tarde');
+        this.loading.set(false);
       },
       complete: () => this.loading.set(false)
     });

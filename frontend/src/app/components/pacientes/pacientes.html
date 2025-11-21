@@ -13,7 +13,8 @@
         </div>
 
         <!-- BOTON -->
-        <button class="bg-[#C3F2F3] text-[#545454] text-xl md:text-3xl font-semibold tracking-wider rounded-xl shadow-lg 
+        <button  (click)="this.modalRegistrarPaciente.set(true);"
+            class="bg-[#C3F2F3] text-[#545454] text-xl md:text-3xl font-semibold tracking-wider rounded-xl shadow-lg 
                     px-16 py-4 hover:scale-105 transition-transform duration-300"
         >
             Nuevo Paciente
@@ -107,3 +108,10 @@
     </div>
 
 </section>
+
+
+@if(modalRegistrarPaciente()) {
+    <app-modal-registro-paciente
+        (cerrar)="cerrarModal()">
+    </app-modal-registro-paciente>
+}

@@ -54,6 +54,10 @@ export class AuthService {
             throw new UnauthorizedException('Correo o contraseña incorrectos');
         }
 
+        if (!usuario.correo_verificado) {
+            throw new UnauthorizedException('Debes verificar tu correo para poder iniciar sesión');
+        }
+
         const match = await bcrypt.compare(contrasena, usuario.contrasena);
         if (!match) throw new UnauthorizedException('Correo o contraseña incorrectos');
 

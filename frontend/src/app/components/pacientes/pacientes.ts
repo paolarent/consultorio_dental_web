@@ -1,16 +1,19 @@
 import { Component, computed, signal } from '@angular/core';
 import { PacienteService } from '../../services/paciente.service';
 import { TelefonoPipe } from '../../pipes/telefono.pipe';
+import { ModalRegistroPaciente } from '../modal-registro-paciente/modal-registro-paciente';
 
 @Component({
   selector: 'app-pacientes',
-  imports: [TelefonoPipe],
+  imports: [TelefonoPipe, ModalRegistroPaciente],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.css'
 })
 export class Pacientes {
   pacientes = signal<any[]>([]);
-  busqueda = signal<string>('')
+  busqueda = signal<string>('');
+
+  modalRegistrarPaciente = signal(false);
 
   pacientesFiltrados = computed(() => {
     const term = this.busqueda().toLowerCase();
@@ -50,5 +53,7 @@ export class Pacientes {
     return edad;
   }
 
-
+  cerrarModal() {
+    this.modalRegistrarPaciente.set(false);
+  }
 }
