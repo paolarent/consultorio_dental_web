@@ -53,6 +53,11 @@ export class Pacientes {
     return edad;
   }
 
+  registrarNuevoPaciente(nuevoPaciente: any) {
+    this.pacientes.update(lista => [nuevoPaciente, ...lista]);
+  }
+
+
   cerrarModal() {
     this.modalRegistrarPaciente.set(false);
   }

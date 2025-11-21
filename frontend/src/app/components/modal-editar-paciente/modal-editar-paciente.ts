@@ -90,6 +90,7 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
 
     this.fpInstance = flatpickr(this.fechaInput.nativeElement, {
       dateFormat: 'Y-m-d',
+      maxDate: "today",
       locale: Spanish,
       defaultDate: fechaParaFlatpickr,
       allowInput: true, // permite que el usuario borre manualmente

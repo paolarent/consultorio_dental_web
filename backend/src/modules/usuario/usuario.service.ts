@@ -59,7 +59,8 @@ export class UsuarioService {
 
         //Generar el token de verificación
         const token = randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos de validez
+        const TOKEN_EXPIRATION_HOURS = 24;
+        const expiresAt = new Date(Date.now() + TOKEN_EXPIRATION_HOURS * 60 * 60 * 1000); //24 hrs de validez
 
         //Guardar el token en verificacion_correo
         await this.prisma.verificacion_correo.create({

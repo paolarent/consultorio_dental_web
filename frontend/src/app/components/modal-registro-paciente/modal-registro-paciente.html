@@ -8,7 +8,7 @@
     <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-3/4 max-w-3xl">
 
         <h2 class="text-4xl font-bold mt-2 mb-6 text-[#105053]">
-            Registro de Paciente
+            Registrar nuevo Paciente
         </h2>
 
         <!-- STEP 1 -->
@@ -19,41 +19,48 @@
                 <!-- Nombre -->
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Nombre</label>
-                    <input type="text" name="nombre" placeholder="Ingresa tu nombre" required
+                    <input type="text" name="nombre" placeholder="Ingresa el nombre" [(ngModel)]="nombre" required
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <!-- Apellido paterno -->
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno</label>
-                    <input type="text" name="apellido1" placeholder="Ingresa tu primer apellido" required
+                    <input type="text" name="apellido1" placeholder="Ingresa el primer apellido" [(ngModel)]="apellido1" required
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <!-- Apellido materno -->
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno</label>
-                    <input type="text" name="apellido2" placeholder="Ingresa tu segundo apellido"
+                    <input type="text" name="apellido2" placeholder="Ingresa el segundo apellido" [(ngModel)]="apellido2"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <!-- Teléfono -->
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Teléfono</label>
-                    <input type="text" name="telefono" placeholder="Ingresa tu teléfono" required
+                    <input type="text" name="telefono" placeholder="Ingresa teléfono" [(ngModel)]="telefono" required
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Correo</label>
-                    <input type="email" name="correo" placeholder="Ingresa el correo" required
+                    <input type="email" name="correo" placeholder="Ingresa correo" [(ngModel)]="correo" required
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <!-- Fecha nacimiento -->
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Fecha de nacimiento</label>
-                    <input #fechaInput type="text" name="fechaNacimiento" placeholder="Selecciona fecha" required
+                    <input 
+                        #fechaInput 
+                        name="fechaNacimiento" 
+                        placeholder="Selecciona la fecha de nacimiento" 
+                        [(ngModel)]="fechaNacimiento"
+                        required
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
@@ -61,7 +68,7 @@
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Sexo</label>
                     <mat-form-field appearance="outline" class="w-full">
-                        <mat-select name="sexo" required placeholder="Seleccione el sexo">
+                        <mat-select name="sexo" required placeholder="Seleccione el sexo" [(ngModel)]="sexo">
                             <mat-option [value]="Sexo.MASCULINO">Masculino</mat-option>
                             <mat-option [value]="Sexo.FEMENINO">Femenino</mat-option>
                             <mat-option [value]="Sexo.OTRO">Otro</mat-option>
@@ -75,7 +82,7 @@
             <div class="flex items-center">
                 <span class="mr-2 text-[#545454] font-bold text-lg">¿Tiene tutor?</span>
                 <img [src]="tieneTutor ? 'assets/icons/on_switch.svg' : 'assets/icons/off_switch.svg'"
-                    class="w-14 h-10 cursor-pointer" (click)="toggleTutor()" />
+                    class="w-14 h-10 cursor-pointer" [(ngModel)]="tieneTutor" (click)="toggleTutor()" />
             </div>
 
             @if(tieneTutor) {
@@ -84,37 +91,37 @@
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Nombre de Tutor</label>
-                    <input type="text" name="tutor_nombre" placeholder="Nombre tutor" required
+                    <input type="text" name="tutor_nombre" placeholder="Nombre tutor" required [(ngModel)]="tutor.nombre"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno Tutor</label>
-                    <input type="text" name="tutor_apellido1" placeholder="Apellido1 tutor" required
+                    <input type="text" name="tutor_apellido1" placeholder="Apellido1 tutor" required [(ngModel)]="tutor.apellido1"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno Tutor</label>
-                    <input type="text" name="tutor_apellido2" placeholder="Apellido2 tutor"
+                    <input type="text" name="tutor_apellido2" placeholder="Apellido2 tutor" [(ngModel)]="tutor.apellido2"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Teléfono Tutor</label>
-                    <input type="text" name="tutor_telefono" placeholder="Teléfono tutor" required
+                    <input type="text" name="tutor_telefono" placeholder="Teléfono tutor" required [(ngModel)]="tutor.telefono"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Correo Tutor</label>
-                    <input type="email" name="tutor_correo" placeholder="Correo tutor"
+                    <input type="email" name="tutor_correo" placeholder="Correo tutor" [(ngModel)]="tutor.correo"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Relación</label>
-                    <input type="text" name="tutor_relacion" placeholder="Relación" required
+                    <input type="text" name="tutor_relacion" placeholder="Relación" required [(ngModel)]="tutor.relacion"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
@@ -148,43 +155,43 @@
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Calle</label>
-                    <input type="text" name="d_calle" required placeholder="Ingresa la calle"
+                    <input type="text" name="d_calle" required placeholder="Ingresa la calle" [(ngModel)]="direccion.calle"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Número Exterior</label>
-                    <input type="text" name="d_num_exterior" required placeholder="Número"
+                    <input type="text" name="d_num_exterior" required placeholder="Número" [(ngModel)]="direccion.num_exterior"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Colonia</label>
-                    <input type="text" name="d_colonia" required placeholder="Colonia"
+                    <input type="text" name="d_colonia" required placeholder="Colonia" [(ngModel)]="direccion.colonia"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Código Postal</label>
-                    <input type="text" name="d_cp" required placeholder="CP"
+                    <input type="text" name="d_cp" required placeholder="CP" [(ngModel)]="direccion.cp"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Entidad Federativa</label>
-                    <input type="text" name="d_entidadfed" required placeholder="Entidad"
+                    <input type="text" name="d_entidadfed" required placeholder="Entidad" [(ngModel)]="direccion.entidadfed"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Municipio</label>
-                    <input type="text" name="d_municipio" required placeholder="Municipio"
+                    <input type="text" name="d_municipio" required placeholder="Municipio" [(ngModel)]="direccion.municipio"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Localidad</label>
-                    <input type="text" name="d_localidad" required placeholder="Localidad"
+                    <input type="text" name="d_localidad" required placeholder="Localidad" [(ngModel)]="direccion.localidad"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
@@ -201,7 +208,7 @@
                 <button
                     class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                     [ngClass]="pacienteStep2Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
-                    
+                    (click)="guardar()"
                 >
                     <span class="text-center text-white text-lg font-semibold tracking-wider">Registrar</span>
                 </button>

@@ -112,6 +112,8 @@
 
 @if(modalRegistrarPaciente()) {
     <app-modal-registro-paciente
-        (cerrar)="cerrarModal()">
+        (cerrar)="cerrarModal()"
+        (registrar)="registrarNuevoPaciente($event)"
+    >
     </app-modal-registro-paciente>
 }
