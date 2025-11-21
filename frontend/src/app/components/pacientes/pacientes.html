@@ -13,13 +13,14 @@
         </div>
 
         <!-- BOTON -->
-        <button  (click)="this.modalRegistrarPaciente.set(true);"
-            class="bg-[#C3F2F3] text-[#545454] text-xl md:text-3xl font-semibold tracking-wider rounded-xl shadow-lg 
-                    px-16 py-4 hover:scale-105 transition-transform duration-300"
-            title="Registrar nuevo paciente"
-        >
-            Nuevo Paciente
+        <button (click)="modalRegistrarPaciente.set(true);" 
+                class="bg-[#C3F2F3] text-[#545454] text-xl md:text-2xl font-semibold tracking-wider rounded-xl shadow-lg 
+                    px-16 py-4 hover:scale-105 transition-transform duration-300 flex items-center gap-6"
+                title="Registrar nuevo paciente">
+            <img src="assets/icons/agregar.svg" alt="Agregar Ingreso" class="w-10 h-10">
+            <span>Nuevo Paciente</span>
         </button>
+
     </div>
 </section>
 

@@ -20,7 +20,6 @@ export class ModalRegistroPaciente implements OnInit, AfterViewInit {
   private registroService = inject(RegistroService);
   private notify = inject(NotificationService);
 
-  @Input() correoInicial = '';
   @Output() cerrar = new EventEmitter<void>();
   @Output() registrar = new EventEmitter<any>();  //para pasarle el resultado al padre
 
@@ -40,7 +39,8 @@ export class ModalRegistroPaciente implements OnInit, AfterViewInit {
   apellido2 = '';
   telefono = '';
   fechaNacimiento = ''; // yyyy-mm-dd
-  sexo: Sexo = Sexo.MASCULINO;
+  sexo: Sexo | null = null;
+;
 
   tieneTutor = false;
   tutor = {
@@ -67,7 +67,7 @@ export class ModalRegistroPaciente implements OnInit, AfterViewInit {
   SiONo = SiONo;
 
   ngOnInit() {
-    this.correo = this.correoInicial || '';
+    this.correo = '';
   }
 
   ngAfterViewInit() {
