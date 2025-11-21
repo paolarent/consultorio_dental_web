@@ -20,6 +20,8 @@
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Nombre</label>
                     <input type="text" name="nombre" placeholder="Ingresa el nombre" [(ngModel)]="nombre" required
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
@@ -27,6 +29,8 @@
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno</label>
                     <input type="text" name="apellido1" placeholder="Ingresa el primer apellido" [(ngModel)]="apellido1" required
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
@@ -34,6 +38,8 @@
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno</label>
                     <input type="text" name="apellido2" placeholder="Ingresa el segundo apellido" [(ngModel)]="apellido2"
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
@@ -41,12 +47,16 @@
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Teléfono</label>
                     <input type="text" name="telefono" placeholder="Ingresa teléfono" [(ngModel)]="telefono" required
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Correo</label>
                     <input type="email" name="correo" placeholder="Ingresa correo" [(ngModel)]="correo" required
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
@@ -82,7 +92,7 @@
             <div class="flex items-center">
                 <span class="mr-2 text-[#545454] font-bold text-lg">¿Tiene tutor?</span>
                 <img [src]="tieneTutor ? 'assets/icons/on_switch.svg' : 'assets/icons/off_switch.svg'"
-                    class="w-14 h-10 cursor-pointer" [(ngModel)]="tieneTutor" (click)="toggleTutor()" />
+                    class="w-14 h-10 cursor-pointer" (click)="toggleTutor()" />
             </div>
 
             @if(tieneTutor) {
@@ -92,36 +102,48 @@
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Nombre de Tutor</label>
                     <input type="text" name="tutor_nombre" placeholder="Nombre tutor" required [(ngModel)]="tutor.nombre"
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno Tutor</label>
                     <input type="text" name="tutor_apellido1" placeholder="Apellido1 tutor" required [(ngModel)]="tutor.apellido1"
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno Tutor</label>
                     <input type="text" name="tutor_apellido2" placeholder="Apellido2 tutor" [(ngModel)]="tutor.apellido2"
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Teléfono Tutor</label>
                     <input type="text" name="tutor_telefono" placeholder="Teléfono tutor" required [(ngModel)]="tutor.telefono"
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Correo Tutor</label>
                     <input type="email" name="tutor_correo" placeholder="Correo tutor" [(ngModel)]="tutor.correo"
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 
                 <div>
                     <label class="block text-base font-medium text-[#545454] mb-1">Relación</label>
                     <input type="text" name="tutor_relacion" placeholder="Relación" required [(ngModel)]="tutor.relacion"
+                        autocomplete="off"
+                        autocorrect="off"
                         class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
                 </div>
 

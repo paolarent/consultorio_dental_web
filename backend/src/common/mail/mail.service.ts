@@ -22,13 +22,15 @@ export class MailerService {
 
     async sendVerificationEmail(to: string, token: string, tipo: 'registro' | 'actualizacion', logoUrl: string, nombreDoc: string) {
         const appUrl = process.env.APP_URL;
+        const appFrontUrl = process.env.FRONTEND_URL;
         let verifyUrl: string;   //`${process.env.APP_URL}/usuario/confirmar-cambio-correo?token=${token}`;              //`${appUrl}/usuario/confirmar-cambio-correo?token=${token}`;
         let asunto: string;
         let mensajePrincipal: string;
         let mensajeExtra: string;
 
         if (tipo === 'registro') {
-            verifyUrl = `${appUrl}/usuario/confirmar-registro?token=${token}`;
+            //verifyUrl = `${appUrl}/usuario/confirmar-registro?token=${token}`;
+            verifyUrl = `${appFrontUrl}/login/restore-password?token=${token}&tipo=registro`;
             asunto = 'Confirma tu cuenta';
             mensajePrincipal =
                 'Gracias por registrarte. Haz clic en el botón para activar tu cuenta.';

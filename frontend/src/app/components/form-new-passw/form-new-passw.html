@@ -12,14 +12,14 @@
             />
         </div>
         
-        <h1 class="text-2xl font-bold mb-4 text-center text-black">CAMBIAR CONTRASEÑA</h1>
-        <p class="text-lg font-regular mb-6 text-center text-black">Ingrese su nueva contraseña y confirmela</p>
+        <h1 class="text-2xl font-bold mb-4 text-center text-black">{{ titulo }}</h1>
+        <p class="text-lg font-regular mb-6 text-center text-black">{{ descripcion }}</p>
         
         <form class="flex flex-col">
             <!-- Grupo inputs -->
             <div class="flex flex-col gap-8 mb-2">
                 <div class="relative">
-                    <label class="block text-lg font-medium text-[#545454] mb-1">Nueva Contraseña</label>
+                    <label class="block text-lg font-medium text-[#545454] mb-1">{{ labelNueva }}</label>
                     <input
                         type="password"
                         [(ngModel)]="nueva"
@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="relative">
-                    <label class="block text-lg font-medium text-[#545454] mb-1">Confirme su nueva Contraseña</label>
+                    <label class="block text-lg font-medium text-[#545454] mb-1">{{ labelConfirmar }}</label>
                     <input
                         type="password"
                         [(ngModel)]="confirmar"
@@ -50,12 +50,6 @@
                     Confirmar
                 </button>
 
-                <!--<a 
-                href="#" 
-                class="block text-center text-[#545454] text-lg font-semibold underline tracking-wide italic hover:text-[#000000] transition-colors"
-                >
-                    Volver al inicio de sesión
-                </a>-->
             </div>
 
         </form>

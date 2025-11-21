@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
-import { RegistroServiceService } from '../../services/registro.service';
+import { RegistroService } from '../../services/registro.service';
 
 @Component({
   selector: 'app-modal-registro-paciente',
@@ -17,7 +17,7 @@ import { RegistroServiceService } from '../../services/registro.service';
   styleUrl: './modal-registro-paciente.css'
 })
 export class ModalRegistroPaciente implements OnInit, AfterViewInit {
-  private registroService = inject(RegistroServiceService);
+  private registroService = inject(RegistroService);
   private notify = inject(NotificationService);
 
   @Input() correoInicial = '';

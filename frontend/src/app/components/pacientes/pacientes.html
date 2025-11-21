@@ -16,6 +16,7 @@
         <button  (click)="this.modalRegistrarPaciente.set(true);"
             class="bg-[#C3F2F3] text-[#545454] text-xl md:text-3xl font-semibold tracking-wider rounded-xl shadow-lg 
                     px-16 py-4 hover:scale-105 transition-transform duration-300"
+            title="Registrar nuevo paciente"
         >
             Nuevo Paciente
         </button>
@@ -90,13 +91,13 @@
                     <div class="flex flex-col justify-between items-end w-[20%]">
 
                         <!-- Botón superior -->
-                        <div class="w-16 h-16 rounded-xl bg-[#545454] flex items-center justify-center shadow hover:bg-[#DDE0EB] transition">
-                            <img src="assets/icons/expediente.svg" class="w-12 h-12"/>
+                        <div title="Ir a expediente" class="w-16 h-16 rounded-xl bg-[#545454] flex items-center justify-center shadow hover:bg-[#DDE0EB] transition">
+                            <img src="assets/icons/expediente.svg" alt="Expediente" class="w-12 h-12"/>
                         </div>
 
                         <!-- Botón inferior -->
-                        <div class="w-16 h-16 rounded-xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#F8636B] transition">
-                            <img src="assets/icons/baja-paciente.svg" class="w-12 h-12"/>
+                        <div title="Dar de baja Paciente" class="w-16 h-16 rounded-xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#F8636B] transition">
+                            <img src="assets/icons/baja-paciente.svg" alt="Baja Paciente" class="w-12 h-12"/>
                         </div>
 
                     </div>

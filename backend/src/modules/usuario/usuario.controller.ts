@@ -44,13 +44,23 @@ export class UsuarioController {
         return this.usuarioService.deleteLogical(id);
     }
 
-    // Confirmación de registro inicial
+    // Confirmación de registro inicial (verifica el correo)
     @Patch('correo/confirmar-registro/:token')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.PACIENTE)
     confirmRegistro(@Param('token') token: string) {
         return this.usuarioService.confirmRegistro(token);
     }
+
+    //endpoint que maneja la validacion del registro (CORREO + CONTRASEÑA)
+    @Patch('/confirmar-registro')
+    async confirmRegistroCorreoContrasena(
+    @Body('token') token: string,
+    @Body('nuevaContrasena') nuevaContrasena: string
+    ) {
+        return this.usuarioService.confirmRegistroCorreoContrasena(token, nuevaContrasena);
+    }
+
 
     //Solicitar actualización de correo (envía token)
     @Patch(':id/correo/request')
@@ -92,16 +102,12 @@ export class UsuarioController {
     //ACTUALIZACION DE CONTRASEÑA (CORREO VERSION)
     // Solicitar recuperación (envía enlace por correo)
     @Post('recuperacion')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.PACIENTE)
     solicitarRecuperacion(@Body('correo') correo: string) {
         return this.usuarioService.solicitarRecuperacion(correo);
     }
 
     // Restablecer la contraseña usando el token JWT
     @Patch('restablecer')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.PACIENTE)
     restablecerContrasena(
     @Body('token') token: string,
     @Body('nuevaContrasena') nuevaContrasena: string,

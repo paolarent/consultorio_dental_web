@@ -17,4 +17,5 @@ export class UsuarioService {
     updateContrasena(actual: string, nueva: string, confirmar: string) {
         return this.http.patch<UpdateContrasena>(`${this.baseUrl}/cambiar-contrasena`, { actual, nueva, confirmar }, { withCredentials: true });
     }
+
 }

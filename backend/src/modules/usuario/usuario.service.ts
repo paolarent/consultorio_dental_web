@@ -115,6 +115,35 @@ export class UsuarioService {
         return { message: 'Registro confirmado correctamente.' };
     }
 
+    async confirmRegistroCorreoContrasena(token: string, nuevaContrasena: string) {
+        const record = await this.prisma.verificacion_correo.findFirst({
+            where: { token, usado: false, fecha_expira: { gt: new Date() } },
+        });
+        if (!record) throw new UnauthorizedException('Token inválido o expirado');
+
+        // Marcar correo como verificado
+        await this.prisma.usuario.update({
+            where: { id_usuario: record.id_usuario },
+            data: { correo_verificado: true },
+        });
+
+        // Guardar la nueva contraseña
+        const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
+        await this.prisma.usuario.update({
+            where: { id_usuario: record.id_usuario },
+            data: { contrasena: hashedPassword },
+        });
+
+        // Marcar token como usado
+        await this.prisma.verificacion_correo.update({
+            where: { id_token: record.id_token },
+            data: { usado: true },
+        });
+
+        return { message: 'Registro confirmado y contraseña creada correctamente.' };
+    }
+
+
     //ACTUALIZAR EL CORREO DEL USUARIO
     async requestCorreoUpdate(id: number, newCorreo: string) {
         // Validamos que no exista otro usuario con ese correo
