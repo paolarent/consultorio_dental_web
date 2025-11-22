@@ -11,6 +11,10 @@ export class ModalLogDelete {
   @Output() confirm = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
 
+  @Input() titulo: string = '';
+  @Input() texto: string = '';
+
+
   onConfirm() {
     this.confirm.emit();
   }
