@@ -1,0 +1,55 @@
+@if (paciente()) {
+
+    <div class="w-full flex flex-col md:flex-row 
+                justify-center md:justify-start 
+                items-center md:items-start 
+                gap-10 mt-6 px-4">
+    
+
+        <!-- TARJETA IZQUIERDA -->
+        <div class="bg-[#C3F2F3] rounded-xl shadow p-6
+                    flex flex-col sm:flex-row items-center sm:items-start sm:ml-12
+                    gap-4 w-full max-w-xl">
+
+            <!-- ICONO -->
+            <img src="assets/icons/paciente-exp.svg"
+                class="w-28 h-28 sm:w-36 sm:h-36 object-contain mx-auto sm:mx-0">
+
+            <!-- INFO -->
+            <div class="flex flex-col gap-2 text-center sm:text-left">
+
+                <h2 class="text-[#1D8F93] text-3xl font-extrabold">
+                    EXPEDIENTE
+                </h2>
+
+                <p class="text-xl font-semibold text-black leading-tight">
+                    {{ paciente().nombre }} {{ paciente().apellido1 }} {{ paciente().apellido2 }}
+                </p>
+
+                <p class="text-xl font-semibold text-black leading-tight">
+                    {{ calcularEdad(paciente().fecha_nacimiento) }} años
+                </p>
+
+                <p class="text-xl text-black leading-tight">
+                    Fecha de registro:
+                    <span class="font-semibold">
+                        {{ paciente().usuario.fecha_registro | date:'dd MMM yyyy':'':'es-MX' }}
+                    </span>
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- MENU DERECHA -->
+        <div class="relative w-full max-w-3xl sm:mt-6 md:ml-0">
+            <app-nav-exp></app-nav-exp>
+        </div>
+
+    </div>
+
+}
+
+
+
+

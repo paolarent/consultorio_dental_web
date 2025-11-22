@@ -40,6 +40,15 @@ export class PacienteService {
                 d_municipio: true,
                 d_localidad: true,
 
+                //traemos el correo desde usuario
+                usuario: {
+                    select: {
+                        id_usuario: true,
+                        correo: true,
+                        fecha_registro: true
+                    }
+                }
+
             }
             
         });

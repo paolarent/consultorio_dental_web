@@ -16,6 +16,7 @@ import { Pacientes } from './components/pacientes/pacientes';
 import { Servicios } from './components/servicios/servicios';
 import { Finanzas } from './components/finanzas/finanzas';
 import { Eventos } from './components/eventos/eventos';
+import { Expediente } from './components/expediente/expediente';
 
 export const routes: Routes = [
     {
@@ -55,7 +56,12 @@ export const routes: Routes = [
             { path: '', redirectTo: 'mi-agenda/citas', pathMatch: 'full' }, // redirección automática
             { path: 'mi-agenda/citas', component: AgendaDoc },
             { path: 'mi-agenda/eventos', component: Eventos },
-            { path: 'pacientes', component: Pacientes },
+            { path: 'pacientes',
+                children: [
+                    { path: '', component: Pacientes }, 
+                    { path: 'expediente/:id', component: Expediente },
+                ]
+            },
             { path: 'servicios', component: Servicios },
             { path: 'finanzas', component: Finanzas }
         ]

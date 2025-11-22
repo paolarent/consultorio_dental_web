@@ -1,0 +1,34 @@
+<div class="relative w-full max-w-3xl mx-auto mt-6">
+    <!-- Contenedor de tabs -->
+    <div class="flex justify-between bg-white rounded-xl shadow-lg px-4 py-3 relative">
+
+        @for (item of items; track $index) {
+        <button 
+            class="flex flex-col items-center justify-center gap-2 w-full py-2 transition"
+            (click)="select(item.key)"
+        >
+            <img 
+            [src]="selected() === item.key ? item.iconActive : item.icon" 
+            class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 transition"
+            />
+
+            <span 
+            class="text-sm sm:text-md md:text-lg font-semibold transition"
+            [class.text-[#115153]]="selected() === item.key"
+            [class.text-[#545454]]="selected() !== item.key"
+            >
+            {{ item.label }}
+            </span>
+        </button>
+        }
+
+    </div>
+
+    <!-- Barra animada -->
+    <div 
+        class="absolute bottom-0 h-1 bg-teal-600 rounded-full transition-all duration-300"
+        [style.width.%]="25"
+        [style.left.%]="indicatorPosition()"
+    ></div>
+
+</div>

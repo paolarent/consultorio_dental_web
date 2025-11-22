@@ -5,10 +5,11 @@ import { ModalRegistroPaciente } from '../modal-registro-paciente/modal-registro
 import { RegistroService } from '../../services/registro.service';
 import { ModalLogDelete } from '../modal-confirmar-logdelete/modal-confirmar-logdelete';
 import { NotificationService } from '../../services/notification.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-pacientes',
-  imports: [TelefonoPipe, ModalRegistroPaciente, ModalLogDelete],
+  imports: [TelefonoPipe, ModalRegistroPaciente, ModalLogDelete, RouterModule],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.css'
 })
@@ -96,7 +97,10 @@ export class Pacientes {
           this.cancelarEliminacion();
           this.notify.success('Paciente dado de baja correctamente.');
         },
-        error: err => console.error(err)
+        error: err => {
+          console.error(err);
+          this.notify.error('Error, no se pudo dar de baja al paciente');
+        }
       });
   }
 

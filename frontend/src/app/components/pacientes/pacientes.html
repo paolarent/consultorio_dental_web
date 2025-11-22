@@ -92,7 +92,9 @@
                     <div class="flex flex-col justify-between items-end w-[20%]">
 
                         <!-- Botón superior -->
-                        <div title="Ir a expediente" class="w-16 h-16 rounded-xl bg-[#545454] flex items-center justify-center shadow hover:bg-[#DDE0EB] transition">
+                        <div title="Ir a expediente" 
+                            [routerLink]="['/doc/pacientes/expediente', paciente.id_paciente]"
+                            class="w-16 h-16 rounded-xl bg-[#545454] flex items-center justify-center shadow hover:bg-[#DDE0EB] transition">
                             <img src="assets/icons/expediente.svg" alt="Expediente" class="w-12 h-12"/>
                         </div>
 
