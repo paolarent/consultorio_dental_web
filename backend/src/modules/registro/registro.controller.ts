@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Patch, UseGuards, Req} from '@nestjs/common';
+import { Controller, Post, Body, Param, Patch, UseGuards, Req, ParseIntPipe} from '@nestjs/common';
 import { RegistroService } from './registro.service';
 import { CreateRegistroDto } from './dto/create-registro.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -27,8 +27,8 @@ export class RegistroController {
     @Patch('paciente-logical/:usuarioId/:pacienteId')
     @Roles(Rol.DENTISTA)
     async deletePacienteLogical(
-        @Param('usuarioId') usuarioId: number,
-        @Param('pacienteId') pacienteId: number,
+        @Param('usuarioId', ParseIntPipe) usuarioId: number,
+        @Param('pacienteId', ParseIntPipe) pacienteId: number,
     ) {
         return this.registroService.deletePacienteLogical(usuarioId, pacienteId);
     }

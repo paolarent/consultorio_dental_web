@@ -191,6 +191,7 @@ export class PacienteService {
                 //traemos el correo desde usuario
                 usuario: {
                     select: {
+                        id_usuario: true,
                         correo: true
                     }
                 }

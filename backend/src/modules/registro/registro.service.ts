@@ -78,7 +78,7 @@ export class RegistroService {
         const usuario = await this.usuarioService.deleteLogical(usuarioId);
 
         // Luego damos de baja al paciente
-        const paciente = await this.pacienteService.deleteLogical(usuarioId);
+        const paciente = await this.pacienteService.deleteLogical(pacienteId);
 
         return {
             message: 'Paciente y usuario dados de baja',

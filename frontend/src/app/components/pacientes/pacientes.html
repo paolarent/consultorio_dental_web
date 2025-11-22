@@ -97,7 +97,8 @@
                         </div>
 
                         <!-- Botón inferior -->
-                        <div title="Dar de baja Paciente" class="w-16 h-16 rounded-xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#F8636B] transition">
+                        <div title="Dar de baja Paciente" (click)="abrirModalEliminar(paciente)"
+                            class="w-16 h-16 rounded-xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#F8636B] transition">
                             <img src="assets/icons/baja-paciente.svg" alt="Baja Paciente" class="w-12 h-12"/>
                         </div>
 
@@ -118,4 +119,15 @@
         (registrar)="registrarNuevoPaciente($event)"
     >
     </app-modal-registro-paciente>
+}
+
+@if (modalEliminar()) {
+    <app-modal-confirmar-logdelete
+        [visible]="modalEliminar()"
+        (confirm)="confirmarEliminacion()"
+        (cancel)="cancelarEliminacion()"
+        [titulo]="'Baja de Paciente'"
+        [texto]="'¿Está seguro de dar de baja este paciente?'"
+    >
+    </app-modal-confirmar-logdelete>
 }
