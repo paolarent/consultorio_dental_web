@@ -106,6 +106,8 @@
     [visible]="modalConfirmacion()"
     (confirm)="confirmarEliminacion()"
     (cancel)="cerrarModalSD()"
+    [titulo]="'Eliminar Elemento'"
+    [texto]="'¿Está seguro de eliminar este elemento?'">
     ></app-modal-confirmar-logdelete>
 }
 

@@ -185,7 +185,10 @@
 @if (modalConfirmacion()) {
     <app-modal-confirmar-logdelete
         (confirm)="confirmarEliminacion()"
-        (cancel)="cancelarEliminacion()">
+        (cancel)="cancelarEliminacion()"
+        [titulo]="'Eliminar Elemento'"
+        [texto]="'¿Está seguro de eliminar este elemento?'"
+    >
     </app-modal-confirmar-logdelete>
 }
 

@@ -19,4 +19,9 @@ export class RegistroService {
         return this.http.patch(`${this.userBaseUrl}/confirmar-registro`, { token, nuevaContrasena }, { withCredentials: true });
     }
 
+    logicalDeletePacUser(usuarioId: number, pacienteId: number) {
+        return this.http.patch(`${this.baseUrl}/paciente-logical/${usuarioId}/${pacienteId}`, {}, { withCredentials: true });
+    }
+
+
 }
