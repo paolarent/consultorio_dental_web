@@ -457,5 +457,45 @@ export class IngresoService {
         });
     }
 
+    async historialIngresosPendientesPaciente(id_usuario: number) {
+        // Buscar el paciente correspondiente al usuario loggeado
+        const paciente = await this.prisma.paciente.findUnique({
+            where: { id_usuario },
+            select: { id_paciente: true, nombre: true, apellido1: true, apellido2: true }
+        });
+
+        if (!paciente) throw new NotFoundException('Paciente no encontrado');
+
+        // Traer los ingresos pendientes solo de ese paciente
+        const ingresos = await this.prisma.ingreso.findMany({
+            where: {
+                id_paciente: paciente.id_paciente,
+                status: { in: [StatusIngreso.PARCIAL, StatusIngreso.PENDIENTE] },
+            },
+            include: {
+                detalle_ingreso: { select: { servicio: { select: { nombre: true } } } },
+                pago_ingreso: { select: { monto: true, status: true } }
+            },
+            orderBy: { fecha: 'desc' }
+        });
+
+        return ingresos.map(i => {
+            const totalPagado = i.pago_ingreso
+                .filter(p => p.status === StatusPagIngreso.CONFIRMADO)
+                .reduce((acc, p) => acc + Number(p.monto), 0);
+
+            return {
+                id_ingreso: i.id_ingreso,
+                servicio: i.detalle_ingreso[0]?.servicio.nombre || 'Servicio',
+                fecha: formatFechaLocal(i.fecha),
+                monto_total: Number(i.monto_total),
+                totalPagado,
+                saldoPendiente: Number(i.monto_total) - totalPagado,
+                status: i.status
+            };
+        });
+    }
+
+
 
 }

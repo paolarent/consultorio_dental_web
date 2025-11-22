@@ -258,29 +258,29 @@
                         <!-- Totales -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-3 text-neutral-700">
 
-                        <!-- Total -->
-                        <div class="flex flex-col">
-                            <span class="text-md font-semibold text-[#545454]">Total</span>
-                            <span class="text-lg font-bold text-neutral-800">
-                            ${{ ingreso.monto_total | number:'1.2-2' }}
-                            </span>
-                        </div>
+                            <!-- Total -->
+                            <div class="flex flex-col">
+                                <span class="text-md font-semibold text-[#545454]">Total</span>
+                                <span class="text-lg font-bold text-neutral-800">
+                                ${{ ingreso.monto_total | number:'1.2-2' }}
+                                </span>
+                            </div>
 
-                        <!-- Pagado -->
-                        <div class="flex flex-col">
-                            <span class="text-md font-semibold text-[#545454]">Pagado</span>
-                            <span class="text-lg font-bold text-[#094309]">
-                            ${{ ingreso.totalPagado | number:'1.2-2' }}
-                            </span>
-                        </div>
+                            <!-- Pagado -->
+                            <div class="flex flex-col">
+                                <span class="text-md font-semibold text-[#545454]">Pagado</span>
+                                <span class="text-lg font-bold text-[#094309]">
+                                ${{ ingreso.totalPagado | number:'1.2-2' }}
+                                </span>
+                            </div>
 
-                        <!-- Pendiente -->
-                        <div class="flex flex-col">
-                            <span class="text-md font-semibold text-[#545454]">Pendiente</span>
-                            <span class="text-lg font-bold text-[#530E0E]">
-                            ${{ ingreso.saldoPendiente | number:'1.2-2' }}
-                            </span>
-                        </div>
+                            <!-- Pendiente -->
+                            <div class="flex flex-col">
+                                <span class="text-md font-semibold text-[#545454]">Pendiente</span>
+                                <span class="text-lg font-bold text-[#530E0E]">
+                                ${{ ingreso.saldoPendiente | number:'1.2-2' }}
+                                </span>
+                            </div>
 
                         </div>
 

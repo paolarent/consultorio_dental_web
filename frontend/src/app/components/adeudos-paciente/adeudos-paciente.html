@@ -1,79 +1,80 @@
-<!-- seccion para la parte de arriba informativa -->
-<section class="relative rounded-2xl py-6 px-6 md:py-8 md:px-10 w-full max-w-8xl bg-white mx-auto">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center w-full">
-        
-        <!-- Bloque de texto -->
-        <div class="flex flex-col items-start space-y-4">
-            <h1 class="text-[#1D8F93] text-4xl font-extrabold leading-tight">
-                Mis Adeudos
-            </h1>
-            <p class="text-black text-2xl font-light">
-                Consulta el estado de tus pagos pendientes
-            </p>
+<div class="relative flex w-full max-w-8xl mx-auto gap-6 py-2 px-6 md:py-4 md:px-4">
 
-        </div>
-
+    <!-- Patrón de fondo de dientitos -->
+    <div
+        class="absolute inset-0 opacity-60 pointer-events-none -z-10"
+        style="background-image: url('assets/images/patron_dientes.png');
+            background-repeat: repeat;
+            background-position: bottom;
+            background-size: 800px 600px;">
     </div>
-</section>
 
-<!-- TARJETAS DE ADEUDOS -->
-<section class="w-full max-w-8xl mx-auto mt-4 px-6 grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
 
-    <!-- TARJETA: TOTAL ADEUDADO -->
-    <div class="bg-zinc-300/30 rounded-[10px] shadow-md p-6 relative h-44 flex justify-between items-center">
+    <!-- Bloque izquierdo 2/5 -->
+    <div class="md:w-2/5 flex flex-col gap-14">
         
+        <!-- Sección informativa -->
+        <section class="bg-white rounded-2xl p-6 shadow-md mt-2">
+        <h1 class="text-[#105053] text-5xl font-extrabold leading-tight">Mis Adeudos</h1>
+        <p class="text-black text-2xl font-light mt-2">Consulta el estado de tus pagos pendientes</p>
+        </section>
+
+        <!-- Total adeudado -->
+        <div class="bg-[#545454] rounded-[10px] shadow-md p-6 flex justify-between items-center h-44">
         <div>
-            <h3 class="text-[#105053] text-3xl font-bold font-['Montserrat']">
-                Total adeudado
-            </h3>
-            <p class="text-black text-5xl font-bold font-['Montserrat'] mt-4">
-                $7,000.00
+            <h3 class="text-white text-4xl font-bold">Total adeudado</h3>
+            <p class="text-white text-5xl font-bold mt-8">
+            ${{ totalPendiente | number:'1.2-2' }}
             </p>
         </div>
-
-        <!-- Icono circular -->
         <div class="relative">
             <div class="w-32 h-32 bg-[#C3F2F3] rounded-full border-4 border-[#105053] flex items-center justify-center">
-                <img src="assets/icons/signo-pesos-adeu.svg" alt="Signo de pesos" class="w-16 h-16">
+            <img src="assets/icons/signo-pesos-adeu.svg" alt="Signo de pesos" class="w-16 h-16">
             </div>
         </div>
-
+        </div>
 
     </div>
 
-    <!-- TARJETA: SALDOS PENDIENTES -->
-    <div class="bg-zinc-300/30 rounded-[10px] shadow-md p-6 relative h-72">
+    <!-- Bloque derecho 3/5 -->
+    <div class="md:w-3/5 flex flex-col max-h-[600px] bg-[#C3F2F3] rounded-[10px] shadow-md p-6">
+        
+        <!-- Título fijo -->
+        <h3 class="text-[#545454] text-4xl font-bold mb-4 flex-shrink-0">Mis Saldos pendientes</h3>
 
-        <h3 class="text-[#105053] text-3xl font-bold font-['Montserrat']">
-            Saldos pendientes
-        </h3>
-
-        <!-- Tarjeta interna -->
-        <div class="bg-white rounded-[10px] border-l-[10px] border-amber-400 p-5 mt-6">
-
-            <p class="text-neutral-600 text-2xl font-bold font-['Montserrat']">
-                Ortodoncia <span class="text-neutral-600 text-xl">- Fecha de la cita</span>
+        <!-- Contenedor scrollable para las cards -->
+        <div class="overflow-y-auto flex-1">
+        @if(ingresosPendientes.length === 0) {
+            <p class="text-center text-neutral-600 mt-4 font-semibold">
+            No hay saldos pendientes.
             </p>
+        }
 
-            <!-- Totales -->
-            <div class="grid grid-cols-3 mt-6 justify-left">
-                <div>
-                    <p class="text-neutral-600 font-semibold">Total</p>
-                    <p class="text-black text-xl font-bold">$10,500.00</p>
+        @for(ingreso of ingresosPendientes; track $index) {
+            <div class="bg-white rounded-[10px] border-l-8 border-[#105053] p-5 mt-6">
+            <p class="text-neutral-600 text-2xl font-bold">{{ ingreso.servicio }}</p>
+            <div class="text-[#545454] text-xl mt-1">{{ ingreso.fecha }}</div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-3 text-neutral-700">
+                <div class="flex flex-col">
+                    <span class="text-lg font-semibold text-[#545454]">Total</span>
+                    <span class="text-2xl font-bold text-neutral-800">${{ ingreso.monto_total | number:'1.2-2' }}</span>
                 </div>
-
-                <div>
-                    <p class="text-neutral-600 font-semibold">Pagado</p>
-                    <p class="text-[#094309] text-xl font-bold">$3,500.00</p>
+                <div class="flex flex-col">
+                    <span class="text-lg font-semibold text-[#545454]">Pagado</span>
+                    <span class="text-2xl font-bold text-[#094309]">${{ ingreso.totalPagado | number:'1.2-2' }}</span>
                 </div>
-
-                <div>
-                    <p class="text-neutral-600 font-semibold">Pendiente</p>
-                    <p class="text-[#530E0E] text-xl font-bold">$7,000.00</p>
+                <div class="flex flex-col">
+                    <span class="text-lg font-semibold text-[#545454]">Pendiente</span>
+                    <span class="text-2xl font-bold text-[#530E0E]">${{ ingreso.saldoPendiente | number:'1.2-2' }}</span>
                 </div>
             </div>
-
+            </div>
+        }
         </div>
+
     </div>
 
-</section>
+</div>
+
+

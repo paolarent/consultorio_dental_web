@@ -16,6 +16,15 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 export class IngresoController {
     constructor(private readonly ingresoService: IngresoService) {}
 
+    @Get('historial/ingresos-pendientes-paciente')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.PACIENTE)
+    async historialPendientesPaciente(@Req() req) {
+        const id_usuario = req.user.id_usuario; // desde JWT
+        return this.ingresoService.historialIngresosPendientesPaciente(id_usuario);
+    }
+
+
     @Get('historial/ingresos-pendientes')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
@@ -148,8 +157,6 @@ export class IngresoController {
             req.user.id_usuario
         );
     }
-
-
 
     // ---------------------------------------------------------
     // OBTENER CORTE ABIERTO
