@@ -4,12 +4,13 @@ import { PacienteService } from '../../services/paciente.service';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeEsMx from '@angular/common/locales/es-MX';
 import { NavExp } from '../nav-exp/nav-exp';
+import { Filiacion } from '../filiacion/filiacion';
 
 registerLocaleData(localeEsMx);
 
 @Component({
   selector: 'app-expediente',
-  imports: [DatePipe, NavExp],
+  imports: [DatePipe, NavExp, Filiacion],
   templateUrl: './expediente.html',
   styleUrl: './expediente.css'
 })
