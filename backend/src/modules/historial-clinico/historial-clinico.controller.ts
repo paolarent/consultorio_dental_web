@@ -8,7 +8,7 @@ import { CreateHistorialDto } from './dto/create-historial.dto';
 import { UpdateHistorialDto } from './dto/update-historial.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
-@Controller('historial-clinico')
+@Controller('historial-tratamientos')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class HistorialClinicoController {
     constructor( private readonly historialService: HistorialClinicoService ) {}

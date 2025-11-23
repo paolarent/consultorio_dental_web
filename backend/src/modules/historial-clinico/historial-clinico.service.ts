@@ -4,6 +4,7 @@ import { CreateHistorialDto } from './dto/create-historial.dto';
 import { UpdateHistorialDto } from './dto/update-historial.dto';
 import { Status } from 'src/common/enums';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { formatFechaLocal } from 'src/utils/format-date';
 
 @Injectable()
 export class HistorialClinicoService {
@@ -16,15 +17,15 @@ export class HistorialClinicoService {
         //Crear el 'historial'
         const historial = await this.prisma.historial_clinico.create({
             data: {
-                id_paciente: dto.id_paciente,
-                id_servicio: dto.id_servicio,
-                fecha: dto.fecha,
+                id_paciente: Number(dto.id_paciente),
+                id_servicio: Number(dto.id_servicio),
+                fecha: new Date(dto.fecha),
                 descripcion: dto.descripcion,
                 status: Status.ACTIVO,
             },
         });
 
-        //Verificar límite de fotos (máx 6)
+        //Verificar límite de fotos (máx 3)
         const fotosExistentes = await this.prisma.fotografia_historial.count({
             where: { id_historial: historial.id_historial },
         });
@@ -54,7 +55,8 @@ export class HistorialClinicoService {
 
     // Listar historial con fotos de un paciente
     async obtenerHistorial(id_paciente: number) {
-        return this.prisma.historial_clinico.findMany({
+        // Primero obtenemos los historiales
+        const historiales = await this.prisma.historial_clinico.findMany({
             where: { id_paciente, status: Status.ACTIVO },
             include: { 
                 fotografia_historial: true, 
@@ -67,6 +69,12 @@ export class HistorialClinicoService {
             },
             orderBy: { fecha: 'desc' },
         });
+
+        // Formateamos solo la fecha antes de devolver
+        return historiales.map(h => ({
+            ...h,
+            fecha: h.fecha.toISOString().split('T')[0] // "2022-04-07"
+        }));
     }
 
     async actualizarHistorial(id_historial: number, dto: UpdateHistorialDto, fotos?: Express.Multer.File[]) {

@@ -1,0 +1,93 @@
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[500px]">
+        <div class="grid gap-4">
+    
+            <h2 class="text-4xl font-bold mt-2 mb-2 text-[#105053]">
+                Registrar tratamiento
+            </h2>
+
+            <!-- Servicio aplicado -->
+            <div>
+                <label class="block text-base font-medium text-[#545454] mb-1">
+                    Servicio aplicado
+                </label>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-select placeholder="Seleccione servicio" required [(ngModel)]="id_servicio">
+                    
+                    @for(serv of tiposServicio; track serv.id_servicio) {
+                        <mat-option [value]="serv.id_servicio">
+                        {{ serv.nombre }}
+                        </mat-option>
+                    }
+
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+
+            <!-- Fecha -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454] mb-1">Fecha</label>
+                <input #fechaInput type="text" placeholder="Selecciona la fecha" required [(ngModel)]="fecha"
+                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none" />
+            </div>
+
+
+            <!-- Notas -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454] mb-1">Notas</label>
+                <textarea placeholder="Notas Administrativas" rows="3" [(ngModel)]="notas"
+                            class="w-full border border-gray-300 bg-zinc-300/30 rounded-lg p-3 focus:ring-2 focus:ring-[#105053] focus:outline-none resize-none"></textarea>
+            </div>
+
+
+            <!-- Imagen del Servicio -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454] mb-1">Imágenes del Tratamiento</label>
+
+                <div class="flex gap-4 mb-2">
+                    @for(archivo of archivos; track archivo.file.name) {
+                        <div class="relative w-24 h-24">
+                            <img src="{{ archivo.preview }}" class="w-full h-full object-cover rounded-md" />
+                            <button type="button" 
+                                    (click)="eliminarArchivo(archivo.index)" 
+                                    class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                ×
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                <!-- Input file -->
+                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-zinc-300/30 hover:bg-zinc-300/50 transition">
+                    <span class="text-gray-500 text-sm">
+                    Cargar Imagenes (min 1, máx 3)
+                    </span>
+                    <input type="file" accept="image/*" multiple class="hidden" (change)="onFileSelected($event)" />
+                </label>
+            </div>
+
+
+            <!-- Botones -->
+            <div class="flex justify-end gap-4 mt-6">
+                <button
+                class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                (click)="cerrar.emit()"
+                >
+                <span class="text-white text-lg font-semibold tracking-wider">Cancelar</span>
+                </button>
+
+                <button
+                class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                (click)="registrarTratamiento()"
+                >
+                <span class="text-white text-lg font-semibold tracking-wider">
+                    Registrar
+                </span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

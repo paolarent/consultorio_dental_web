@@ -6,12 +6,13 @@ import localeEsMx from '@angular/common/locales/es-MX';
 import { NavExp } from '../nav-exp/nav-exp';
 import { Filiacion } from '../filiacion/filiacion';
 import { Padecimientos } from '../padecimientos/padecimientos';
+import { HistorialTrat } from '../historial-trat/historial-trat';
 
 registerLocaleData(localeEsMx);
 
 @Component({
   selector: 'app-expediente',
-  imports: [DatePipe, NavExp, Filiacion, Padecimientos],
+  imports: [DatePipe, NavExp, Filiacion, Padecimientos, HistorialTrat],
   templateUrl: './expediente.html',
   styleUrl: './expediente.css'
 })

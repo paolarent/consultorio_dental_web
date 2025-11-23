@@ -1,0 +1,79 @@
+<section class="w-full max-w-[86rem] mx-auto mt-14 flex flex-col gap-6">
+    <!-- Header + Botón -->
+    <div class="flex flex-col lg:flex-row justify-between items-center w-full gap-4 lg:gap-4">
+        <div class="text-[#115153] text-3xl lg:text-4xl font-bold text-center lg:text-left">
+        Servicios y Tratamientos Aplicados
+        </div>
+
+        <button (click)="abrirModal()"
+        class="inline-flex bg-[#545454] text-xl lg:text-2xl text-white font-semibold tracking-widest rounded-xl shadow-lg 
+                px-8 sm:px-16 py-3 sm:py-4 hover:scale-105 transition-transform duration-300 items-center gap-4 sm:gap-6"
+        title="Registrar Tratamiento">
+        <img src="assets/icons/agregar_vb.svg" alt="Agregar Tratamiento Aplicado" class="w-8 h-8 lg:w-10 lg:h-10">
+        <span>Registrar Tratamiento</span>
+        </button>
+    </div>
+
+    <!-- Fondo contenedor de las cards -->
+    <div class="bg-[#C3F2F3] rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[400px] overflow-y-auto">
+
+        <!-- Loading -->
+        @if(cargando) {
+        <div class="col-span-full text-center text-lg text-neutral-600">
+            Cargando historial...
+        </div>
+        }
+
+        <!-- Cards de historial dinámicas -->
+        @for(h of historial; track h.id_historial) {
+            <div class="bg-white border-l-6 border-teal-900 rounded-lg shadow p-4 flex flex-row gap-4">
+
+                <!-- Información del tratamiento -->
+                <div class="flex-1 flex flex-col gap-3">
+                <h3 class="text-black text-xl md:text-3xl font-semibold">{{ h.servicio.nombre }}</h3>
+                <p class="text-neutral-600 text-lg md:text-xl">{{ formatFecha(h.fecha) }}</p>
+                <p class="text-neutral-600 text-base md:text-lg">{{ h.descripcion }}</p>
+
+                <!-- Fotos si hay -->
+                <div class="flex gap-4 mt-2">
+                    @for(f of h.fotografia_historial; track f.id_foto) {
+                    <img src="{{ f.url_fotografia }}" alt="Foto tratamiento" class="w-24 h-24 rounded-lg bg-zinc-300 object-cover" />
+                    }
+                </div>
+                </div>
+
+                <!-- Botones a la derecha -->
+                <div class="flex flex-col justify-between items-center md:items-end gap-2 sm:gap-4 w-auto">
+                    <div title="Ir a expediente" 
+                        class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#25BEC4] flex items-center justify-center shadow hover:bg-[#545454] transition cursor-pointer">
+                        <img src="assets/icons/edit.svg" alt="Expediente" class="w-8 h-8 md:w-10 md:h-10"/>
+                    </div>
+                    <div title="Dar de baja Paciente"
+                        class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#8E0F0F] transition cursor-pointer">
+                        <img src="assets/icons/cancelar.svg" alt="Baja Paciente" class="w-10 h-10 md:w-12 md:h-12"/>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+        <!-- Empty state -->
+        @if(!cargando && historial.length === 0) {
+        <div class="col-span-full text-center text-xl font-semibold text-neutral-600 italic mt-10">
+            No hay tratamientos registrados.
+        </div>
+        }
+
+    </div>
+</section>
+
+<!-- Modal -->
+@if(ModalAgUpTratamiento()) {
+    <app-modal-historial-agup
+        [paciente]="paciente"
+        (cerrar)="cerrarModal()"
+        (agregado)="agregarHistorial($event)">
+    </app-modal-historial-agup>
+}
+
+

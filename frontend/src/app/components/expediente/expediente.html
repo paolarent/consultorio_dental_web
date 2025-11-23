@@ -59,7 +59,7 @@
         }
 
         @if (currentTab() === 'historial') {
-            <p class="text-center text-lg mt-4">Vista de Historial (placeholder)</p>
+            <app-historial-trat [paciente]="paciente()"></app-historial-trat>
         }
 
         @if (currentTab() === 'archivo') {
