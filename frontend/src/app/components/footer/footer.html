@@ -4,7 +4,7 @@
         <!-- Nombre del consultorio -->
         @if (auth.usuario(); as usuario) {
             <div>
-                <p class="font-bold mt-4 text-lg text-center">{{ usuario.consultorio.nombre }}</p>
+                <p class="font-bold mt-4 text-lg text-center">{{ usuario.consultorio?.nombre }}</p>
                 <p appCopyright></p> 
             </div>
 
@@ -12,22 +12,22 @@
             <div>
                 <p class="font-bold">CONTACTO:</p>
                 <p>
-                    <span class="font-semibold">Teléfono:</span> +52 {{ usuario.consultorio.telefono | telefono }}
+                    <span class="font-semibold">Teléfono:</span> +52 {{ usuario.consultorio?.telefono | telefono }}
                 </p>
-                <p><span class="font-semibold">Correo:</span> {{ usuario.consultorio.correo }}</p>
+                <p><span class="font-semibold">Correo:</span> {{ usuario.consultorio?.correo }}</p>
             </div>
         }
 
         <!-- Redes sociales / mapas siempre visibles -->
         <div class="flex justify-center md:justify-end space-x-6 mt-4">
             @if (auth.usuario(); as usuario) {
-                <a [href]="usuario.consultorio.maps_url" target="_blank" rel="noopener noreferrer">
+                <a [href]="usuario.consultorio?.maps_url" target="_blank" rel="noopener noreferrer">
                 <img src="assets/icons/maps.svg" alt="Mapas" title="MAPS" class="w-12 h-12 hover:scale-105 transition-transform duration-300" />
                 </a>
-                <a [href]="usuario.consultorio.facebook_url" target="_blank" rel="noopener noreferrer">
+                <a [href]="usuario.consultorio?.facebook_url" target="_blank" rel="noopener noreferrer">
                 <img src="assets/icons/facebook.svg" alt="Facebook" title="FACEBOOK" class="w-12 h-12 hover:scale-105 transition-transform duration-300" />
                 </a>
-                <a [href]="usuario.consultorio.instagram_url" target="_blank" rel="noopener noreferrer">
+                <a [href]="usuario.consultorio?.instagram_url" target="_blank" rel="noopener noreferrer">
                 <img src="assets/icons/instagram.svg" alt="Instagram" title="INSTAGRAM" class="w-12 h-12 hover:scale-105 transition-transform duration-300" />
                 </a>
             }

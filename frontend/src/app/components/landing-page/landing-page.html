@@ -21,7 +21,7 @@
             <h1 class="text-5xl font-bold leading-tight">
                 Hola, bienvenido a <br />
             <span class="text-6xl text-[#115153] font-extrabold">
-                {{ usuario.consultorio.nombre }} 😁
+                {{ usuario.consultorio?.nombre || 'Odontix' }} 😁
             </span>
             </h1>
 
