@@ -8,7 +8,7 @@
 
         <!-- TARJETA IZQUIERDA -->
         <div class="bg-[#C3F2F3] rounded-xl shadow p-6
-                    flex flex-col sm:flex-row items-center sm:items-start sm:ml-12
+                    flex flex-col md:flex-row items-center md:items-start md:ml-12
                     gap-4 w-full max-w-xl">
 
             <!-- ICONO -->
@@ -43,12 +43,33 @@
 
         <!-- MENU DERECHA -->
         <div class="relative w-full max-w-3xl sm:mt-6 md:ml-0">
-            <app-nav-exp></app-nav-exp>
+            <app-nav-exp (tabChanged)="setTab($event)"></app-nav-exp>
         </div>
 
     </div>
 
+    <div class="w-full max-w-full mx-auto mt-4">
+
+        @if (currentTab() === 'filiacion') {
+            <app-filiacion [paciente]="paciente()"></app-filiacion>
+        }
+
+        @if (currentTab() === 'antecedentes') {
+            <p class="text-center text-lg mt-4">Vista de Antecedentes (placeholder)</p>
+        }
+
+        @if (currentTab() === 'historial') {
+            <p class="text-center text-lg mt-4">Vista de Historial (placeholder)</p>
+        }
+
+        @if (currentTab() === 'archivo') {
+            <p class="text-center text-lg mt-4">Vista de Archivo (placeholder)</p>
+        }
+
+    </div>
+
 }
+
 
 
 

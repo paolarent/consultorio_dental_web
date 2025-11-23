@@ -19,6 +19,12 @@ export class Expediente {
   pacienteService = inject(PacienteService);
 
   paciente = signal<any | null>(null);
+  currentTab = signal('filiacion');
+
+  setTab(tab: string) {
+    this.currentTab.set(tab);
+  }
+
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));

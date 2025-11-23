@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, EventEmitter, Output, signal } from '@angular/core';
 
 @Component({
   selector: 'app-nav-exp',
@@ -7,6 +7,8 @@ import { Component, computed, signal } from '@angular/core';
   styleUrl: './nav-exp.css'
 })
 export class NavExp {
+  @Output() tabChanged = new EventEmitter<string>();
+
   items = [
     { key: 'filiacion', label: 'Filiación', icon: 'assets/icons/filiacion-vb.svg', iconActive: 'assets/icons/filiacion-va.svg' },
     { key: 'antecedentes', label: 'Antecedentes Médicos', icon: 'assets/icons/antecedentes-vb.svg', iconActive: 'assets/icons/antecedentes-va.svg' },
@@ -18,6 +20,7 @@ export class NavExp {
 
   select(tab: string) {
     this.selected.set(tab);
+    this.tabChanged.emit(tab);
   }
 
   // Barra animada 0–75%
