@@ -5,12 +5,13 @@ import { DatePipe, registerLocaleData } from '@angular/common';
 import localeEsMx from '@angular/common/locales/es-MX';
 import { NavExp } from '../nav-exp/nav-exp';
 import { Filiacion } from '../filiacion/filiacion';
+import { Padecimientos } from '../padecimientos/padecimientos';
 
 registerLocaleData(localeEsMx);
 
 @Component({
   selector: 'app-expediente',
-  imports: [DatePipe, NavExp, Filiacion],
+  imports: [DatePipe, NavExp, Filiacion, Padecimientos],
   templateUrl: './expediente.html',
   styleUrl: './expediente.css'
 })
@@ -24,7 +25,6 @@ export class Expediente {
   setTab(tab: string) {
     this.currentTab.set(tab);
   }
-
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));

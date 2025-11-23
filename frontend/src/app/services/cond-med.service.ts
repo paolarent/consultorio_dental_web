@@ -10,7 +10,10 @@ export class CondicionesMedicasService {
     private http = inject(HttpClient);
     private baseUrl = 'http://localhost:3000/condiciones-medicas'; //ruta backend
 
-    listarCMPaciente(): Observable<CondicionMedica[]> {
+    listarCMPaciente(idPaciente?: number): Observable<CondicionMedica[]> {
+        if (idPaciente) {
+            return this.http.get<CondicionMedica[]>(`${this.baseUrl}/mis-condiciones-medicas?idPaciente=${idPaciente}`, { withCredentials: true });
+        }
         return this.http.get<CondicionMedica[]>(`${this.baseUrl}/mis-condiciones-medicas`, { withCredentials: true });
     }
 

@@ -55,7 +55,7 @@
         }
 
         @if (currentTab() === 'antecedentes') {
-            <p class="text-center text-lg mt-4">Vista de Antecedentes (placeholder)</p>
+            <app-padecimientos [idPaciente]="paciente()!.id_paciente"></app-padecimientos>
         }
 
         @if (currentTab() === 'historial') {

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards, Request, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards, Request, BadRequestException, Query } from '@nestjs/common';
 import { PacienteUtilsService } from 'src/common/services/paciente-utils.service';
 import { CondicionMedicaService } from './condicion-medica.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -39,11 +39,20 @@ export class CondicionMedicaController {
 
     @Get('mis-condiciones-medicas')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.PACIENTE)
-    async listarPaciente(@Req() req) {
-        // Obtener id_paciente a partir del id_usuario del JWT
-        const paciente = await this.pacienteUtils.obtenerPacientePorUsuario(req.user.id_usuario);
-        return this.condicionMedService.listarCMPorPaciente(paciente.id_paciente);
+    @Roles(Rol.PACIENTE, Rol.DENTISTA)
+    async listarPaciente(@Req() req, @Query('idPaciente') idPaciente?: string) {
+        let pacienteId: number;
+
+        if (idPaciente) {
+            // Si manda idPaciente (dentista desde expediente)
+            pacienteId = Number(idPaciente);
+        } else {
+            // Si no, tomar de la sesión (paciente)
+            const paciente = await this.pacienteUtils.obtenerPacientePorUsuario(req.user.id_usuario);
+            pacienteId = paciente.id_paciente;
+        }
+
+        return this.condicionMedService.listarCMPorPaciente(pacienteId);
     }
 
     @Get('paciente/:id_paciente')

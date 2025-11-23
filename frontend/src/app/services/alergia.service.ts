@@ -11,7 +11,10 @@ export class AlergiasService {
     private http = inject(HttpClient);
     private baseUrl = 'http://localhost:3000/alergias'; //ruta al back
 
-    listarAlergiasPaciente(): Observable<Alergia[]> {
+    listarAlergiasPaciente(idPaciente?: number): Observable<Alergia[]> {
+        if (idPaciente) {
+            return this.http.get<Alergia[]>(`${this.baseUrl}/mis-alergias?idPaciente=${idPaciente}`, { withCredentials: true });
+        }
         return this.http.get<Alergia[]>(`${this.baseUrl}/mis-alergias`, { withCredentials: true });
     }
 

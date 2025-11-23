@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards, Request, Req, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Request, Req, BadRequestException, Query } from '@nestjs/common';
 import { AlergiaService } from './alergia.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -43,11 +43,20 @@ export class AlergiaController {
     //Para el paciente
     @Get('mis-alergias')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Rol.PACIENTE)
-    async listarPaciente(@Req() req) {
-        // Obtener id_paciente a partir del id_usuario del JWT
-        const paciente = await this.pacienteUtils.obtenerPacientePorUsuario(req.user.id_usuario);
-        return this.alergiaService.listarPorPaciente(paciente.id_paciente);
+    @Roles(Rol.PACIENTE, Rol.DENTISTA)
+    async listarPaciente(@Req() req, @Query('idPaciente') idPaciente?: string) {
+        let pacienteId: number;
+
+        if (idPaciente) {
+            // Si manda idPaciente (dentista desde expediente)
+            pacienteId = Number(idPaciente);
+        } else {
+            // Si no, tomar de la sesión (paciente)
+            const paciente = await this.pacienteUtils.obtenerPacientePorUsuario(req.user.id_usuario);
+            pacienteId = paciente.id_paciente;
+        }
+
+        return this.alergiaService.listarPorPaciente(pacienteId);
     }
 
     //Para el dentista que consulta un paciente específico
