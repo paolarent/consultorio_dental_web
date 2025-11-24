@@ -18,6 +18,10 @@ export class ModalArchivo {
   @Output() archivoAgregado = new EventEmitter<Archivo>();
   @Output() cerrar = new EventEmitter<void>();
 
+  @Input() archivoEditar: Archivo | null = null;  // si viene algo significa modo editar
+  @Output() archivoActualizado = new EventEmitter<Archivo>();
+  tieneImagenOriginal = signal(false);
+
   nombre = signal('');
   descripcion = signal('');
   file = signal<File | null>(null);
@@ -26,6 +30,25 @@ export class ModalArchivo {
   cargando = signal(false);
 
   constructor(private archivoService: ArchivoService) {}
+
+  ngOnChanges() {
+    if (this.archivoEditar) {
+      this.nombre.set(this.archivoEditar.nombre);
+      this.descripcion.set(this.archivoEditar.descripcion);
+      this.preview.set(this.archivoEditar.url_imagen);
+
+      this.file.set(null); // no hay archivo nuevo
+      this.tieneImagenOriginal.set(true);  // sí existe imagen previa
+    } else {
+      this.nombre.set('');
+      this.descripcion.set('');
+      this.preview.set(null);
+
+      this.file.set(null);
+      this.tieneImagenOriginal.set(false);
+    }
+  }
+
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -44,29 +67,84 @@ export class ModalArchivo {
   }
 
   guardar() {
-    if (!this.nombre() || !this.file() || !this.descripcion()) {
-      this.notify.warning('Por favor complete todos los campos');
-      return;
-    } 
+    if (!this.archivoEditar) {
+      if (!this.nombre() || !this.descripcion() || !this.file()) {
+        this.notify.warning('Por favor complete todos los campos');
+        return;
+      }
+    }
+
+    if (this.archivoEditar) {
+      if (!this.nombre().trim() || !this.descripcion().trim()) {
+        this.notify.warning('Por favor complete todos los campos');
+        this.cargando.set(false);
+        return;
+      }
+    }
+
 
     this.cargando.set(true);
+
     const formData = new FormData();
     formData.append('nombre', this.nombre());
     formData.append('descripcion', this.descripcion());
-    formData.append('status', StatusArchivo.ACTIVO);
-    formData.append('imagen', this.file()!);
 
-    this.archivoService.subirArchivo(this.paciente.id_paciente, formData).subscribe({
-      next: (archivo: Archivo) => {
+    // Si hay archivo nuevo, adjuntarlo
+    if (this.file()) {
+      formData.append('file', this.file()!);
+    }
+
+    // --- MODO EDITAR ---
+    if (this.archivoEditar) {
+      // Si NO hay archivo nuevo y NO tiene imagen actual (caso imposible pero válido)
+      if (!this.file() && !this.tieneImagenOriginal()) {
+        this.notify.warning('Debe seleccionar una imagen');
+        this.cargando.set(false);
+        return;
+      }
+
+      this.archivoService.actualizarArchivo(
+        this.archivoEditar.id_archivo,
+        formData
+      ).subscribe({
+        next: (archivo) => {
+          this.archivoActualizado.emit(archivo);
+          this.notify.success('Archivo actualizado');
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.notify.error('Error al actualizar');
+          this.cargando.set(false);
+        }
+      });
+
+      return;
+    }
+
+    // --- MODO CREAR ---
+    if (!this.file()) {
+      this.notify.warning('Debe subir una imagen');
+      this.cargando.set(false);
+      return;
+    }
+
+    //formData.append('file', this.file()!);
+
+    this.archivoService.subirArchivo(
+      this.paciente.id_paciente,
+      formData
+    ).subscribe({
+      next: (archivo) => {
         this.archivoAgregado.emit(archivo);
-        this.notify.success('Archivo agregado correctamente');
+        this.notify.success('Archivo agregado');
         this.cargando.set(false);
       },
-      error: (err) => {
-        console.error(err);
-        this.notify.error('Error, no se pudo agregar el archivo');
+      error: () => {
+        this.notify.error('Error al agregar');
         this.cargando.set(false);
       }
     });
   }
+
+
 }

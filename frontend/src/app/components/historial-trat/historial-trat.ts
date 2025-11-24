@@ -96,26 +96,26 @@ export class HistorialTrat implements OnInit {
     this.modalConfirmacion.set(true);
   }
 
-    cerrarModalSD() {
-      this.modalConfirmacion.set(false);
-      this.historialAEliminar = undefined;
-    }
+  cerrarModalSD() {
+    this.modalConfirmacion.set(false);
+    this.historialAEliminar = undefined;
+  }
 
-    confirmarSoftDelete() {
-      if (!this.historialAEliminar) return;
+  confirmarSoftDelete() {
+    if (!this.historialAEliminar) return;
 
-      this.historialService.desactivarHistorial(this.historialAEliminar)
-        .subscribe({
-          next: () => {
-            this.obtenerHistorial(); // recarga la lista
-            this.cerrarModalSD();     // cierra modal
+    this.historialService.desactivarHistorial(this.historialAEliminar)
+      .subscribe({
+        next: () => {
+          this.obtenerHistorial(); // recarga la lista
+          this.cerrarModalSD();     // cierra modal
 
-            this.notify.success("Registro de tratamiento eliminado");
-          },
-          error: () => {
-            this.notify.error("Error al eliminar el registro");
-          }
-        });
+          this.notify.success("Registro de tratamiento eliminado");
+        },
+        error: () => {
+          this.notify.error("Error al eliminar el registro");
+        }
+      });
   }
 
 }

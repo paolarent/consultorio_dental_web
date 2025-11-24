@@ -5,7 +5,7 @@
             Archivo de Fotografías del Paciente
         </div>
 
-        <button (click)="abrirModal()"
+        <button (click)="abrirModalNuevo()"
         class="inline-flex bg-[#545454] text-xl lg:text-2xl text-white font-semibold tracking-widest rounded-xl shadow-lg 
                 px-8 sm:px-16 py-3 sm:py-4 hover:scale-105 transition-transform duration-300 items-center gap-4 sm:gap-6"
             title="Registrar Tratamiento">
@@ -17,13 +17,12 @@
     <!-- Fondo contenedor de las cards -->
     <div class="bg-[#DDE0EB] rounded-lg p-6 max-h-[500px] overflow-y-auto">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @for (archivo of archivos(); track archivo.id_archivo; let i = $index) {
-            <div (click)="abrirImagen(i)"
-                class="bg-white rounded-xl shadow-md cursor-pointer hover:scale-105 transition-transform duration-300 flex flex-col">
+            @for (archivo of archivos; track archivo.id_archivo; let i = $index) {
+            <div class="bg-white rounded-xl shadow-md cursor-pointer hover:scale-105 transition-transform duration-300 flex flex-col">
 
                 <!-- Imagen arriba -->
                 <div class="w-full h-44 rounded-t-xl overflow-hidden">
-                <img [src]="archivo.url_imagen" alt="{{ archivo.nombre }}" class="w-full h-full object-cover"/>
+                <img (click)="abrirImagen(i)" [src]="archivo.url_imagen" alt="{{ archivo.nombre }}" class="w-full h-full object-cover"/>
                 </div>
 
                 <!-- Parte inferior: texto + botones -->
@@ -37,12 +36,12 @@
 
                 <!-- Botones -->
                 <div class="flex flex-col gap-2 sm:gap-3">
-                    <div title="Editar archivo" 
+                    <div title="Editar archivo" (click)="editarArchivo(archivo)"
                         class="w-12 h-12 rounded-2xl bg-[#25BEC4] flex items-center justify-center shadow hover:bg-[#545454] transition cursor-pointer"
                         >
                     <img src="assets/icons/edit.svg" alt="Editar" class="w-7 h-7"/>
                     </div>
-                    <div title="Eliminar archivo" 
+                    <div title="Eliminar archivo" (click)="abrirModalEliminar(archivo.id_archivo)"
                         class="w-12 h-12 rounded-2xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#8E0F0F] transition cursor-pointer"
                         >
                     <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8"/>
@@ -58,10 +57,26 @@
 </section>
 
 <!-- Modal -->
-@if(ModalArchivo()) {
+@if (ModalArchivo()) {
 <app-modal-archivo
-    [paciente]="paciente" 
-    (archivoAgregado)="onArchivoAgregado($event)"
-    (cerrar)="ModalArchivo.set(false)">
+    [paciente]="paciente"
+    [archivoEditar]="archivoSeleccionado"  
+    (cerrar)="cerrarModal()"
+    (archivoAgregado)="onArchivoAgregado()"
+    (archivoActualizado)="onArchivoActualizado()">
 </app-modal-archivo>
 }
+
+
+@if(modalConfirmacion()) {
+    <app-modal-confirmar-logdelete
+    [visible]="modalConfirmacion()"
+    (confirm)="confirmarSoftDelete()"
+    (cancel)="cerrarModalSD()"
+    [titulo]="'Eliminar Elemento'"
+    [texto]="'¿Está seguro de eliminar este elemento?'">
+    ></app-modal-confirmar-logdelete>
+}
+
+
+

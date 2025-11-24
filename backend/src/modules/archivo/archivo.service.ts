@@ -6,6 +6,12 @@ import { StatusArchivo } from 'src/common/enums';
 import { CreateArchivoDto } from './dto/create-archivo.dto';
 import { UpdateArchivoDto } from './dto/update-archivo.dto';
 
+interface CloudinaryUploadResult {
+    secure_url: string;
+    public_id: string;
+}
+
+
 @Injectable()
 export class ArchivoService {
     constructor(
@@ -44,19 +50,37 @@ export class ArchivoService {
         });
     }
 
-    // Editar nombre o descripcion de X archivo
-    async actualizarArchivo(id_archivo: number, dto: UpdateArchivoDto) {
+    async actualizarArchivo(id_archivo: number, dto: UpdateArchivoDto, file?: Express.Multer.File) {
         const archivo = await this.prisma.archivo.findUnique({ where: { id_archivo } });
         if (!archivo) throw new NotFoundException('Archivo no encontrado');
+
+        let nuevaUrl = archivo.url_imagen;
+        let nuevoPublicId = archivo.imagen_public_id;
+
+        if (file) {
+            // 1. Borrar imagen anterior
+            if (archivo.imagen_public_id) {
+                await this.cloudinary.deleteImage(archivo.imagen_public_id);
+            }
+
+            // 2. Subir nueva
+            const upload = await this.cloudinary.uploadImage(file, `pacientes/archivo/${archivo.id_paciente}`) as CloudinaryUploadResult;;
+
+            nuevaUrl = upload.secure_url;
+            nuevoPublicId = upload.public_id;
+        }
 
         return this.prisma.archivo.update({
             where: { id_archivo },
             data: {
                 nombre: dto.nombre ?? archivo.nombre,
                 descripcion: dto.descripcion ?? archivo.descripcion,
+                url_imagen: nuevaUrl,
+                imagen_public_id: nuevoPublicId,
             },
         });
     }
+
 
     // Soft-delete (ocultar el archivo)
     async ocultarArchivo(id_archivo: number) {

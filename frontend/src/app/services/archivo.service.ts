@@ -16,4 +16,13 @@ export class ArchivoService {
     subirArchivo(idPaciente: number, data: FormData): Observable<Archivo> {
         return this.http.post<Archivo>(`${this.baseUrl}/paciente/${idPaciente}`, data, { withCredentials: true });
     }
+
+    actualizarArchivo(id_archivo: number, formData: FormData): Observable<Archivo> {
+        return this.http.patch<Archivo>(`${this.baseUrl}/update/${id_archivo}`, formData, { withCredentials: true });
+    }
+
+    ocultarArchivo(id_historial: number) {
+        return this.http.patch(`${this.baseUrl}/ocultar/${id_historial}`, {}, { withCredentials: true });
+    }
+
 }

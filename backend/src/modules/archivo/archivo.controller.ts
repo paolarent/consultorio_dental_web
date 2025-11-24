@@ -20,7 +20,7 @@ export class ArchivoController {
     }
 
     @Post('paciente/:id')
-    @UseInterceptors(FileInterceptor('imagen'))
+    @UseInterceptors(FileInterceptor('file'))
     @Roles(Rol.DENTISTA)
     subir(
         @Param('id') id: string,
@@ -31,10 +31,14 @@ export class ArchivoController {
     }
 
     @Patch('update/:id')
+    @UseInterceptors(FileInterceptor('file'))
     @Roles(Rol.DENTISTA)
-    actualizar(@Param('id') id: string, @Body() dto: UpdateArchivoDto) {
-        return this.archivoService.actualizarArchivo(Number(id), dto);
+    actualizar(
+    @Param('id') id: string, @Body() dto: UpdateArchivoDto, @UploadedFile() file?: Express.Multer.File ) 
+    {
+        return this.archivoService.actualizarArchivo(Number(id), dto, file);
     }
+
 
     @Patch('ocultar/:id')
     @Roles(Rol.DENTISTA)
