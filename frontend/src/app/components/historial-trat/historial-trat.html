@@ -5,7 +5,7 @@
         Servicios y Tratamientos Aplicados
         </div>
 
-        <button (click)="abrirModal()"
+        <button (click)="abrirModalNuevo()"
         class="inline-flex bg-[#545454] text-xl lg:text-2xl text-white font-semibold tracking-widest rounded-xl shadow-lg 
                 px-8 sm:px-16 py-3 sm:py-4 hover:scale-105 transition-transform duration-300 items-center gap-4 sm:gap-6"
         title="Registrar Tratamiento">
@@ -15,65 +15,97 @@
     </div>
 
     <!-- Fondo contenedor de las cards -->
-    <div class="bg-[#C3F2F3] rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[400px] overflow-y-auto">
-
-        <!-- Loading -->
-        @if(cargando) {
-        <div class="col-span-full text-center text-lg text-neutral-600">
-            Cargando historial...
-        </div>
-        }
-
-        <!-- Cards de historial dinámicas -->
-        @for(h of historial; track h.id_historial) {
-            <div class="bg-white border-l-6 border-teal-900 rounded-lg shadow p-4 flex flex-row gap-4">
-
-                <!-- Información del tratamiento -->
-                <div class="flex-1 flex flex-col gap-3">
-                <h3 class="text-black text-xl md:text-3xl font-semibold">{{ h.servicio.nombre }}</h3>
-                <p class="text-neutral-600 text-lg md:text-xl">{{ formatFecha(h.fecha) }}</p>
-                <p class="text-neutral-600 text-base md:text-lg">{{ h.descripcion }}</p>
-
-                <!-- Fotos si hay -->
-                <div class="flex gap-4 mt-2">
-                    @for(f of h.fotografia_historial; track f.id_foto) {
-                    <img src="{{ f.url_fotografia }}" alt="Foto tratamiento" class="w-24 h-24 rounded-lg bg-zinc-300 object-cover" />
-                    }
-                </div>
-                </div>
-
-                <!-- Botones a la derecha -->
-                <div class="flex flex-col justify-between items-center md:items-end gap-2 sm:gap-4 w-auto">
-                    <div title="Ir a expediente" 
-                        class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#25BEC4] flex items-center justify-center shadow hover:bg-[#545454] transition cursor-pointer">
-                        <img src="assets/icons/edit.svg" alt="Expediente" class="w-8 h-8 md:w-10 md:h-10"/>
-                    </div>
-                    <div title="Dar de baja Paciente"
-                        class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#8E0F0F] transition cursor-pointer">
-                        <img src="assets/icons/cancelar.svg" alt="Baja Paciente" class="w-10 h-10 md:w-12 md:h-12"/>
-                    </div>
-                </div>
-
+    <div class="bg-[#C3F2F3] rounded-lg p-6 max-h-[500px] flex flex-col">
+        <!-- Barra de búsqueda -->
+        <div class="px-4 mb-4 w-full flex justify-left flex-shrink-0">
+            <div class="relative flex-1 max-w-7xl">
+                <input
+                    type="text"
+                    [value]="busqueda()"
+                    (input)="busqueda.set($event.target.value)"
+                    placeholder="Buscar..."
+                    class="w-full pl-16 pr-4 py-3 rounded-xl border border-gray-300 shadow-sm text-base xl:text-xl
+                        focus:outline-none focus:ring-2 focus:ring-teal-600"
+                />
+                <img
+                    src="assets/icons/buscar.svg"
+                    class="w-6 h-6 xl:w-8 xl:h-8 absolute left-4 top-2.5 opacity-70"
+                />
             </div>
-        }
-
-        <!-- Empty state -->
-        @if(!cargando && historial.length === 0) {
-        <div class="col-span-full text-center text-xl font-semibold text-neutral-600 italic mt-10">
-            No hay tratamientos registrados.
         </div>
-        }
 
+        <div class="flex-1 overflow-y-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Loading -->
+                @if(cargando) {
+                <div class="col-span-full text-center text-lg text-neutral-600">
+                    Cargando historial...
+                </div>
+                }
+
+                <!-- Cards de historial dinámicas -->
+                @for(h of historialFiltrado; track h.id_historial) {
+                    <div class="bg-white border-l-6 border-teal-900 rounded-lg shadow p-4 flex flex-row gap-4">
+
+                            <!-- Información del tratamiento -->
+                        <div class="flex-1 flex flex-col gap-3">
+                            <h3 class="text-black text-xl md:text-3xl font-semibold">{{ h.servicio.nombre }}</h3>
+                            <p class="text-neutral-600 text-lg md:text-xl">{{ formatFecha(h.fecha) }}</p>
+                            <p class="text-neutral-600 text-base md:text-lg">{{ h.descripcion }}</p>
+
+                            <!-- Fotos si hay -->
+                            <div class="flex gap-4 mt-2">
+                                @for(f of h.fotografia_historial; track f.id_foto) {
+                                <img src="{{ f.url_fotografia }}" alt="Foto tratamiento" class="w-24 h-24 rounded-lg bg-zinc-300 object-cover" />
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Botones a la derecha -->
+                        <div class="flex flex-col justify-between items-center md:items-end gap-2 sm:gap-4 w-auto">
+                            <div title="Editar aplicacion" (click)="editarTratamiento(h)"
+                                class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#25BEC4] flex items-center justify-center shadow hover:bg-[#545454] transition cursor-pointer">
+                                <img src="assets/icons/edit.svg" alt="Expediente" class="w-8 h-8 md:w-10 md:h-10"/>
+                            </div>
+                            <div title="Eliminar tratamiento aplicado" (click)="abrirModalEliminar(h.id_historial)"
+                                class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#8E0F0F] transition cursor-pointer">
+                                <img src="assets/icons/cancelar.svg" alt="Baja Paciente" class="w-10 h-10 md:w-12 md:h-12"/>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+
+                <!-- Empty state -->
+                @if(!cargando && historial.length === 0) {
+                <div class="col-span-full text-center text-xl font-semibold text-neutral-600 italic mt-10">
+                    No hay tratamientos registrados.
+                </div>
+                }
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- Modal -->
+<!-- Modal reutilizado -->
 @if(ModalAgUpTratamiento()) {
     <app-modal-historial-agup
         [paciente]="paciente"
-        (cerrar)="cerrarModal()"
+        [historial]="historialSeleccionado"
+        (cerrar)="ModalAgUpTratamiento.set(false)"
         (agregado)="agregarHistorial($event)">
     </app-modal-historial-agup>
 }
+
+@if(modalConfirmacion()) {
+    <app-modal-confirmar-logdelete
+    [visible]="modalConfirmacion()"
+    (confirm)="confirmarSoftDelete()"
+    (cancel)="cerrarModalSD()"
+    [titulo]="'Eliminar Elemento'"
+    [texto]="'¿Está seguro de eliminar este elemento?'">
+    ></app-modal-confirmar-logdelete>
+}
+
 
 

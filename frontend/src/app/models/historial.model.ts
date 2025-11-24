@@ -13,7 +13,9 @@ interface Historial {
 }
 
 interface ArchivoPreview {
-    file: File;
+    file: File | null; // null si ya está en backend
     preview: string;
-    index: number;
+    index?: number;
+    id_foto?: number; // fotos que ya existen en backend
 }
+

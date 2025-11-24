@@ -17,4 +17,16 @@ export class HistorialService {
         return this.http.post(`${this.baseUrl}`, formData, { withCredentials: true });
     }
 
+    actualizarTratamiento(id_historial: number, formData: FormData): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/update/${id_historial}`, formData, { withCredentials: true });
+    }
+
+    eliminarFoto(id_foto: number): Observable<any> {
+        return this.http.patch(`${this.baseUrl}/foto/delete/${id_foto}`, {}, { withCredentials: true });
+    }
+
+    // Función para desactivar historial
+    desactivarHistorial(id_historial: number) {
+        return this.http.patch(`${this.baseUrl}/delete/${id_historial}`, {}, { withCredentials: true });
+    }
 }

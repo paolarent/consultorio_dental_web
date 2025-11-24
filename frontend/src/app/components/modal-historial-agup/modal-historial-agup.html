@@ -3,7 +3,7 @@
         <div class="grid gap-4">
     
             <h2 class="text-4xl font-bold mt-2 mb-2 text-[#105053]">
-                Registrar tratamiento
+                {{ historial ? 'Editar tratamiento' : 'Registrar tratamiento' }}
             </h2>
 
             <!-- Servicio aplicado -->
@@ -47,17 +47,18 @@
                 <label class="block text-base font-medium text-[#545454] mb-1">Imágenes del Tratamiento</label>
 
                 <div class="flex gap-4 mb-2">
-                    @for(archivo of archivos; track archivo.file.name) {
+                    @for(archivo of archivos; track archivo.file?.name ?? archivo.id_foto) {
                         <div class="relative w-24 h-24">
-                            <img src="{{ archivo.preview }}" class="w-full h-full object-cover rounded-md" />
-                            <button type="button" 
-                                    (click)="eliminarArchivo(archivo.index)" 
-                                    class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                ×
-                            </button>
+                        <img src="{{ archivo.preview }}" class="w-full h-full object-cover rounded-md" />
+                        <button type="button" 
+                                (click)="eliminarArchivo(archivo.index, archivo.id_foto)" 
+                                class="absolute top-0 right-0 bg-red-500 font-bold text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                            ×
+                        </button>
                         </div>
                     }
                 </div>
+
 
                 <!-- Input file -->
                 <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-zinc-300/30 hover:bg-zinc-300/50 transition">
@@ -80,10 +81,10 @@
 
                 <button
                 class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
-                (click)="registrarTratamiento()"
+                (click)="guardarTratamiento()"
                 >
                 <span class="text-white text-lg font-semibold tracking-wider">
-                    Registrar
+                    {{ historial ? 'Guardar cambios' : 'Registrar' }}
                 </span>
                 </button>
             </div>

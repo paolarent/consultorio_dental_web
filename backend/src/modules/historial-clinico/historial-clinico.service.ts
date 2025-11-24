@@ -96,7 +96,8 @@ export class HistorialClinicoService {
         const updated = await this.prisma.historial_clinico.update({
             where: { id_historial },
             data: {
-                fecha: dto.fecha ?? historial.fecha,
+                id_servicio: dto.id_servicio ? Number(dto.id_servicio) : historial.id_servicio,
+                fecha: dto.fecha ? new Date(dto.fecha) : historial.fecha,
                 descripcion: dto.descripcion ?? historial.descripcion,
             },
         });
@@ -117,7 +118,6 @@ export class HistorialClinicoService {
 
         return updated;
     }
-    
 
     // Eliminar foto individual
     async eliminarFoto(id_foto: number) {

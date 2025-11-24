@@ -19,6 +19,8 @@ export class ModalHistorialAgup implements AfterViewInit {
   @Input() paciente!: { id_paciente: number };
   @Output() cerrar = new EventEmitter<void>();
   @Output() agregado = new EventEmitter<any>();
+  @Input() historial?: Historial; // si viene, vamos a editar
+
 
   tiposServicio: any[] = [];
   id_servicio!: number;
@@ -26,7 +28,6 @@ export class ModalHistorialAgup implements AfterViewInit {
   notas: string = '';
   archivos: ArchivoPreview[] = [];
   private fpInstance: any;
-  previewUrl: string | null = null;
 
   private historialService = inject(HistorialService);
   private servicioService = inject(ServicioService);
@@ -37,6 +38,26 @@ export class ModalHistorialAgup implements AfterViewInit {
   ngAfterViewInit() {
     this.initFlatpickr();
     this.cargarServicios();
+
+    if (this.historial) {
+        this.cargarDatosParaEdicion();
+    }
+  }
+
+  private cargarDatosParaEdicion() {
+      this.id_servicio = this.historial?.id_servicio ?? 0;
+      this.fecha = this.historial?.fecha || '';
+      this.notas = this.historial?.descripcion || '';
+      this.archivos = (this.historial?.fotografia_historial || []).map((f, idx) => ({
+          file: null as any, // No hay File local, solo preview
+          preview: f.url_fotografia,
+          id_foto: f.id_foto
+      }));
+
+      // Si ya se inicializo la cosa flatpickr, actualizar su valor
+      if (this.fpInstance && this.fecha) {
+          this.fpInstance.setDate(this.fecha, false);
+      }
   }
 
   private initFlatpickr() {
@@ -64,7 +85,7 @@ export class ModalHistorialAgup implements AfterViewInit {
       return;
     }
 
-    archivosSeleccionados.forEach((f, idx) => {
+    archivosSeleccionados.forEach((f) => {
       const reader = new FileReader();
       reader.onload = () => {
         this.archivos.push({ file: f, preview: reader.result as string, index: this.archivos.length });
@@ -78,10 +99,21 @@ export class ModalHistorialAgup implements AfterViewInit {
   }
 
 
-  eliminarArchivo(index: number) {
-    this.archivos.splice(index, 1);
+  eliminarArchivo(index?: number, id_foto?: number) {
+      if (id_foto) {
+          // llamar API para eliminar foto existente
+          this.historialService.eliminarFoto(id_foto).subscribe({
+              next: () => {
+                  this.archivos = this.archivos.filter(a => a.id_foto !== id_foto);
+                  this.notify.success('Foto eliminada correctamente.');
+              },
+              error: () => this.notify.error('Error al eliminar foto')
+          });
+      } else if (index !== undefined) {
+          // eliminar foto nueva
+          this.archivos.splice(index, 1);
+      }
   }
-
 
   cargarServicios() {
     this.servicioService.listarServicios().subscribe({
@@ -90,29 +122,31 @@ export class ModalHistorialAgup implements AfterViewInit {
     });
   }
 
-  registrarTratamiento() {
-    if (!this.id_servicio || !this.fecha || !this.notas || this.archivos.length === 0) {
-      this.notify.warning('Por favor, Completa todos los campos obligatorios');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('id_paciente', String(this.paciente.id_paciente));
-    formData.append('id_servicio', String(this.id_servicio));
-    formData.append('fecha', this.fecha);
-    formData.append('descripcion', this.notas);
-    this.archivos.forEach(a => formData.append('fotos', a.file));
-
-    this.historialService.registrarTratamiento(formData).subscribe({
-      next: res => {
-        this.agregado.emit(res);
-        this.notify.success('Tratamiento registrado correctamente.')
-        this.cerrar.emit();
-      },
-      error: err => {
-        console.error('Error al registrar historial', err);
-        this.notify.error('Error al registrar tratamiento');
+  guardarTratamiento() {
+      if (!this.id_servicio || !this.fecha || !this.notas || this.archivos.length === 0) {
+          this.notify.warning('Por favor, completa todos los campos obligatorios');
+          return;
       }
-    });
+
+      const formData = new FormData();
+      formData.append('id_paciente', String(this.paciente.id_paciente));
+      formData.append('id_servicio', String(this.id_servicio));
+      formData.append('fecha', this.fecha);
+      formData.append('descripcion', this.notas);
+
+      this.archivos.filter(a => a.file).forEach(a => formData.append('fotos', a.file!));
+
+      if (this.historial) {
+          this.historialService.actualizarTratamiento(this.historial.id_historial, formData).subscribe({
+              next: res => { this.agregado.emit(res); this.notify.success('Tratamiento actualizado'); this.cerrar.emit(); },
+              error: err => { console.error(err); this.notify.error('Error al actualizar tratamiento'); }
+          });
+      } else {
+          this.historialService.registrarTratamiento(formData).subscribe({
+              next: res => { this.agregado.emit(res); this.notify.success('Tratamiento registrado'); this.cerrar.emit(); },
+              error: err => { console.error(err); this.notify.error('Error al registrar tratamiento'); }
+          });
+      }
   }
+
 }

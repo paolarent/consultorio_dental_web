@@ -7,12 +7,13 @@ import { NavExp } from '../nav-exp/nav-exp';
 import { Filiacion } from '../filiacion/filiacion';
 import { Padecimientos } from '../padecimientos/padecimientos';
 import { HistorialTrat } from '../historial-trat/historial-trat';
+import { Archivo } from '../archivo/archivo';
 
 registerLocaleData(localeEsMx);
 
 @Component({
   selector: 'app-expediente',
-  imports: [DatePipe, NavExp, Filiacion, Padecimientos, HistorialTrat],
+  imports: [DatePipe, NavExp, Filiacion, Padecimientos, HistorialTrat, Archivo],
   templateUrl: './expediente.html',
   styleUrl: './expediente.css'
 })
