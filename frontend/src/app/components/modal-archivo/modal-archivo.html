@@ -1,0 +1,82 @@
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[500px]">
+        <div class="grid gap-4">
+    
+            <h2 class="text-4xl font-bold mt-2 mb-2 text-[#105053]">
+                Nuevo Archivo
+            </h2>
+
+
+            <!-- Nombre del servicio -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454]">Nombre del Archivo</label>
+                <input
+                type="text"
+                placeholder="Archivo"
+                required
+                [(ngModel)]="nombre"
+                class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                />
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454] mb-1">Descripción</label>
+                <textarea
+                placeholder="Descripción breve del archivo"
+                rows="3"
+                [(ngModel)]="descripcion"
+                class="w-full border border-teal-600 bg-zinc-300/30 rounded-lg p-3 focus:ring-2 focus:ring-[#105053] focus:outline-none resize-none"
+                ></textarea>
+            </div>
+
+            <!-- Imagen del Servicio -->
+            <div class="mb-4">
+                <label class="block text-base font-medium text-[#545454] mb-1">Imagen del Servicio</label>
+                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-teal-600 rounded-lg cursor-pointer bg-zinc-300/30 hover:bg-zinc-300/50 transition">
+                
+                <!-- Preview -->
+                @if(preview()) {
+                    <img [src]="preview()" class="w-20 h-20 object-cover mb-2 rounded-md" />
+                }
+
+                <span class="text-gray-500 text-sm">
+                    @if(preview()) {
+                    Cambiar imagen
+                    } @else {
+                    Selecciona una imagen
+                    }
+                </span>
+
+                <input
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="onFileSelected($event)"
+                />
+                </label>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end gap-4 mt-6">
+                <button
+                class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                (click)="cancelar()"
+                >
+                <span class="text-white text-lg font-semibold tracking-wider">Cancelar</span>
+                </button>
+
+                <button
+                class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                (click)="guardar()"
+                >
+                <span class="text-white text-lg font-semibold tracking-wider">
+                    Guardar
+                </span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+

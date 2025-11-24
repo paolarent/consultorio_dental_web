@@ -5,16 +5,63 @@
             Archivo de Fotografías del Paciente
         </div>
 
-        <button 
+        <button (click)="abrirModal()"
         class="inline-flex bg-[#545454] text-xl lg:text-2xl text-white font-semibold tracking-widest rounded-xl shadow-lg 
                 px-8 sm:px-16 py-3 sm:py-4 hover:scale-105 transition-transform duration-300 items-center gap-4 sm:gap-6"
-        title="Registrar Tratamiento">
+            title="Registrar Tratamiento">
         <img src="assets/icons/agregar_vb.svg" alt="Agregar Tratamiento Aplicado" class="w-8 h-8 lg:w-10 lg:h-10">
             <span>Subir Archivo</span>
         </button>
     </div>
 
     <!-- Fondo contenedor de las cards -->
-    <div class="bg-[#DDE0EB] rounded-lg p-6 max-h-[500px] flex flex-col">
+    <div class="bg-[#DDE0EB] rounded-lg p-6 max-h-[500px] overflow-y-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (archivo of archivos(); track archivo.id_archivo; let i = $index) {
+            <div (click)="abrirImagen(i)"
+                class="bg-white rounded-xl shadow-md cursor-pointer hover:scale-105 transition-transform duration-300 flex flex-col">
+
+                <!-- Imagen arriba -->
+                <div class="w-full h-44 rounded-t-xl overflow-hidden">
+                <img [src]="archivo.url_imagen" alt="{{ archivo.nombre }}" class="w-full h-full object-cover"/>
+                </div>
+
+                <!-- Parte inferior: texto + botones -->
+                <div class="flex flex-row justify-between items-start px-4 py-3 mt-3">
+
+                <!-- Texto -->
+                <div class="flex-1 pr-4">
+                    <div class="text-xl font-semibold text-gray-800">{{ archivo.nombre }}</div>
+                    <div class="text-md text-gray-500 mt-1">{{ archivo.descripcion }}</div>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex flex-col gap-2 sm:gap-3">
+                    <div title="Editar archivo" 
+                        class="w-12 h-12 rounded-2xl bg-[#25BEC4] flex items-center justify-center shadow hover:bg-[#545454] transition cursor-pointer"
+                        >
+                    <img src="assets/icons/edit.svg" alt="Editar" class="w-7 h-7"/>
+                    </div>
+                    <div title="Eliminar archivo" 
+                        class="w-12 h-12 rounded-2xl bg-[#BC0E0E] flex items-center justify-center shadow hover:bg-[#8E0F0F] transition cursor-pointer"
+                        >
+                    <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8"/>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+            }
+
+        </div>
     </div>
 </section>
+
+<!-- Modal -->
+@if(ModalArchivo()) {
+<app-modal-archivo
+    [paciente]="paciente" 
+    (archivoAgregado)="onArchivoAgregado($event)"
+    (cerrar)="ModalArchivo.set(false)">
+</app-modal-archivo>
+}

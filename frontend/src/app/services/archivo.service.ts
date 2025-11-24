@@ -1,0 +1,19 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Archivo } from '../models/archivo.model';
+import { Observable } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class ArchivoService {
+    private http = inject(HttpClient);
+    private baseUrl = 'http://localhost:3000/archivo'; 
+
+    //Para obtener archivos de un paciente
+    obtenerArchivos(id_paciente: number): Observable<Archivo[]> {
+        return this.http.get<Archivo[]>(`${this.baseUrl}/paciente/${id_paciente}`, { withCredentials: true });
+    }
+
+    subirArchivo(idPaciente: number, data: FormData): Observable<Archivo> {
+        return this.http.post<Archivo>(`${this.baseUrl}/paciente/${idPaciente}`, data, { withCredentials: true });
+    }
+}
