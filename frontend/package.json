@@ -37,6 +37,7 @@
     "@fullcalendar/timegrid": "^6.1.19",
     "flatpickr": "^4.6.13",
     "ng-gallery": "^12.0.0",
+    "ngx-material-timepicker": "^13.1.1",
     "ngx-toastr": "^19.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

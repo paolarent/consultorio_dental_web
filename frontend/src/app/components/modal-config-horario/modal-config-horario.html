@@ -1,0 +1,139 @@
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[600px]">
+
+        <h2 class="text-4xl font-bold mb-6 text-[#105053] text-center">
+            Configuración de Horario
+        </h2>
+
+        <div class="space-y-6">
+
+            @for (dia of diasSemana(); track $index) {
+            <div class="border p-4 rounded-xl shadow-sm">
+
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xl font-semibold">
+                        {{ dia.nombre }}
+                    </span>
+
+                    <!-- Toggle -->
+                    <button
+                        (click)="dia.activo = !dia.activo"
+                        class="relative w-16 h-8 rounded-full transition"
+                    >
+                        @if (dia.activo) {
+                        <img src="assets/icons/on_switch.svg" class="w-16 h-8" />
+                        } @else {
+                        <img src="assets/icons/off_switch.svg" class="w-16 h-8" />
+                        }
+                    </button>
+                </div>
+
+                @if (dia.activo) {
+                <div class="space-y-4">
+
+                    <!-- Turno principal -->
+                    <div class="grid grid-cols-2 gap-4 items-center">
+                        <div>
+                            <label class="text-sm font-medium">Hora inicio</label>
+
+                            <!-- input + timepicker -->
+                            <input
+                                matInput
+                                [ngxTimepicker]="tpInicio"
+                                [(ngModel)]="dia.hora_inicio"
+                                placeholder="00:00"
+                                readonly
+                                class="w-full mt-1 border border-[#1D8F93] rounded-md p-2"
+                            />
+                            <ngx-material-timepicker #tpInicio></ngx-material-timepicker>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium">Hora fin</label>
+
+                            <input 
+                                matInput
+                                [ngxTimepicker]="tpFin"
+                                [(ngModel)]="dia.hora_fin"
+                                placeholder="00:00"
+                                readonly
+                                class="w-full mt-1 border border-[#1D8F93] rounded-md p-2"
+                            />
+
+                            <ngx-material-timepicker #tpFin></ngx-material-timepicker>
+                        </div>
+                    </div>
+
+                    <!-- Segundo turno -->
+                    @if (dia.segundoTurno) {
+                    <div class="grid grid-cols-2 gap-4 items-center">
+
+                        <div>
+                            <label class="text-sm font-medium">Inicio 2do Turno</label>
+
+                            <input
+                                matInput
+                                [ngxTimepicker]="tp2Inicio"
+                                [(ngModel)]="dia.turno2_inicio"
+                                placeholder="00:00"
+                                readonly
+                                class="w-full mt-1 border border-[#1D8F93] rounded-md p-2"
+                            />
+
+                            <ngx-material-timepicker #tp2Inicio></ngx-material-timepicker>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium">Fin 2do Turno</label>
+
+                            <input
+                                matInput
+                                [ngxTimepicker]="tp2Fin"
+                                [(ngModel)]="dia.turno2_fin"
+                                placeholder="00:00"
+                                readonly
+                                class="w-full mt-1 border border-[#1D8F93] rounded-md p-2"
+                            />
+
+                            <ngx-material-timepicker #tp2Fin></ngx-material-timepicker>
+                        </div>
+
+                    </div>
+                    }
+
+                    <!-- Botón agregar/quitar segundo turno -->
+                    <button 
+                        class="text-sm text-[#545454] px-4 py-2 bg-[#C3F2F3] font-semibold rounded-lg"
+                        (click)="dia.segundoTurno = !dia.segundoTurno"
+                    >
+                        {{ dia.segundoTurno ? 'Eliminar segundo turno' : 'Agregar segundo turno' }}
+                    </button>
+
+                </div>
+                }
+
+            </div>
+            }
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 mt-8">
+            <button
+                class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                (click)="cancelar()"
+            >
+            <span class="text-white text-lg font-semibold tracking-wider">Cancelar</span>
+            </button>
+
+            <button (click)="guardarCambios()"
+                class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+
+            >
+                <span class="text-white text-lg font-semibold tracking-wider">
+                    Guardar Cambios
+                </span>
+            </button>
+        </div>
+
+    </div>
+</div>

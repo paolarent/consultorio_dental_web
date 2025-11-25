@@ -194,3 +194,82 @@ input[type="radio"] {
     animation: fadeIn 0.25s ease-out forwards;
 }
 
+/* INPUT TIME */
+:root {
+    --timepicker-primary-bg: #115153;     /* Color principal del header */
+    --timepicker-primary-color: #fff;     /* Texto en header */
+    --timepicker-clock-bg: #ffffff;       /* Fondo del reloj */
+    --timepicker-clock-number-color:#545454;
+    --timepicker-overlay-bg: rgba(0, 0, 0, 0.45);
+}
+
+/* Fondo del overlay */
+.timepicker-overlay {
+    background-color: var(--timepicker-overlay-bg) !important;
+}
+
+/* Caja principal del timepicker */
+.timepicker {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Encabezado (donde aparece la hora seleccionada) */
+.timepicker__header {
+    background-color: var(--timepicker-primary-bg) !important;
+    color: var(--timepicker-primary-color) !important;
+    font-size: 2rem !important;
+    padding: 20px !important;
+}
+
+/* Texto interno del header */
+.timepicker-button {
+    color: var(--timepicker-primary-color) !important;
+}
+
+/* Cuerpo del reloj */
+.timepicker__body {
+    background-color: var(--timepicker-clock-bg) !important;
+    padding: 25px !important;
+}
+
+/* Aguja del reloj */
+.clock-face__clock-hand {
+    background-color: var(--timepicker-primary-bg) !important;
+}
+
+/* Centro de la aguja */
+.clock-face__clock-hand::after {
+    background-color: var(--timepicker-primary-bg) !important;
+    width: 14px !important;
+    height: 14px !important;
+    border-radius: 50% !important;
+}
+
+/* Números del reloj */
+.clock-face__number {
+    color: var(--timepicker-clock-number-color) !important;
+    font-size: 1.3rem !important;
+}
+
+/* Número seleccionado */
+.clock-face__number--selected {
+    background-color: var(--timepicker-primary-bg) !important;
+    color: var(--timepicker-primary-color) !important;
+    border-radius: 50% !important;
+    transform: scale(1.1);
+}
+
+/* Botones abajo (cancelar, ok) */
+.timepicker__actions button {
+    color: var(--timepicker-primary-bg) !important;
+    font-weight: bold !important;
+}
+
+.timepicker__actions button:hover {
+    opacity: 0.8 !important;
+}
+
+
+

@@ -33,7 +33,8 @@
                 </button>
 
                 <!-- Engranaje -->
-                <button class="bg-gray-200 p-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer">
+                <button (click)="abrirModalHorario()"
+                    class="bg-gray-200 p-2 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer">
                     <img src="assets/icons/settings.svg" alt="Configuración" title="Configuración" class="w-10 h-10"/>
                 </button>
 
@@ -49,3 +50,8 @@
 
     </div>
 </section>
+
+<!-- MODAL PARA EDITAR HORARIO -->
+@if (mostrarModalHorario()) {
+    <app-modal-config-horario (cerrar)="cerrarModal()"></app-modal-config-horario>
+}
