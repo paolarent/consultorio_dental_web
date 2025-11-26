@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, inject, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, inject, Output, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
@@ -25,6 +25,8 @@ export class ModalAgIngreso implements AfterViewInit {
   private pacienteService = inject(PacienteService);
   private notify = inject(NotificationService);
   private elementRef = inject(ElementRef);
+
+  cargando = signal(false);
 
   @ViewChild('fechaInput', { static: false }) fechaInput!: ElementRef<HTMLInputElement>;
 
@@ -243,6 +245,8 @@ export class ModalAgIngreso implements AfterViewInit {
 
   // ---------------- Enviar DTO ----------------
   validarYCrearIngreso() {
+    if (this.cargando()) return; // Evita clicks múltiples
+    
     if (!this.validarAbonoParcial() || !this.validarPagosDivididos()) return;
 
     const dto: any = {
@@ -267,14 +271,18 @@ export class ModalAgIngreso implements AfterViewInit {
           ]
     };
 
+    this.cargando.set(true); //Activa bloqueo antes de enviar
+
     this.ingresoService.crearIngreso(dto).subscribe({
       next: res => {
         this.notify.success('Ingreso agregado correctamente');
         this.cancelar();
+        this.cargando.set(false); // desbloquear
       },
       error: err => {
         console.error(err);
         this.notify.error('Ocurrió un error al crear el ingreso');
+        this.cargando.set(false); // desbloquear
       }
     });
   }

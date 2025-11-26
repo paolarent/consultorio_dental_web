@@ -67,6 +67,8 @@ export class ModalArchivo {
   }
 
   guardar() {
+    if (this.cargando()) return; // evitar múltiples clicks
+
     if (!this.archivoEditar) {
       if (!this.nombre() || !this.descripcion() || !this.file()) {
         this.notify.warning('Por favor complete todos los campos');
@@ -81,7 +83,6 @@ export class ModalArchivo {
         return;
       }
     }
-
 
     this.cargando.set(true);
 

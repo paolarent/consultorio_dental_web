@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, inject, Input, Output, signal, ViewChild } from '@angular/core';
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,6 +21,7 @@ export class ModalHistorialAgup implements AfterViewInit {
   @Output() agregado = new EventEmitter<any>();
   @Input() historial?: Historial; // si viene, vamos a editar
 
+  guardando = signal(false);  //Signal para evitar sobrepresionar
 
   tiposServicio: any[] = [];
   id_servicio!: number;
@@ -123,6 +124,8 @@ export class ModalHistorialAgup implements AfterViewInit {
   }
 
   guardarTratamiento() {
+      if (this.guardando()) return; // prevenir clicks múltiples
+
       if (!this.id_servicio || !this.fecha || !this.notas || this.archivos.length === 0) {
           this.notify.warning('Por favor, completa todos los campos obligatorios');
           return;
@@ -136,16 +139,28 @@ export class ModalHistorialAgup implements AfterViewInit {
 
       this.archivos.filter(a => a.file).forEach(a => formData.append('fotos', a.file!));
 
+      this.guardando.set(true); // bloquear mientras se procesa
+
+      const callback = {
+        next: (res: any) => { 
+          this.agregado.emit(res); 
+          this.notify.success(this.historial ? 'Tratamiento actualizado' : 'Tratamiento registrado'); 
+          this.cerrar.emit(); 
+        },
+        error: (err: any) => { 
+          console.error(err); 
+          this.notify.error(this.historial ? 'Error al actualizar tratamiento' : 'Error al registrar tratamiento'); 
+          this.guardando.set(false); 
+        },
+        complete: () => { 
+          this.guardando.set(false); 
+        }
+      };
+
       if (this.historial) {
-          this.historialService.actualizarTratamiento(this.historial.id_historial, formData).subscribe({
-              next: res => { this.agregado.emit(res); this.notify.success('Tratamiento actualizado'); this.cerrar.emit(); },
-              error: err => { console.error(err); this.notify.error('Error al actualizar tratamiento'); }
-          });
+          this.historialService.actualizarTratamiento(this.historial.id_historial, formData).subscribe(callback);
       } else {
-          this.historialService.registrarTratamiento(formData).subscribe({
-              next: res => { this.agregado.emit(res); this.notify.success('Tratamiento registrado'); this.cerrar.emit(); },
-              error: err => { console.error(err); this.notify.error('Error al registrar tratamiento'); }
-          });
+          this.historialService.registrarTratamiento(formData).subscribe(callback);
       }
   }
 

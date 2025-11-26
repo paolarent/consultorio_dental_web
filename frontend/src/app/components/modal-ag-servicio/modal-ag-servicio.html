@@ -3,7 +3,7 @@
         <div class="grid gap-4">
     
         <h2 class="text-4xl font-bold mt-2 mb-2 text-[#105053]">
-            Gestión de Servicios
+            {{ esEdicion ? 'Editar Servicio' : 'Agregar Servicio' }}
         </h2>
 
 
@@ -112,10 +112,10 @@
 
             <button
             class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
-            (click)="guardarServicio()"
+            (click)="guardarServicio()" [disabled]="guardando()"
             >
             <span class="text-white text-lg font-semibold tracking-wider">
-                Continuar
+                {{ esEdicion ? 'Actualizar' : 'Guardar' }}
             </span>
             </button>
         </div>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, EventEmitter, inject, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, inject, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -30,6 +30,8 @@ export class ModalAgGasto implements OnInit, AfterViewInit {
 
   tiposGasto: {id_tipo_egreso: number; nombre: string} [] = [];
   errorMsg: string = '';
+
+  cargando = signal(false);
 
   constructor(private egresoService: EgresoService) {}
 
@@ -65,6 +67,7 @@ export class ModalAgGasto implements OnInit, AfterViewInit {
   }
 
   guardar(): void {
+    if (this.cargando()) return; // Evita clicks múltiples
     this.errorMsg = '';
 
     // Validaciones
@@ -93,17 +96,20 @@ export class ModalAgGasto implements OnInit, AfterViewInit {
       descripcion: this.descripcion
     };
 
+    this.cargando.set(true); //Activa bloqueo antes de enviar
+
     // Enviar al backend
     this.egresoService.crearEgreso(dto).subscribe({
       next: (res) => {
         this.notify.success('Gasto registrado correctamente.');
         this.agregadoExitoso.emit(res);
         this.cancelar(); // cerrar modal al guardar
+        this.cargando.set(false); // desbloquear
       },
       error: (err) => {
         console.error(err);
         this.notify.error('Error al registrar el gasto.');
-
+        this.cargando.set(false); // desbloquear
       }
     });
   }

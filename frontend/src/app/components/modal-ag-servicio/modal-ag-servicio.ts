@@ -19,6 +19,7 @@ export class ModalAgServicio {
   @Output() cerrar = new EventEmitter<void>();
 
   TipoCobro = TipoCobro;
+  guardando = signal(false);
 
   preview = signal<string | null>(null);
   nombre = signal('');
@@ -67,6 +68,8 @@ export class ModalAgServicio {
   }
 
   guardarServicio() {
+    if (this.guardando()) return; // si ya estamos guardando, ignoramos clics adicionales
+
     // Validación: el archivo solo obligatorio si es creación
     if (!this.nombre() || !this.descripcion() || !this.tipoCobro() || 
         !this.precio() || !this.duracion() || (!this.file && !this.esEdicion)) { 
@@ -74,33 +77,44 @@ export class ModalAgServicio {
       return;
     }
 
+    //Validación de precio y durecion
+    if (this.precio()! < 0) {
+      this.notify.warning('Cuidado!, el precio no puede ser negativo.');
+      return;
+    }
+
+    if (this.duracion()! < 0) {
+      this.notify.warning('Cuidado!, la duración no puede ser negativa.');
+      return;
+    }
+
+     // Bloqueamos el botón
+    this.guardando.set(true);
+
     const formData = new FormData();
     formData.append('nombre', this.nombre());
     formData.append('descripcion', this.descripcion());
     formData.append('tipo_cobro', this.tipoCobro()!);
     formData.append('precio_base', this.precio()?.toString()!);
     formData.append('duracion_base', this.duracion()?.toString()!);
-
     if (this.file) formData.append('imagen', this.file);
 
-    if (this.esEdicion) {
-      this.servicioService.updateServicio(this.servicioEditar!.id_servicio!, formData).subscribe({
-        next: () => {
-          this.notify.success('Servicio actualizado correctamente.');
-          this.cerrar.emit();
-        },
-        error: (err) => this.notify.error(err?.error?.message || 'Error al actualizar servicio.')
-      });
-    } else {
-      this.servicioService.createServicio(formData).subscribe({
-        next: () => {
-          this.notify.success('Servicio agregado correctamente.');
-          this.limpiar();
-          this.cerrar.emit();
-        },
-        error: (err) => this.notify.error(err?.error?.message || 'Error. No se pudo agregar el servicio.')
-      });
-    }
+    const observable = this.esEdicion
+    ? this.servicioService.updateServicio(this.servicioEditar!.id_servicio!, formData)
+    : this.servicioService.createServicio(formData);
+
+    observable.subscribe({
+      next: () => {
+        this.notify.success(this.esEdicion ? 'Servicio actualizado correctamente.' : 'Servicio agregado correctamente.');
+        this.limpiar();
+        this.cerrar.emit();
+        this.guardando.set(false); // desbloqueamos
+      },
+      error: (err) => {
+        this.notify.error(err?.error?.message || 'Ocurrió un error.');
+        this.guardando.set(false); // desbloqueamos
+      }
+    });
   }
 
   limpiar() {

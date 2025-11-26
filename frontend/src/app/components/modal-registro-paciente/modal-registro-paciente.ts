@@ -139,6 +139,9 @@ export class ModalRegistroPaciente implements OnInit, AfterViewInit {
 
   // ---------- REGISTRO Y EMICION ----------
   guardar() {
+    // bloquear si ya se está guardando
+    if (this.loading) return;
+
     // validaciones finales
     if (this.step === 2) {
       if (this.step2Form && this.step2Form.invalid) {

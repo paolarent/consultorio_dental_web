@@ -246,7 +246,7 @@
 
                 <button
                     class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
-                    (click)="validarYCrearIngreso()"
+                    (click)="validarYCrearIngreso()" [disabled]="cargando()"
                 >
                     <span class="text-center text-white text-lg font-semibold tracking-wider">Agregar</span>
                 </button>
