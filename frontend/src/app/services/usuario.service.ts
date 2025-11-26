@@ -2,11 +2,13 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UpdateCorreo } from '../models/update-correo.model';
 import { UpdateContrasena } from '../models/update-contra.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:3000/usuario';
+    //private baseUrl = 'http://localhost:3000/usuario';
+    private baseUrl = `${environment.backendUrl}/usuario`;
 
     //Solicitar actualización de correo
     correoUpdateRequest(id: number, newCorreo: string) {

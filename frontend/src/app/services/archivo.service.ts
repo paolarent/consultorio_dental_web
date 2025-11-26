@@ -2,11 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Archivo } from '../models/archivo.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ArchivoService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:3000/archivo'; 
+    //private baseUrl = 'http://localhost:3000/archivo'; 
+    private baseUrl = `${environment.backendUrl}/archivo`;
 
     //Para obtener archivos de un paciente
     obtenerArchivos(id_paciente: number): Observable<Archivo[]> {

@@ -2,13 +2,16 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { AbonarIngresoDto } from "../models/abono.model";
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class IngresoService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:3000/ingresos'; //ruta al back
+    //private baseUrl = 'http://localhost:3000/ingresos'; //ruta al back
+    private baseUrl = `${environment.backendUrl}/ingresos`;
+
 
     // OBTENER CORTE ABIERTO
     obtenerCorteAbierto(): Observable<any> {

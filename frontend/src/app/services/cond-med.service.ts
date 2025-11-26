@@ -2,13 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CondicionMedica } from '../models/get-condmed.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CondicionesMedicasService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:3000/condiciones-medicas'; //ruta backend
+    //private baseUrl = 'http://localhost:3000/condiciones-medicas'; //ruta backend
+    private baseUrl = `${environment.backendUrl}/condiciones-medicas`;
 
     listarCMPaciente(idPaciente?: number): Observable<CondicionMedica[]> {
         if (idPaciente) {

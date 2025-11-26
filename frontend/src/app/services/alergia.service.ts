@@ -2,14 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Alergia } from '../models/get-alergia.model';
-
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AlergiasService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:3000/alergias'; //ruta al back
+    //private baseUrl = 'http://localhost:3000/alergias'; //ruta al back
+    private baseUrl = `${environment.backendUrl}/alergias`;
 
     listarAlergiasPaciente(idPaciente?: number): Observable<Alergia[]> {
         if (idPaciente) {

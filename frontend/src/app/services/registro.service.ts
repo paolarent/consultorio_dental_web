@@ -1,13 +1,16 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root',
 })
 
 export class RegistroService {
-    private baseUrl = 'http://localhost:3000/registro';
-    private userBaseUrl = 'http://localhost:3000/usuario'
+    //private baseUrl = 'http://localhost:3000/registro';
+    //private userBaseUrl = 'http://localhost:3000/usuario'
+    private baseUrl = `${environment.backendUrl}/registro`;
+    private userBaseUrl = `${environment.backendUrl}/usuario`;
 
     constructor(private http: HttpClient) {}
 

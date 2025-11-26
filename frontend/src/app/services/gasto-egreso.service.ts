@@ -2,13 +2,15 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateEgresoDto } from '../models/egreso.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class EgresoService {
     private http = inject(HttpClient);
-    private baseUrl = 'http://localhost:3000/egreso'; //ruta al back
+    //private baseUrl = 'http://localhost:3000/egreso'; //ruta al back
+    private baseUrl = `${environment.backendUrl}/egreso`;
 
     listarTiposEgreso(): Observable<{ id_tipo_egreso: number; nombre: string }[]> {
             return this.http.get<{ id_tipo_egreso: number; nombre: string }[]>(`${this.baseUrl}/tipos`, { withCredentials: true }
