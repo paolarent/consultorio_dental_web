@@ -56,16 +56,23 @@ export class ModalConfigHorario {
         };
       }
 
-      const turno1 = registros[0];
-      const turno2 = registros[1];
+      // --- ORDENAR LOS TURNOS POR HORA  ---
+      const registrosOrdenados = [...registros].sort((a, b) =>
+        this.convertirHora(a.hora_inicio) - this.convertirHora(b.hora_inicio)
+      );
+
+      const turno1 = registrosOrdenados[0];
+      const turno2 = registrosOrdenados[1]; // puede ser undefined
 
       return {
         dia,
         nombre: this.nombreDia(dia),
         activo: true,
+        //TURNO PRINCIPAL
         hora_inicio: turno1.hora_inicio,
         hora_fin: turno1.hora_fin,
         id_turno1: turno1.id_horario,
+        //TURNO DOS
         segundoTurno: !!turno2,
         turno2_inicio: turno2?.hora_inicio ?? '',
         turno2_fin: turno2?.hora_fin ?? '',
