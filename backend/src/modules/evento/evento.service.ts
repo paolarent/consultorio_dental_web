@@ -6,7 +6,7 @@ import { status_evento } from '@prisma/client';
 
 @Injectable()
 export class EventoService {
-    constructor( private readonly prisma: PrismaService ) {}
+    constructor( private prisma: PrismaService ) {}
 
     async findAllActive(id_consultorio?: number) {
         if (id_consultorio) {

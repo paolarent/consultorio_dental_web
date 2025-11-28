@@ -145,4 +145,236 @@ export class MailerService {
         });
     }
 
+    //--------------------------------------------------------------------------------------------------------------------------------------------
+    // MÉTODOS PARA SISTEMA DE CITAS
+
+    /**
+     * Enviar notificación de cita (confirmación, cancelación, etc.)
+     */
+    async enviarNotificacionCita(
+        to: string,
+        tipo: 'programada' | 'confirmada' | 'cancelada' | 'solicitud_pendiente',
+        datos: {
+            fecha: string;
+            hora: string;
+            motivo: string;
+            nombreDentista?: string;
+            nombrePaciente?: string;
+            canceladoPor?: string;
+        }
+    ) {
+        const logoUrl = process.env.LOGO_URL || 'https://via.placeholder.com/220x100';
+        const nombreDoc = process.env.NOMBRE_DOCTOR || 'Consultorio Dental';
+        
+        let asunto: string;
+        let mensaje: string;
+        let colorBoton: string = '#1D8F93';
+
+        switch (tipo) {
+            case 'programada':
+                asunto = 'Tu cita ha sido programada';
+                mensaje = `Tu cita para <strong>${datos.motivo}</strong> ha sido programada exitosamente para el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong>.`;
+                break;
+            
+            case 'confirmada':
+                asunto = 'Tu cita ha sido confirmada';
+                mensaje = `Tu cita para <strong>${datos.motivo}</strong> el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong> ha sido confirmada.`;
+                break;
+            
+            case 'cancelada':
+                asunto = 'Tu cita ha sido cancelada';
+                mensaje = `Tu cita para <strong>${datos.motivo}</strong> programada el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong> ha sido cancelada${datos.canceladoPor ? ` por el ${datos.canceladoPor}` : ''}.`;
+                colorBoton = '#DC2626';
+                break;
+            
+            case 'solicitud_pendiente':
+                asunto = 'Nueva solicitud de cita';
+                mensaje = `El paciente <strong>${datos.nombrePaciente}</strong> ha solicitado una cita para <strong>${datos.motivo}</strong> el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong>. Por favor, revisa y confirma la cita.`;
+                colorBoton = '#F59E0B';
+                break;
+        }
+
+        const html = `
+        <div style="background-color: #f0f0f0; padding: 40px 0; font-family: Arial, sans-serif;">
+            <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 40px;">
+                <img src="${logoUrl}" alt="Logo" style="width: 220px; margin: 0 auto 20px; display: block; border-radius:10px" />
+                <h2 style="color: #000000; font-size: 24px; margin-bottom: 20px; text-align: center;">${asunto}</h2>
+                <div style="background-color: #F3F4F6; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="color: #374151; font-size: 16px; margin: 0; line-height: 1.6;">${mensaje}</p>
+                </div>
+                ${tipo === 'solicitud_pendiente' ? `
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="${process.env.FRONTEND_URL}/dentista/citas" style="display: inline-block; padding: 14px 28px; font-size: 18px; font-weight: bold; color: #ffffff; background-color: ${colorBoton}; border-radius: 12px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                            Ver cita
+                        </a>
+                    </div>
+                ` : ''}
+                <p style="color: #6B7280; font-size: 14px; margin-top: 30px; text-align: center;">
+                    Si tienes alguna duda, no dudes en contactarnos.
+                </p>
+            </div>
+        </div>
+        `;
+
+        await this.transporter.sendMail({
+            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
+            to,
+            subject: asunto,
+            html
+        });
+
+        this.logger.log(`Notificación de cita enviada a ${to}: ${tipo}`);
+    }
+
+    /**
+     * Enviar notificación de reprogramación
+     */
+    async enviarNotificacionReprogramacion(
+        to: string,
+        tipo: 'solicitud' | 'aceptada' | 'rechazada',
+        datos: {
+            fechaOriginal: string;
+            horaOriginal: string;
+            nuevaFecha: string;
+            nuevaHora: string;
+            motivo: string;
+            solicitadoPor?: string;
+        }
+    ) {
+        const logoUrl = process.env.LOGO_URL || 'https://via.placeholder.com/220x100';
+        const nombreDoc = process.env.NOMBRE_DOCTOR || 'Consultorio Dental';
+        
+        let asunto: string;
+        let mensaje: string;
+        let colorBoton: string = '#1D8F93';
+
+        switch (tipo) {
+            case 'solicitud':
+                asunto = 'Solicitud de reprogramación de cita';
+                mensaje = `Se ha solicitado reprogramar tu cita de <strong>${datos.motivo}</strong> del <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong> para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>. Por favor, confirma si aceptas el cambio.`;
+                colorBoton = '#F59E0B';
+                break;
+            
+            case 'aceptada':
+                asunto = 'Tu cita ha sido reprogramada';
+                mensaje = `Tu solicitud de reprogramación ha sido aceptada. Tu cita de <strong>${datos.motivo}</strong> ahora está programada para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>.`;
+                colorBoton = '#10B981';
+                break;
+            
+            case 'rechazada':
+                asunto = 'Solicitud de reprogramación rechazada';
+                mensaje = `Tu solicitud de reprogramación ha sido rechazada. Tu cita de <strong>${datos.motivo}</strong> permanece en la fecha original: <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong>.`;
+                colorBoton = '#DC2626';
+                break;
+        }
+
+        const html = `
+        <div style="background-color: #f0f0f0; padding: 40px 0; font-family: Arial, sans-serif;">
+            <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 40px;">
+                <img src="${logoUrl}" alt="Logo" style="width: 220px; margin: 0 auto 20px; display: block; border-radius:10px" />
+                <h2 style="color: #000000; font-size: 24px; margin-bottom: 20px; text-align: center;">${asunto}</h2>
+                <div style="background-color: #F3F4F6; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="color: #374151; font-size: 16px; margin: 0; line-height: 1.6;">${mensaje}</p>
+                </div>
+                ${tipo === 'solicitud' ? `
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="${process.env.FRONTEND_URL}/citas" style="display: inline-block; padding: 14px 28px; font-size: 18px; font-weight: bold; color: #ffffff; background-color: ${colorBoton}; border-radius: 12px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                            Revisar solicitud
+                        </a>
+                    </div>
+                ` : ''}
+                <p style="color: #6B7280; font-size: 14px; margin-top: 30px; text-align: center;">
+                    Gracias por tu comprensión.
+                </p>
+            </div>
+        </div>
+        `;
+
+        await this.transporter.sendMail({
+            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
+            to,
+            subject: asunto,
+            html
+        });
+
+        this.logger.log(`Notificación de reprogramación enviada a ${to}: ${tipo}`);
+    }
+
+    /**
+     * Enviar recordatorio de cita (1 día antes)
+     */
+    async enviarRecordatorioCita(
+        to: string,
+        datos: {
+            fecha: string;
+            hora: string;
+            motivo?: string;
+            nombreDentista: string;
+            notas?: string;
+        }
+    ) {
+        const logoUrl = process.env.LOGO_URL || 'https://via.placeholder.com/220x100';
+        const nombreDoc = process.env.NOMBRE_DOCTOR || 'Consultorio Dental';
+
+        const html = `
+        <div style="background-color: #f0f0f0; padding: 40px 0; font-family: Arial, sans-serif;">
+            <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 40px;">
+                <img src="${logoUrl}" alt="Logo" style="width: 220px; margin: 0 auto 20px; display: block; border-radius:10px" />
+                <h2 style="color: #000000; font-size: 24px; margin-bottom: 20px; text-align: center;">📅 Recordatorio de cita</h2>
+                <div style="background-color: #DBEAFE; padding: 20px; border-radius: 8px; border-left: 4px solid #3B82F6; margin-bottom: 20px;">
+                    <p style="color: #1E40AF; font-size: 16px; margin: 0 0 10px 0; font-weight: bold;">
+                        Tienes una cita mañana
+                    </p>
+                    <p style="color: #374151; font-size: 16px; margin: 0; line-height: 1.6;">
+                        <strong>Motivo:</strong> ${datos.motivo}<br>
+                        <strong>Fecha:</strong> ${this.formatearFecha(datos.fecha)}<br>
+                        <strong>Hora:</strong> ${this.formatearHora(datos.hora)}<br>
+                        <strong>Dentista:</strong> Dr. ${datos.nombreDentista}
+                    </p>
+                    ${datos.notas ? `<p style="color: #6B7280; font-size: 14px; margin-top: 10px; font-style: italic;">Nota: ${datos.notas}</p>` : ''}
+                </div>
+                <div style="background-color: #FEF3C7; padding: 15px; border-radius: 8px; border-left: 4px solid #F59E0B; margin-bottom: 20px;">
+                    <p style="color: #92400E; font-size: 14px; margin: 0;">
+                        ⏰ <strong>Recomendación:</strong> Te sugerimos llegar 10 minutos antes de tu cita.
+                    </p>
+                </div>
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="${process.env.FRONTEND_URL}/paciente/citas" style="display: inline-block; padding: 14px 28px; font-size: 18px; font-weight: bold; color: #ffffff; background-color: #1D8F93; border-radius: 12px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                        Ver mis citas
+                    </a>
+                </div>
+                <p style="color: #6B7280; font-size: 14px; margin-top: 30px; text-align: center;">
+                    Si necesitas cancelar o reprogramar, hazlo con al menos 2 horas de anticipación.
+                </p>
+            </div>
+        </div>
+        `;
+
+        await this.transporter.sendMail({
+            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
+            to,
+            subject: '📅 Recordatorio: Tienes una cita mañana',
+            html
+        });
+
+        this.logger.log(`Recordatorio de cita enviado a ${to}`);
+    }
+
+    // ============================================
+    // MÉTODOS AUXILIARES
+    // ============================================
+    
+    private formatearFecha(fecha: string): string {
+        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const date = new Date(fecha);
+        return `${date.getDate()} de ${meses[date.getMonth()]} de ${date.getFullYear()}`;
+    }
+
+    private formatearHora(hora: string): string {
+        // Asume formato "HH:mm:ss+00:00" o "HH:mm"
+        const [hh, mm] = hora.split(':');
+        return `${hh}:${mm}`;
+    }
+
 }

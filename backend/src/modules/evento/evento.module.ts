@@ -6,6 +6,7 @@ import { EventoController } from './evento.controller';
 @Module({
     controllers: [EventoController],
     providers: [EventoService, PrismaService],
+    exports: [EventoService]
 })
 export class EventoModule {}
 

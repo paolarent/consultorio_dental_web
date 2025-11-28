@@ -68,8 +68,9 @@ export enum StatusArchivo {
 }
 
 export enum StatusCitaReprog {
-  PROGRAMADA = "programada",
-  CANCELADA = "cancelada",
+  ACEPTADA = "aceptada",
+  PENDIENTE = "pendiente",
+  CANCELADA = "cancelada"
 }
 
 export enum StatusCitas {

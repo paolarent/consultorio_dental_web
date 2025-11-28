@@ -1,43 +1,45 @@
-import { IsInt, IsString, IsOptional, IsDate, IsEnum, Matches, } from 'class-validator';
+import { IsInt, IsString, IsOptional, IsDate, IsEnum, Matches, IsNotEmpty, IsDateString, } from 'class-validator';
 import { SiONo, StatusEvento } from '../../../common/enums';
 import { Type } from 'class-transformer';
 
 export class CreateEventoDto {
     @IsString()
+    @IsNotEmpty()
     titulo: string;
 
     @IsInt()
+    @IsNotEmpty()
     id_tipo_evento: number;
 
-    @IsDate()
-    @Type(() => Date) 
-    fecha_inicio: Date;
+    @IsDateString()
+    @IsNotEmpty()
+    fecha_inicio: string;
 
-    @IsDate()
-    @Type(() => Date)
-    fecha_fin: Date;
+    @IsDateString()
+    @IsNotEmpty()
+    fecha_fin: string;
 
     @IsEnum(SiONo)
+    @IsNotEmpty()
     evento_todo_el_dia: SiONo;
 
-    @IsOptional()
     @IsString()
-    @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: 'Formato HH:mm' })
-    hora_inicio?: string;
+    @IsOptional()
+    hora_inicio?: string; // "HH:mm"
 
-    @IsOptional()
     @IsString()
-    @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: 'Formato HH:mm' })
-    hora_fin?: string;
+    @IsOptional()
+    hora_fin?: string; // "HH:mm"
 
     @IsInt()
+    @IsNotEmpty()
     id_consultorio: number;
 
-    @IsOptional()
     @IsString()
+    @IsOptional()
     notas?: string;
 
-    @IsOptional()
-    @IsEnum(StatusEvento)
-    status?: StatusEvento;
+    //@IsOptional()
+    //@IsEnum(StatusEvento)
+    //status?: StatusEvento;
 }

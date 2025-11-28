@@ -34,7 +34,8 @@ model archivo {
 model cita {
   id_cita             Int                   @id @default(autoincrement())
   id_paciente         Int
-  id_motivo           Int
+  id_motivo           Int?
+  id_servicio         Int? 
   fecha               DateTime              @db.Date
   hora_inicio         DateTime              @db.Timetz(6)
   frecuencia          frecuencia_servicio?  @default(unica)
@@ -42,8 +43,9 @@ model cita {
   id_consultorio      Int
   status              status_citas
   consultorio         consultorio           @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
-  motivo_consulta     motivo_consulta       @relation(fields: [id_motivo], references: [id_motivo], onDelete: Cascade, map: "id_motivo")
+  motivo_consulta     motivo_consulta?       @relation(fields: [id_motivo], references: [id_motivo], onDelete: Cascade, map: "id_motivo")
   paciente            paciente              @relation(fields: [id_paciente], references: [id_paciente], onDelete: Cascade, map: "id_paciente")
+  servicio            servicio?    @relation(fields: [id_servicio], references: [id_servicio], onDelete: Cascade, map: "id_servicio")
   reprogramacion_cita reprogramacion_cita[]
 }
 
@@ -317,6 +319,7 @@ model servicio {
   detalle_ingreso   detalle_ingreso[]
   historial_clinico historial_clinico[]
   motivo_consulta   motivo_consulta[]
+  cita              cita[]
   consultorio       consultorio         @relation(fields: [id_consultorio], references: [id_consultorio], onDelete: Cascade, map: "id_consultorio")
 }
 
@@ -489,7 +492,8 @@ enum status_archivo {
 }
 
 enum status_cita_reprog {
-  programada
+  aceptada
+  pendiente
   cancelada
 }
 
