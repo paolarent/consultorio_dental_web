@@ -148,24 +148,18 @@ export class MailerService {
     //--------------------------------------------------------------------------------------------------------------------------------------------
     // MÉTODOS PARA SISTEMA DE CITAS
 
-    /**
-     * Enviar notificación de cita (confirmación, cancelación, etc.)
-     */
+    //Enviar notificación de cita (confirmación, cancelación, etc.)
     async enviarNotificacionCita(
         to: string,
-        tipo: 'programada' | 'confirmada' | 'cancelada' | 'solicitud_pendiente',
+        tipo: 'programada' | 'cancelada' | 'solicitud_pendiente',
         datos: {
             fecha: string;
             hora: string;
-            motivo: string;
-            nombreDentista?: string;
             nombrePaciente?: string;
-            canceladoPor?: string;
-        }
+        },
+        logoUrl: string,
+        nombreDoc?: string
     ) {
-        const logoUrl = process.env.LOGO_URL || 'https://via.placeholder.com/220x100';
-        const nombreDoc = process.env.NOMBRE_DOCTOR || 'Consultorio Dental';
-        
         let asunto: string;
         let mensaje: string;
         let colorBoton: string = '#1D8F93';
@@ -173,23 +167,18 @@ export class MailerService {
         switch (tipo) {
             case 'programada':
                 asunto = 'Tu cita ha sido programada';
-                mensaje = `Tu cita para <strong>${datos.motivo}</strong> ha sido programada exitosamente para el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong>.`;
-                break;
-            
-            case 'confirmada':
-                asunto = 'Tu cita ha sido confirmada';
-                mensaje = `Tu cita para <strong>${datos.motivo}</strong> el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong> ha sido confirmada.`;
+                mensaje = `Tu cita ha sido programada exitosamente para el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong>.`;
                 break;
             
             case 'cancelada':
                 asunto = 'Tu cita ha sido cancelada';
-                mensaje = `Tu cita para <strong>${datos.motivo}</strong> programada el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong> ha sido cancelada${datos.canceladoPor ? ` por el ${datos.canceladoPor}` : ''}.`;
+                mensaje = `Tu cita programada el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong> ha sido cancelada.`;
                 colorBoton = '#DC2626';
                 break;
             
             case 'solicitud_pendiente':
                 asunto = 'Nueva solicitud de cita';
-                mensaje = `El paciente <strong>${datos.nombrePaciente}</strong> ha solicitado una cita para <strong>${datos.motivo}</strong> el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong>. Por favor, revisa y confirma la cita.`;
+                mensaje = `El paciente <strong>${datos.nombrePaciente}</strong> ha solicitado una cita el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong>. Por favor, ingresa, revisa y confirma la cita.`;
                 colorBoton = '#F59E0B';
                 break;
         }
@@ -217,7 +206,7 @@ export class MailerService {
         `;
 
         await this.transporter.sendMail({
-            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
+            from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
             to,
             subject: asunto,
             html
@@ -226,9 +215,7 @@ export class MailerService {
         this.logger.log(`Notificación de cita enviada a ${to}: ${tipo}`);
     }
 
-    /**
-     * Enviar notificación de reprogramación
-     */
+    // Enviar notificación de reprogramación
     async enviarNotificacionReprogramacion(
         to: string,
         tipo: 'solicitud' | 'aceptada' | 'rechazada',
@@ -237,13 +224,11 @@ export class MailerService {
             horaOriginal: string;
             nuevaFecha: string;
             nuevaHora: string;
-            motivo: string;
             solicitadoPor?: string;
-        }
-    ) {
-        const logoUrl = process.env.LOGO_URL || 'https://via.placeholder.com/220x100';
-        const nombreDoc = process.env.NOMBRE_DOCTOR || 'Consultorio Dental';
-        
+        },
+        logoUrl: string,
+        nombreDoc?: string
+    ) {    
         let asunto: string;
         let mensaje: string;
         let colorBoton: string = '#1D8F93';
@@ -251,19 +236,19 @@ export class MailerService {
         switch (tipo) {
             case 'solicitud':
                 asunto = 'Solicitud de reprogramación de cita';
-                mensaje = `Se ha solicitado reprogramar tu cita de <strong>${datos.motivo}</strong> del <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong> para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>. Por favor, confirma si aceptas el cambio.`;
+                mensaje = `Se ha solicitado reprogramar tu cita de <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong> para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>. Por favor, confirma si aceptas el cambio.`;
                 colorBoton = '#F59E0B';
                 break;
             
             case 'aceptada':
                 asunto = 'Tu cita ha sido reprogramada';
-                mensaje = `Tu solicitud de reprogramación ha sido aceptada. Tu cita de <strong>${datos.motivo}</strong> ahora está programada para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>.`;
+                mensaje = `Tu solicitud de reprogramación ha sido aceptada. Tu cita ahora está programada para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>.`;
                 colorBoton = '#10B981';
                 break;
             
             case 'rechazada':
                 asunto = 'Solicitud de reprogramación rechazada';
-                mensaje = `Tu solicitud de reprogramación ha sido rechazada. Tu cita de <strong>${datos.motivo}</strong> permanece en la fecha original: <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong>.`;
+                mensaje = `Tu solicitud de reprogramación ha sido rechazada. Tu cita permanece en la fecha original: <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong>. Si no podra asistir por favor ingrese y cancele.`;
                 colorBoton = '#DC2626';
                 break;
         }
@@ -291,7 +276,7 @@ export class MailerService {
         `;
 
         await this.transporter.sendMail({
-            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
+            from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
             to,
             subject: asunto,
             html
@@ -308,14 +293,12 @@ export class MailerService {
         datos: {
             fecha: string;
             hora: string;
-            motivo?: string;
             nombreDentista: string;
             notas?: string;
-        }
+        },
+        logoUrl: string,
+        nombreDoc?: string
     ) {
-        const logoUrl = process.env.LOGO_URL || 'https://via.placeholder.com/220x100';
-        const nombreDoc = process.env.NOMBRE_DOCTOR || 'Consultorio Dental';
-
         const html = `
         <div style="background-color: #f0f0f0; padding: 40px 0; font-family: Arial, sans-serif;">
             <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 40px;">
@@ -326,7 +309,6 @@ export class MailerService {
                         Tienes una cita mañana
                     </p>
                     <p style="color: #374151; font-size: 16px; margin: 0; line-height: 1.6;">
-                        <strong>Motivo:</strong> ${datos.motivo}<br>
                         <strong>Fecha:</strong> ${this.formatearFecha(datos.fecha)}<br>
                         <strong>Hora:</strong> ${this.formatearHora(datos.hora)}<br>
                         <strong>Dentista:</strong> Dr. ${datos.nombreDentista}
@@ -351,7 +333,7 @@ export class MailerService {
         `;
 
         await this.transporter.sendMail({
-            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
+            from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
             to,
             subject: '📅 Recordatorio: Tienes una cita mañana',
             html
@@ -366,7 +348,7 @@ export class MailerService {
     
     private formatearFecha(fecha: string): string {
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         const date = new Date(fecha);
         return `${date.getDate()} de ${meses[date.getMonth()]} de ${date.getFullYear()}`;
     }

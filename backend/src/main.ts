@@ -1,14 +1,18 @@
-// main.ts
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log'],
+  });
+
   app.use(cookieParser());
 
+  const frontUrl = process.env.FRONTEND_URL;
+
   app.enableCors({
-    origin: 'http://localhost:4200', //ruta del front
+    origin: frontUrl, //ruta del front
     credentials: true,
   });
 
