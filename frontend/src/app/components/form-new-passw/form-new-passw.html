@@ -12,34 +12,38 @@
             />
         </div>
         
-        <h1 class="text-2xl font-bold mb-4 text-center text-black">{{ titulo }}</h1>
-        <p class="text-lg font-regular mb-6 text-center text-black">{{ descripcion }}</p>
+        <h1 class="text-xl lg:text-2xl font-bold mb-4 text-center text-black">{{ titulo }}</h1>
+        <p class="text-base lg:text-lg font-regular mb-6 text-center text-black">{{ descripcion }}</p>
         
         <form class="flex flex-col">
             <!-- Grupo inputs -->
             <div class="flex flex-col gap-8 mb-2">
-                <div class="relative">
+                <div>
                     <label class="block text-lg font-medium text-[#545454] mb-1">{{ labelNueva }}</label>
-                    <input
-                        type="password"
-                        [(ngModel)]="nueva"
-                        name="nueva"
-                        appTogglePassword
-                        placeholder="Ingresa tu contraseña"
-                        class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                    />
+                    <div class="relative">
+                        <input
+                            type="password"
+                            [(ngModel)]="nueva"
+                            name="nueva"
+                            appTogglePassword
+                            placeholder="Ingresa tu contraseña"
+                            class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
                 </div>
 
-                <div class="relative">
+                <div>
                     <label class="block text-lg font-medium text-[#545454] mb-1">{{ labelConfirmar }}</label>
-                    <input
-                        type="password"
-                        [(ngModel)]="confirmar"
-                        name="confirmar"
-                        appTogglePassword
-                        placeholder="Ingresa tu contraseña"
-                        class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                    />
+                    <div class="relative">
+                        <input
+                            type="password"
+                            [(ngModel)]="confirmar"
+                            name="confirmar"
+                            appTogglePassword
+                            placeholder="Ingresa tu contraseña"
+                            class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                        />
+                    </div>
                 </div>
 
                 <button

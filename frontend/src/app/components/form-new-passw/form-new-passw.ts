@@ -57,6 +57,12 @@ export class FormNewPassw {
       this.notify.error('Debes completar todos los campos');
       return;
     }
+
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,20}$/.test(this.nueva)) {
+      this.notify.warning('La contraseña debe tener entre 8 y 20 caracteres, incluir mayúscula, minúscula, número y símbolo especial.');
+      return;
+    }
+
     if (this.nueva !== this.confirmar) {
       this.notify.error('Las contraseñas no coinciden');
       return;

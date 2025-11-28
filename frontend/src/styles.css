@@ -272,4 +272,27 @@ input[type="radio"] {
 }
 
 
+/* FOOTER */
+/* Footer layout — entre 820px y 768px */
+@media (max-width: 820px) and (min-width: 768px) {
+    footer .footer-wrapper {
+        display: flex;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 30px !important;
+    }
+
+    /* Contenedor de textos (copyright + contacto) */
+    footer .footer-info-group {
+        order: 1;
+        text-align: center !important;
+    }
+
+    /* Redes sociales */
+    footer .footer-socials {
+        order: 2;
+    }
+}
+
+
 

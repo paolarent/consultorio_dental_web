@@ -1,4 +1,4 @@
-<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+<div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4">
     
     <!-- Fondo con patrón (por detrás del form) -->
     <div
@@ -9,66 +9,66 @@
             background-size: 700px 500px;">
     </div>
 
-    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto"
-        [ngClass]="step === 3 ? 'w-2/5 max-w-md' : 'w-3/4 max-w-3xl'"
+    <div class="relative bg-white p-4 sm:p-6 rounded-xl max-h-[90vh] overflow-y-auto w-full"
+        [ngClass]="step === 3 ? 'sm:w-11/12 md:w-3/4 lg:w-2/5 max-w-md' : 'sm:w-11/12 md:w-11/12 lg:w-3/4 max-w-3xl'"
     >
-        <h2 class="text-4xl font-bold mt-2 mb-8 text-[#105053]">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mt-2 mb-6 sm:mb-8 text-[#105053]">
             {{ step === 1 ? 'Editar Mis Datos' : (step === 2 ? 'Editar Dirección' : 'Editar Usuario') }}
         </h2>
 
         <!-- STEP 1: Datos personales + tutor -->
         @if(step === 1) {
         <form #pacienteStep1Form="ngForm">
-            <div class="grid grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Nombre</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Nombre</label>
                     <input
                     type="text"
                     name="nombre"
                     [(ngModel)]="paciente.nombre"
                     placeholder="Ingresa tu nombre"
                     required
-                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                     />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Apellido Paterno</label>
                     <input
                     type="text"
                     name="apellido1"
                     [(ngModel)]="paciente.apellido1"
                     placeholder="Ingresa tu primer apellido"
                     required
-                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                     />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Apellido Materno</label>
                     <input
                     type="text"
                     name="apellido2"
                     [(ngModel)]="paciente.apellido2"
                     placeholder="Ingresa tu segundo apellido"
-                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                     />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Teléfono</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Teléfono</label>
                     <input
                     type="text"
                     name="telefono"
                     [(ngModel)]="paciente.telefono"
                     placeholder="Ingresa tu teléfono"
                     required
-                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                    class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                     />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">
                         Fecha de nacimiento
                     </label>
 
@@ -79,13 +79,14 @@
                             name="fechaNacimiento"
                             placeholder="Selecciona la fecha de nacimiento"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Sexo</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Sexo</label>
 
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-select
@@ -103,105 +104,105 @@
             </div>
 
             <!-- Toggle tutor -->
-            <div class="flex items-center mt-0 mb-6">
-                <span class="mr-2 text-[#545454] font-bold text-lg">¿Tiene tutor?</span>
+            <div class="flex items-center mt-4 mb-4 sm:mt-0 sm:mb-6">
+                <span class="mr-2 text-[#545454] font-bold text-base sm:text-lg">¿Tiene tutor?</span>
                 <img [src]="tieneTutor ? 'assets/icons/on_switch.svg' : 'assets/icons/off_switch.svg'"
-                    class="w-14 h-10 cursor-pointer" (click)="toggleTutor()"
+                    class="w-12 h-8 sm:w-14 sm:h-10 cursor-pointer" (click)="toggleTutor()"
                 />
             </div>
 
             <!-- Datos tutor -->
             @if(tieneTutor) {
-                <div class="grid grid-cols-2 gap-6 mt-4 mb-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-4 mb-6 sm:mb-10">
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Nombre de Tutor</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Nombre de Tutor</label>
                         <input
                             type="text"
                             name="tutor_nombre"
                             [(ngModel)]="paciente.tutor_nombre"
                             placeholder="Nombre tutor"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
                     
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno de Tutor</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Apellido Paterno de Tutor</label>
                         <input
                             type="text"
                             name="tutor_apellido1"
                             [(ngModel)]="paciente.tutor_apellido1"
                             placeholder="Apellido1 tutor"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno de Tutor</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Apellido Materno de Tutor</label>
                         <input
                             type="text"
                             name="tutor_apellido2"
                             [(ngModel)]="paciente.tutor_apellido2"
                             placeholder="Apellido2 tutor"
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
                     
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Teléfono Tutor</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Teléfono Tutor</label>
                         <input
                             type="text"
                             name="tutor_telefono"
                             [(ngModel)]="paciente.tutor_telefono"
                             placeholder="Teléfono tutor"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
                 
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Correo tutor</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Correo tutor</label>
                         <input
                             type="email"
                             name="tutor_correo"
                             [(ngModel)]="paciente.tutor_correo"
                             placeholder="Correo tutor"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
                     
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Relación</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Relación</label>
                         <input
                             type="text"
                             name="tutor_relacion"
                             [(ngModel)]="paciente.tutor_relacion"
                             placeholder="Relación"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
                     
                 </div>
             }
 
-            <div class="flex justify-end gap-4 mt-6">
+            <div class="flex flex-row justify-end gap-3 sm:gap-4 mt-6">
                 <button
-                    class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                    class="w-full sm:w-auto px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
                     (click)="cancelar()"
                 >
-                    <span class="text-center text-white text-lg font-semibold tracking-wider">Cancelar</span>
+                    <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Cancelar</span>
                 </button>
                 
                 <button
-                    class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                    class="w-full sm:w-auto px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                     [ngClass]="pacienteStep1Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
                     
                     (click)="siguienteStep()"
                 >
-                    <span class="text-center text-white text-lg font-semibold tracking-wider">Siguiente</span>
+                    <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Siguiente</span>
                 </button>
             </div>
         </form>
@@ -210,109 +211,109 @@
         <!-- STEP 2: Datos de direccion -->
         @if(step === 2) {
             <form #pacienteStep2Form="ngForm">
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <!-- campos de dirección -->
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Calle</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Calle</label>
                         <input
                             type="text"
                             name="d_calle"
                             [(ngModel)]="paciente.d_calle"
                             placeholder="Ingresa la calle"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Núm. Exterior</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Núm. Exterior</label>
                         <input
                             type="text"
                             name="d_num_exterior"
                             [(ngModel)]="paciente.d_num_exterior"
                             placeholder="Ingresa el numero"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Colonia</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Colonia</label>
                         <input
                             type="text"
                             name="d_colonia"
                             [(ngModel)]="paciente.d_colonia"
                             placeholder="Ingresa la colonia"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Código Póstal</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Código Póstal</label>
                         <input
                             type="text"
                             name="d_cp"
                             [(ngModel)]="paciente.d_cp"
                             placeholder="Ingresa el CP"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Entidad Federativa</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Entidad Federativa</label>
                         <input
                             type="text"
                             name="d_entidadfed"
                             [(ngModel)]="paciente.d_entidadfed"
                             placeholder="Ingresa la entidad"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Municipio</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Municipio</label>
                         <input
                             type="text"
                             name="d_municipio"
                             [(ngModel)]="paciente.d_municipio"
                             placeholder="Ingresa el municipio"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
 
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Localidad</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Localidad</label>
                         <input
                             type="text"
                             name="d_localidad"
                             [(ngModel)]="paciente.d_localidad"
                             placeholder="Ingresa la localidad"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
                     </div>
 
                 </div>
 
-                <div class="flex justify-end gap-4 mt-6">
+                <div class="flex flex-row justify-end gap-3 sm:gap-4 mt-6">
                     <button
-                        class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                        class="w-full sm:w-auto px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
                         (click)="volverStep()"
                     >
-                        <span class="text-center text-white text-lg font-semibold tracking-wider">Volver</span>
+                        <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Volver</span>
                     </button>
                     
                     <button
-                        class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                        class="w-full sm:w-auto px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                         [ngClass]="pacienteStep2Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
                         
                         (click)="siguienteStep()"
                     >
-                        <span class="text-center text-white text-lg font-semibold tracking-wider">Siguiente</span>
+                        <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Siguiente</span>
                     </button>
                 </div>
             </form>
@@ -321,11 +322,11 @@
         <!-- STEP 3: Datos de usuario (correo y contraseña) -->
         @if(step === 3) {
             <form #pacienteStep3Form="ngForm">
-                <div class="grid gap-10">
+                <div class="grid gap-6 sm:gap-10">
                     
                     <!-- Columna izquierda: Correo -->
                     <div>
-                        <label class="block text-base font-medium text-[#545454] mb-1">Correo</label>
+                        <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Correo</label>
                         <input
                             type="email"
                             name="correo"
@@ -333,7 +334,7 @@
                             [value]="auth.usuario()?.correo"
                             placeholder="Ingresa el nuevo correo"
                             required
-                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
+                            class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
 
                     </div>
@@ -345,72 +346,78 @@
                             class="w-full h-12 bg-[#C3F2F3] rounded-xl inline-flex justify-center items-center cursor-pointer hover:bg-[#545454] mb-4"
                             (click)="togglePasswordFields()"
                         >
-                            <span class="text-[#545454] font-bold text-lg hover:text-[#C3F2F3]">
+                            <span class="text-[#545454] font-bold text-base sm:text-lg hover:text-[#C3F2F3]">
                                 Cambiar contraseña
                             </span>
                         </button>
 
                         @if(showPasswordFields) {
                             <!-- Contraseña actual -->
-                            <div class="relative w-full mb-4">
-                                <label class="block text-base font-medium text-[#545454] mb-1">Contraseña actual</label>
-                                <input
-                                    type="password"
-                                    appTogglePassword
-                                    placeholder="Ingresa tu contraseña actual"
-                                    class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                                    name="contrasenaActual"
-                                    [(ngModel)]="contrasenaActual"
-                                    required
-                                />
+                            <div class="w-full mb-4">
+                                <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Contraseña actual</label>
+                                <div class="relative">
+                                    <input
+                                        type="password"
+                                        appTogglePassword
+                                        placeholder="Ingresa tu contraseña actual"
+                                        class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
+                                        name="contrasenaActual"
+                                        [(ngModel)]="contrasenaActual"
+                                        required
+                                    />
+                                </div>
                             </div>
 
                             <!-- Contraseña nueva -->
-                            <div class="relative w-full mb-4">
-                                <label class="block text-base font-medium text-[#545454] mb-1">Nueva contraseña</label>
-                                <input
-                                    type="password"
-                                    appTogglePassword
-                                    placeholder="Ingresa tu nueva contraseña"
-                                    class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                                    name="contrasenaNueva"
-                                    [(ngModel)] = "contrasenaNueva" 
-                                    required
-                                />
+                            <div class="w-full mb-4">
+                                <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Nueva contraseña</label>
+                                <div class="relative">
+                                    <input
+                                        type="password"
+                                        appTogglePassword
+                                        placeholder="Ingresa tu nueva contraseña"
+                                        class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
+                                        name="contrasenaNueva"
+                                        [(ngModel)]="contrasenaNueva" 
+                                        required
+                                    />
+                                </div>
                             </div>
 
                             <!-- Confirmar contraseña -->
-                            <div class="relative w-full mb-4">
-                                <label class="block text-base font-medium text-[#545454] mb-1">Confirmar contraseña</label>
-                                <input
-                                    type="password"
-                                    appTogglePassword
-                                    placeholder="Confirma tu nueva contraseña"
-                                    class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none"
-                                    name="contrasenaConfirmar"
-                                    [(ngModel)] = "contrasenaConfirmar"
-                                    required
-                                />
+                            <div class="w-full mb-4">
+                                <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Confirmar contraseña</label>
+                                <div class="relative">
+                                    <input
+                                        type="password"
+                                        appTogglePassword
+                                        placeholder="Confirma tu nueva contraseña"
+                                        class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 pr-12 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
+                                        name="contrasenaConfirmar"
+                                        [(ngModel)]="contrasenaConfirmar"
+                                        required
+                                    />
+                                </div>
                             </div>
                         }
                     </div>
 
                 </div>
 
-                <div class="flex justify-end gap-4 mt-6">
+                <div class="flex flex-row justify-end gap-3 sm:gap-4 mt-6">
                     <button
-                        class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                        class="w-full sm:w-auto px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
                         (click)="volverStep()"
                     >
-                        <span class="text-center text-white text-lg font-semibold tracking-wider">Volver</span>
+                        <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Volver</span>
                     </button>
 
                     <button
-                        class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                        class="w-full sm:w-auto px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                         [ngClass]="pacienteStep3Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
                         (click)="guardarCambios()"
                     >
-                        <span class="text-center text-white text-lg font-semibold tracking-wider">Guardar cambios</span>
+                        <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Guardar</span>
                     </button>
                 </div>
 

@@ -1,78 +1,82 @@
-<div class="relative flex w-full max-w-8xl mx-auto gap-6 py-2 px-6 md:py-4 md:px-4">
-
-    <!-- Patrón de fondo de dientitos -->
-    <div
-        class="absolute inset-0 opacity-60 pointer-events-none -z-10"
-        style="background-image: url('assets/images/patron_dientes.png');
-            background-repeat: repeat;
-            background-position: bottom;
-            background-size: 800px 600px;">
-    </div>
+<div class="relative w-full mx-auto 
+            py-2 px-6 md:py-4 md:px-4
+            mt-10 mb-10
+            flex flex-col lg:flex-row gap-6">
 
 
-    <!-- Bloque izquierdo 2/5 -->
-    <div class="md:w-2/5 flex flex-col gap-14">
-        
+    <!-- Bloque izquierdo -->
+    <div class="w-full lg:flex-1 flex flex-col gap-14">
+
         <!-- Sección informativa -->
-        <section class="bg-white rounded-2xl p-6 shadow-md mt-2">
-        <h1 class="text-[#105053] text-5xl font-extrabold leading-tight">Mis Adeudos</h1>
-        <p class="text-black text-2xl font-light mt-2">Consulta el estado de tus pagos pendientes</p>
+        <section class="bg-white rounded-2xl p-6 shadow-xl mt-2">
+            <h1 class="text-[#105053] text-4xl lg:text-5xl font-extrabold leading-tight">
+                Mis Adeudos
+            </h1>
+            <p class="text-black text-xl lg:text-2xl font-light mt-2">
+                Consulta el estado de tus pagos pendientes
+            </p>
         </section>
 
         <!-- Total adeudado -->
-        <div class="bg-[#545454] rounded-[10px] shadow-md p-6 flex justify-between items-center h-44">
-        <div>
-            <h3 class="text-white text-4xl font-bold">Total adeudado</h3>
-            <p class="text-white text-5xl font-bold mt-8">
-            ${{ totalPendiente | number:'1.2-2' }}
-            </p>
-        </div>
-        <div class="relative">
-            <div class="w-32 h-32 bg-[#C3F2F3] rounded-full border-4 border-[#105053] flex items-center justify-center">
-            <img src="assets/icons/signo-pesos-adeu.svg" alt="Signo de pesos" class="w-16 h-16">
+        <div class="bg-[#545454] rounded-[10px] shadow-xl p-6 flex justify-between items-center h-44 mb-8 lg:mb-0">
+            <div>
+                <h3 class="text-white text-3xl xl:text-4xl font-bold">Total adeudado</h3>
+                <p class="text-white text-4xl xl:text-5xl font-bold mt-8">
+                    ${{ totalPendiente | number:'1.2-2' }}
+                </p>
+            </div>
+
+            <div class="relative">
+                <div class="w-28 h-28 lg:w-32 lg:h-32 bg-[#C3F2F3] rounded-full border-4 border-[#105053]
+                            flex items-center justify-center">
+                    <img
+                        src="assets/icons/signo-pesos-adeu.svg"
+                        alt="Signo de pesos"
+                        class="w-14 h-14 lg:w-16 lg:h-16">
+                </div>
             </div>
         </div>
-        </div>
-
     </div>
 
-    <!-- Bloque derecho 3/5 -->
-    <div class="md:w-3/5 flex flex-col max-h-[600px] bg-[#C3F2F3] rounded-[10px] shadow-md p-6">
-        
+    <!-- Bloque derecho -->
+    <div class="w-full lg:flex-1 flex flex-col bg-[#C3F2F3] rounded-[10px] shadow-xl p-6 
+                max-h-[700px] md:max-h-[600px]">
+
         <!-- Título fijo -->
-        <h3 class="text-[#545454] text-4xl font-bold mb-4 flex-shrink-0">Mis Saldos pendientes</h3>
+        <h3 class="text-[#545454] text-3xl lg:text-4xl font-bold mb-4 flex-shrink-0">
+            Mis Saldos pendientes
+        </h3>
 
-        <!-- Contenedor scrollable para las cards -->
+        <!-- Contenedor scrollable -->
         <div class="overflow-y-auto flex-1">
-        @if(ingresosPendientes.length === 0) {
-            <p class="text-center text-neutral-600 mt-4 font-semibold">
-            No hay saldos pendientes.
-            </p>
-        }
+            @if(ingresosPendientes.length === 0) {
+                <p class="text-center text-neutral-600 mt-4 font-semibold text-lg lg:text-xl">
+                    No hay saldos pendientes.
+                </p>
+            }
 
-        @for(ingreso of ingresosPendientes; track $index) {
-            <div class="bg-white rounded-[10px] border-l-8 border-[#105053] p-5 mt-6">
-            <p class="text-neutral-600 text-2xl font-bold">{{ ingreso.servicio }}</p>
-            <div class="text-[#545454] text-xl mt-1">{{ ingreso.fecha }}</div>
+            @for(ingreso of ingresosPendientes; track $index) {
+                <div class="bg-white rounded-[10px] border-l-8 border-[#105053] p-5 mt-6">
+                    <p class="text-neutral-600 text-2xl font-bold">{{ ingreso.servicio }}</p>
+                    <div class="text-[#545454] text-xl mt-1">{{ ingreso.fecha }}</div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-3 text-neutral-700">
-                <div class="flex flex-col">
-                    <span class="text-lg font-semibold text-[#545454]">Total</span>
-                    <span class="text-2xl font-bold text-neutral-800">${{ ingreso.monto_total | number:'1.2-2' }}</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-3 text-neutral-700">
+                        <div class="flex flex-col">
+                            <span class="text-lg font-semibold text-[#545454]">Total</span>
+                            <span class="text-2xl font-bold text-neutral-800">${{ ingreso.monto_total | number:'1.2-2' }}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-lg font-semibold text-[#545454]">Pagado</span>
+                            <span class="text-2xl font-bold text-[#094309]">${{ ingreso.totalPagado | number:'1.2-2' }}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-lg font-semibold text-[#545454]">Pendiente</span>
+                            <span class="text-2xl font-bold text-[#530E0E]">${{ ingreso.saldoPendiente | number:'1.2-2' }}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-lg font-semibold text-[#545454]">Pagado</span>
-                    <span class="text-2xl font-bold text-[#094309]">${{ ingreso.totalPagado | number:'1.2-2' }}</span>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-lg font-semibold text-[#545454]">Pendiente</span>
-                    <span class="text-2xl font-bold text-[#530E0E]">${{ ingreso.saldoPendiente | number:'1.2-2' }}</span>
-                </div>
-            </div>
-            </div>
-        }
+            }
         </div>
-
     </div>
 
 </div>

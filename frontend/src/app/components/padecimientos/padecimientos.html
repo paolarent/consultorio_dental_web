@@ -1,18 +1,18 @@
 <!-- Componente de seccion para Alergias y Condiciones Médicas -->
-<section class="w-full px-10 max-w-8xl mx-auto mt-6 flex flex-col md:flex-row gap-12 mb-10">
+<section class="w-full px-4 sm:px-6 lg:px-10 max-w-8xl mx-auto mt-6 flex flex-col xl:flex-row gap-6 md:gap-12 mb-10">
     <!-- Tarjeta de Alergias -->
-    <div class="flex-1 bg-[#F5F8FC] rounded-xl shadow-md p-6 relative h-[400px] overflow-y-auto">
+    <div class="flex-1 bg-[#F5F8FC] rounded-xl shadow-md p-4 md:p-6 min-h-[300px] md:h-[400px] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3 mb-4">
-                <img src="assets/icons/alergia.svg" alt="Alergias" class="w-12 h-12">
-                <h2 class="text-[#105053] text-3xl font-bold">Alergias</h2>
+                <img src="assets/icons/alergia.svg" alt="Alergias" class="w-10 h-10 sm:w-12 sm:h-12">
+                <h2 class="text-[#105053] text-2xl sm:text-3xl font-bold">Alergias</h2>
             </div>
 
             <button
                 (click)="modalAlergias.set(true)"
                 class="flex items-center gap-2 bg-[#C3F2F3] text-[#545454] text-lg font-semibold px-5 py-2 rounded-lg shadow hover:scale-105 transition">
-                <img src="assets/icons/agregar.svg" alt="Agregar alergia" class="w-8 h-8">
-                Agregar
+                <img src="assets/icons/agregar.svg" alt="Agregar alergia" class="w-6 h-6 sm:w-8 sm:h-8">
+                <span class="hidden sm:inline">Agregar</span>
             </button>
             
         </div>
@@ -20,42 +20,44 @@
         <!-- Listado de Alergias -->
         <div class="space-y-4">
             @for (alergia of alergias; track alergia.id_alergia; let i = $index) {
-                <div class="flex items-start rounded-lg p-4 shadow-sm"
-                    [class.bg-red-200/60]="alergia.severidad.toLowerCase() === 'alta'"
-                    [class.border-l-8]="true"
-                    [class.border-red-700]="alergia.severidad.toLowerCase() === 'alta'"
-                    [class.bg-yellow-100/60]="alergia.severidad.toLowerCase() === 'media'"
-                    [class.border-yellow-400]="alergia.severidad.toLowerCase() === 'media'"
-                    [class.bg-green-100/60]="alergia.severidad.toLowerCase() === 'baja'"
-                    [class.border-green-400]="alergia.severidad.toLowerCase() === 'baja'"
-                >
-                    <div class="flex flex-col flex-1">
-                        <h3 class="text-neutral-700 text-xl font-bold">{{ alergia.nombre }}</h3>
-                        <p class="text-neutral-600 text-base">{{ alergia.notas }}</p>
-                    </div>
-
-                    <div class="flex items-center gap-4 ml-6 self-start">
-                        <span 
-                            class="text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap"
-                            [class.bg-red-700/25]="alergia.severidad.toLowerCase() === 'alta'"
-                            [class.text-red-950]="alergia.severidad.toLowerCase() === 'alta'"
-                            [class.bg-orange-300/50]="alergia.severidad.toLowerCase() === 'media'"
-                            [class.text-yellow-950]="alergia.severidad.toLowerCase() === 'media'"
-                            [class.bg-green-300]="alergia.severidad.toLowerCase() === 'baja'"
-                            [class.text-green-950]="alergia.severidad.toLowerCase() === 'baja'"
-                        >
-                            Severidad {{ alergia.severidad | titlecase }}
-                        </span>
-                        
-                        
-                        <button 
-                            (click)="abrirModalEliminar('alergia', alergia.id_alergia)"
-                            class="bg-red-700 w-12 h-12 p-2 rounded-xl hover:scale-105 transition">
-                            <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
-                        </button>
-
-                    </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center rounded-lg p-4 shadow-sm"
+                [class.bg-red-200/60]="alergia.severidad.toLowerCase() === 'alta'"
+                [class.border-l-8]="true"
+                [class.border-red-700]="alergia.severidad.toLowerCase() === 'alta'"
+                [class.bg-yellow-100/60]="alergia.severidad.toLowerCase() === 'media'"
+                [class.border-yellow-400]="alergia.severidad.toLowerCase() === 'media'"
+                [class.bg-green-100/60]="alergia.severidad.toLowerCase() === 'baja'"
+                [class.border-green-400]="alergia.severidad.toLowerCase() === 'baja'"
+            >
+                <!-- Contenido principal -->
+                <div class="flex flex-col flex-1">
+                    <h3 class="text-neutral-700 text-lg sm:text-xl font-bold">{{ alergia.nombre }}</h3>
+                    <p class="text-neutral-600 text-sm sm:text-base">{{ alergia.notas }}</p>
                 </div>
+
+                <!-- Badge y botón: fila horizontal en móvil, fila horizontal en sm+ también -->
+                <div class="flex flex-row items-center justify-between sm:justify-start gap-4 mt-3 sm:mt-0 sm:ml-6 w-full sm:w-auto">
+                    <span 
+                        class="text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap"
+                        [class.bg-red-700/25]="alergia.severidad.toLowerCase() === 'alta'"
+                        [class.text-red-950]="alergia.severidad.toLowerCase() === 'alta'"
+                        [class.bg-orange-300/50]="alergia.severidad.toLowerCase() === 'media'"
+                        [class.text-yellow-950]="alergia.severidad.toLowerCase() === 'media'"
+                        [class.bg-green-300]="alergia.severidad.toLowerCase() === 'baja'"
+                        [class.text-green-950]="alergia.severidad.toLowerCase() === 'baja'"
+                    >
+                        Severidad {{ alergia.severidad | titlecase }}
+                    </span>
+
+                    <button 
+                        (click)="abrirModalEliminar('alergia', alergia.id_alergia)"
+                        class="bg-red-700 w-12 h-12 p-2 rounded-xl hover:scale-105 transition"
+                    >
+                        <img src="assets/icons/cancelar.svg" alt="Eliminar" class="w-8 h-8">
+                    </button>
+                </div>
+            </div>
+
             }
 
             @if (!alergias || alergias.length === 0) {
@@ -66,20 +68,20 @@
     </div>
 
     <!-- Tarjeta de Condiciones Médicas -->
-    <div class="flex-1 bg-[#F5F8FC] rounded-xl shadow-md p-6 relative h-[400px] overflow-y-auto">
+    <div class="flex-1 bg-[#F5F8FC] rounded-xl shadow-md p-4 md:p-6 min-h-[300px] md:h-[400px] overflow-y-auto">
         <!-- Encabezado -->
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3 mb-4">
-                <img src="assets/icons/cond-med.svg" alt="Condiciones Médicas" class="w-12 h-12">
-                <h2 class="text-[#105053] text-3xl font-bold">Condiciones Médicas</h2>
+                <img src="assets/icons/cond-med.svg" alt="Condiciones Médicas" class="w-10 h-10 sm:w-12 sm:h-12">
+                <h2 class="text-[#105053] text-2xl sm:text-3xl font-bold">Condiciones Médicas</h2>
             </div>
             
             <!-- Botón agregar condición médica -->
             <button
                 (click)="modalCondMed.set(true)"
                 class="flex items-center gap-2 bg-[#C3F2F3] text-[#545454] text-lg font-semibold px-5 py-2 rounded-lg shadow hover:scale-105 transition">
-                <img src="assets/icons/agregar.svg" alt="Agregar condicion" class="w-8 h-8">
-                Agregar
+                <img src="assets/icons/agregar.svg" alt="Agregar condicion" class="w-6 h-6 sm:w-8 sm:h-8">
+                <span class="hidden sm:inline">Agregar</span>
             </button>
 
         </div>
@@ -87,15 +89,16 @@
         <!-- Condiciones registradas -->
         <div class="space-y-4">
             @for (cond of condiciones; track cond.id_condicion_medica; let i = $index) {
-                <div class="flex items-center bg-zinc-200 border-l-8 border-teal-900 rounded-lg p-4 shadow-sm">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center bg-zinc-200 border-l-8 border-teal-900 rounded-lg p-4 shadow-sm">
                     <div class="flex flex-col flex-1">
-                        <h3 class="text-teal-900 text-xl font-bold">{{ cond.nombre }}</h3>
-                        <p class="text-neutral-600 text-base">
+                        <h3 class="text-teal-900 text-lg sm:text-xl font-bold">{{ cond.nombre }}</h3>
+                        <p class="text-neutral-600 text-sm sm:text-base">
                             Diagnosticada en: {{ cond.a_o_diagnostico }}<br>
                             Medicamento: {{ cond.medicamentos_formateados }}
                         </p>
                     </div>
-                    <div class="flex items-center justify-center gap-4 ml-6">
+                    
+                    <div class="flex flex-row items-center justify-between sm:justify-start gap-2 mt-3 sm:mt-0 sm:ml-6 w-full sm:w-auto">
                         <span
                             class="text-sm font-bold px-4 py-2 rounded-md whitespace-nowrap"
                             [class.bg-[#C8FCCA]]="cond.condicion_controlada === 'si'"
@@ -105,8 +108,6 @@
                         >
                             {{ cond.condicion_controlada === 'si' ? 'Controlada' : 'No controlada' }}
                         </span>
-
-
 
                         <button 
                             (click)="abrirModalEliminar('condicion', cond.id_condicion_medica)"
