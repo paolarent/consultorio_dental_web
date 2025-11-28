@@ -24,6 +24,8 @@ export class FormRestorePassw {
       this.notify.error('Debes ingresar tu correo');
       return;
     }
+    // Evitar que se envíe de nuevo si ya está cargando (sobreclick)
+    if (this.loading()) return;
 
     this.loading.set(true);
 
