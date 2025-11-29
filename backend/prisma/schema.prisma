@@ -37,7 +37,8 @@ model cita {
   id_motivo           Int?
   id_servicio         Int? 
   fecha               DateTime              @db.Date
-  hora_inicio         DateTime              @db.Timetz(6)
+  hora_inicio         DateTime              @db.Timetz(6)     
+  hora_fin            DateTime              @db.Timetz(6)
   frecuencia          frecuencia_servicio?  @default(unica)
   notas               String?
   id_consultorio      Int
@@ -285,9 +286,11 @@ model reprogramacion_cita {
   id_cita           Int
   solicitada_por    reprog_solicitada_por
   fecha_original    DateTime              @db.Date
-  hora_original     DateTime              @db.Timetz(6)
+  hora_original     DateTime              @db.Timetz(6)      
+  hora_fin_original DateTime              @db.Timetz(6)
   nueva_fecha       DateTime              @db.Date
   nueva_hora        DateTime              @db.Timetz(6)
+  nueva_hora_fin    DateTime              @db.Timetz(6)
   fecha_solicitud   DateTime              @default(now()) @db.Timestamptz(6)
   id_consultorio    Int
   status            status_cita_reprog

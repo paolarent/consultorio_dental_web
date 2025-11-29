@@ -172,7 +172,7 @@ export class MailerService {
             
             case 'cancelada':
                 asunto = 'Tu cita ha sido cancelada';
-                mensaje = `Tu cita programada el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong> ha sido cancelada.`;
+                mensaje = `Tu cita programada el <strong>${this.formatearFecha(datos.fecha)}</strong> a las <strong>${this.formatearHora(datos.hora)}</strong> ha sido cancelada. Por favor considera re-agendar`;
                 colorBoton = '#DC2626';
                 break;
             
@@ -236,13 +236,13 @@ export class MailerService {
         switch (tipo) {
             case 'solicitud':
                 asunto = 'Solicitud de reprogramación de cita';
-                mensaje = `Se ha solicitado reprogramar tu cita de <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong> para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>. Por favor, confirma si aceptas el cambio.`;
+                mensaje = `Se ha solicitado reprogramar su cita de <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong> para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>. Por favor, confirma si aceptas el cambio.`;
                 colorBoton = '#F59E0B';
                 break;
             
             case 'aceptada':
                 asunto = 'Tu cita ha sido reprogramada';
-                mensaje = `Tu solicitud de reprogramación ha sido aceptada. Tu cita ahora está programada para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>.`;
+                mensaje = `Tu solicitud de reprogramación ha sido aceptada. La cita ahora está programada para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>.`;
                 colorBoton = '#10B981';
                 break;
             
@@ -347,11 +347,20 @@ export class MailerService {
     // ============================================
     
     private formatearFecha(fecha: string): string {
-        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        const date = new Date(fecha);
+        const meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+
+        // Crear fecha en horario local
+        const date = new Date(`${fecha}T00:00:00`);
+
+        // Ajustar timezone (igual que en crearCita)
+        date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+
         return `${date.getDate()} de ${meses[date.getMonth()]} de ${date.getFullYear()}`;
     }
+
 
     private formatearHora(hora: string): string {
         // Asume formato "HH:mm:ss+00:00" o "HH:mm"

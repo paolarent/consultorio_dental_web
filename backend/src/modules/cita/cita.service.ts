@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailerService } from 'src/common/mail/mail.service';
 import { CrearCitaDto } from './dto/create-cita.dto';
@@ -19,9 +19,7 @@ export class CitaService {
         private mailerService: MailerService
     ) {}
 
-    // ============================================
     // DEFINICIÓN DE TRANSICIONES VÁLIDAS
-    // ============================================
     private readonly TRANSICIONES_VALIDAS: Record<string, StatusCitas[]> = {
         [StatusCitas.PENDIENTE]: [StatusCitas.PROGRAMADA, StatusCitas.CANCELADA],
         [StatusCitas.PROGRAMADA]: [StatusCitas.COMPLETADA, StatusCitas.CANCELADA, StatusCitas.REPROGRAMADA],
@@ -29,6 +27,129 @@ export class CitaService {
         [StatusCitas.COMPLETADA]: [],
         [StatusCitas.CANCELADA]: []
     };
+
+    //Convierte hora 12h (8:00 AM) a 24h (08:00:00)
+    private convertir12hA24h(hora12h: string): string {
+        const match = hora12h.trim().match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!match) {
+            // Si ya viene en formato 24h, normalizarlo
+            if (hora12h.match(/^\d{1,2}:\d{2}(:\d{2})?$/)) {
+            const [h, m] = hora12h.split(':');
+            return `${h.padStart(2, '0')}:${m.padStart(2, '0')}:00`;
+            }
+            throw new BadRequestException('Formato de hora inválido. Use HH:MM AM/PM');
+        }
+        
+        let [_, horas, minutos, periodo] = match;
+        let hora24 = parseInt(horas);
+        
+        if (periodo.toUpperCase() === 'PM' && hora24 !== 12) {
+            hora24 += 12;
+        } else if (periodo.toUpperCase() === 'AM' && hora24 === 12) {
+            hora24 = 0;
+        }
+        
+        return `${String(hora24).padStart(2, '0')}:${minutos.padStart(2, '0')}:00`;
+    }
+
+    //Convierte hora 24h (08:00:00) a 12h (8:00 AM)
+    private convertir24hA12h(hora24h: string): string {
+        const [horaStr, minStr] = hora24h.split(':');
+        let hora = parseInt(horaStr);
+        const minutos = minStr || '00';
+        
+        const periodo = hora >= 12 ? 'PM' : 'AM';
+        hora = hora % 12 || 12; // Convierte 0 a 12, 13 a 1, etc.
+        
+        return `${hora}:${minutos} ${periodo}`;
+    }
+
+    //Calcula la hora de fin sumando la duración del servicio
+    private calcularHoraFin(horaInicio: string, duracionMinutos: number): string {
+        // Asegurar que horaInicio esté en formato 24h
+        const hora24 = horaInicio.includes('AM') || horaInicio.includes('PM') 
+            ? this.convertir12hA24h(horaInicio) 
+            : horaInicio;
+        
+        const [horas, minutos] = hora24.split(':').map(Number);
+        const fecha = new Date();
+        fecha.setHours(horas, minutos, 0, 0);
+        fecha.setMinutes(fecha.getMinutes() + duracionMinutos);
+        
+        return `${String(fecha.getHours()).padStart(2, '0')}:${String(fecha.getMinutes()).padStart(2, '0')}:00`;
+    }
+
+    //Obtiene el servicio y calcula hora_fin
+    private async obtenerServicioYCalcularFin(id_servicio: number, hora_inicio: string) {
+    const servicio = await this.prisma.servicio.findUnique({
+        where: { id_servicio },
+        select: { duracion_base: true }
+    });
+
+    if (!servicio) {
+        throw new NotFoundException('Servicio no encontrado');
+    }
+
+    const duracion = Number(servicio.duracion_base);
+    const hora_fin = this.calcularHoraFin(hora_inicio, duracion);
+    
+    return { duracion_base: duracion, hora_fin };
+    }
+
+    //Convierte una hora string a DateTime para la fecha dada
+    private convertirHoraADateTime(fecha: string, hora: string): Date {
+    // Convertir a formato 24h si viene en 12h
+    const hora24 = hora.includes('AM') || hora.includes('PM') 
+        ? this.convertir12hA24h(hora) 
+        : hora;
+    
+    // Asegurar formato HH:MM:SS
+    const horaCompleta = hora24.length === 5 ? `${hora24}:00` : hora24;
+    
+    return new Date(`${fecha}T${horaCompleta}`);
+    }
+
+
+    //Compara si una hora está dentro de un rango
+    private horaEnRango(hora: string, inicio: string, fin: string): boolean {
+        // Convertir todas a formato 24h para comparar
+        const hora24 = hora.includes('AM') || hora.includes('PM') 
+            ? this.convertir12hA24h(hora) 
+            : hora;
+        const inicio24 = inicio.includes('AM') || inicio.includes('PM') 
+            ? this.convertir12hA24h(inicio) 
+            : inicio;
+        const fin24 = fin.includes('AM') || fin.includes('PM') 
+            ? this.convertir12hA24h(fin) 
+            : fin;
+        
+        return hora24 >= inicio24 && hora24 < fin24;
+    }
+
+    //Valida que la fecha y hora no sean en el pasado
+    private validarFechaHoraFutura(fecha: string, hora_inicio: string, minutosAnticipacionMinima: number = 60) {
+    // Convertir hora a 24h si viene en 12h
+    const hora24 = hora_inicio.includes('AM') || hora_inicio.includes('PM') 
+        ? this.convertir12hA24h(hora_inicio) 
+        : hora_inicio;
+    
+    // Construir DateTime completo de la cita
+    const fechaHoraCita = new Date(`${fecha}T${hora24}`);
+    const ahora = new Date();
+    
+    // Calcular tiempo mínimo requerido
+    const tiempoMinimo = new Date(ahora.getTime() + minutosAnticipacionMinima * 60000);
+    
+    if (fechaHoraCita <= ahora) {
+        throw new BadRequestException('No se pueden agendar citas en el pasado');
+    }
+    
+    if (fechaHoraCita < tiempoMinimo) {
+        throw new BadRequestException(
+        `La cita debe agendarse con al menos ${minutosAnticipacionMinima} minutos de anticipación`
+        );
+    }
+    }
 
     // CREAR CITA (DENTISTA)
     async crearCita(dto: CrearCitaDto, id_consultorio: number) {
@@ -42,16 +163,33 @@ export class CitaService {
             throw new NotFoundException('Paciente no encontrado');
         }
 
-        // Validar disponibilidad
-        await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, id_consultorio);
+        const { hora_fin } = await this.obtenerServicioYCalcularFin(
+            dto.id_servicio, 
+            dto.hora_inicio
+        );
+
+        // VALIDACIONES EN ORDEN:
+        //Validar que esté dentro del horario del consultorio
+        await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+        
+        //Validar que no haya eventos bloqueando
+        await this.validarEventos(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+        
+        //Validar que no haya conflictos con otras citas
+        await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+
+        // Fecha sin hora
+        const fechaLocal = new Date(`${dto.fecha}T00:00:00`);
+        fechaLocal.setMinutes(fechaLocal.getMinutes() + fechaLocal.getTimezoneOffset());
 
         // Crear cita con status "programada" directamente
         const cita = await this.prisma.cita.create({
             data: {
                 id_paciente: dto.id_paciente,
                 id_servicio: dto.id_servicio,
-                fecha: new Date(dto.fecha),
-                hora_inicio: new Date(`${dto.fecha}T${dto.hora_inicio}`),
+                fecha: fechaLocal,
+                hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
+                hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
                 frecuencia: dto.frecuencia || 'unica',
                 notas: dto.notas,
                 id_consultorio,
@@ -98,16 +236,40 @@ export class CitaService {
             throw new NotFoundException('Paciente no encontrado');
         }
 
+        // Buscar el motivo para obtener el id_servicio
+        const motivo = await this.prisma.motivo_consulta.findUnique({
+            where: { id_motivo: dto.id_motivo },
+            select: { id_servicio: true }
+        });
+
+        if (!motivo) {
+            throw new NotFoundException('Motivo de consulta no encontrado');
+        }
+
+        if (!motivo.id_servicio) {
+            throw new BadRequestException('El motivo de consulta no tiene un servicio asociado');
+        }
+
+        // Obtener servicio y calcular hora_fin
+        const { hora_fin } = await this.obtenerServicioYCalcularFin(
+            motivo.id_servicio, 
+            dto.hora_inicio
+        );
+
          // Validar disponibilidad
-        await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, id_consultorio);
+        await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+        await this.validarEventos(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+        await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
 
         // Crear cita con status "pendiente" (solicitud)
         const cita = await this.prisma.cita.create({
             data: {
                 id_paciente: paciente.id_paciente,
                 id_motivo: dto.id_motivo,
+                id_servicio: motivo.id_servicio, 
                 fecha: new Date(dto.fecha),
-                hora_inicio: new Date(`${dto.fecha}T${dto.hora_inicio}`),
+                hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
+                hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
                 frecuencia: 'unica', //defecto (paciente no sabe se supone ps)
                 notas: dto.notas,
                 id_consultorio,
@@ -237,6 +399,7 @@ export class CitaService {
 
         const { logoUrl, nombreDoc } = this.extraerDatosConsultorio(cita.consultorio);
         const destinatario = rol === 'paciente' ? cita.consultorio.correo : cita.paciente.usuario.correo;
+        const nombreDocFinal = rol === 'paciente' ? 'Odontix 🦷' : nombreDoc;
 
         this.enviarCorreoSeguro(() =>
             this.mailerService.enviarNotificacionCita(
@@ -247,7 +410,7 @@ export class CitaService {
                     hora: this.formatearHoraDB(cita.hora_inicio),
                 },
                 logoUrl,
-                nombreDoc
+                nombreDocFinal
             )
         );
 
@@ -263,7 +426,8 @@ export class CitaService {
             where: { id_cita: dto.id_cita },
             include: {
                 paciente: { include: { usuario: true } },
-                consultorio: true
+                consultorio: true,
+                servicio: true
             }
         });
 
@@ -274,6 +438,16 @@ export class CitaService {
          // Validar que pertenezca al consultorio
         if (cita.id_consultorio !== id_consultorio) {
             throw new ForbiddenException('No tienes permiso en este consultorio');
+        }
+
+        if (!['programada', 'pendiente'].includes(cita.status)) {
+            throw new BadRequestException(
+                `No se puede reprogramar una cita con estado "${cita.status}". Solo se pueden reprogramar citas programadas o pendientes.`
+            );
+        }
+
+        if (!cita.servicio) {
+            throw new BadRequestException('La cita no tiene un servicio asociado');
         }
 
         const totalReprogramaciones = await this.prisma.reprogramacion_cita.count({
@@ -296,7 +470,17 @@ export class CitaService {
             throw new BadRequestException('No se puede reprogramar una cita con menos de 1 hora de anticipación');
         }
 
-        await this.validarDisponibilidad(dto.nueva_fecha, dto.nueva_hora, id_consultorio, dto.id_cita);
+        // Calcular nueva_hora_fin
+        const nueva_hora_fin = this.calcularHoraFin(dto.nueva_hora, cita.servicio.duracion_base);
+
+        // Validar horario del consultorio
+        await this.validarHorarioConsultorio(dto.nueva_fecha, dto.nueva_hora, nueva_hora_fin, id_consultorio);
+
+        //Validar eventos
+        await this.validarEventos(dto.nueva_fecha, dto.nueva_hora, nueva_hora_fin, id_consultorio);
+
+        //Validar disponibilidad (excluyendo la cita actual)
+        await this.validarDisponibilidad(dto.nueva_fecha, dto.nueva_hora, nueva_hora_fin, id_consultorio, dto.id_cita);
 
         // Crear solicitud de reprogramación
         //TRANSACCIÓN ATÓMICA
@@ -307,8 +491,10 @@ export class CitaService {
                     solicitada_por: rol,
                     fecha_original: cita.fecha,
                     hora_original: cita.hora_inicio,
+                    hora_fin_original: cita.hora_fin,
                     nueva_fecha: new Date(dto.nueva_fecha),
-                    nueva_hora: new Date(`${dto.nueva_fecha}T${dto.nueva_hora}`),
+                    nueva_hora: this.convertirHoraADateTime(dto.nueva_fecha, dto.nueva_hora),
+                    nueva_hora_fin: this.convertirHoraADateTime(dto.nueva_fecha, nueva_hora_fin),
                     id_consultorio,
                     status: StatusCitaReprog.PENDIENTE
                 }
@@ -325,6 +511,7 @@ export class CitaService {
         const { logoUrl, nombreDoc } = this.extraerDatosConsultorio(cita.consultorio);
         //Notificar a la otra parte
         const destinatario = rol === 'paciente' ? cita.consultorio.correo : cita.paciente.usuario.correo;
+        const nombreDocFinal = rol === 'paciente' ? 'Odontix 🦷' : nombreDoc;
 
         this.enviarCorreoSeguro(() =>
             this.mailerService.enviarNotificacionReprogramacion(
@@ -337,7 +524,7 @@ export class CitaService {
                     solicitadoPor: rol
                 },
                 logoUrl,
-                nombreDoc
+                nombreDocFinal
             )
         );
 
@@ -355,7 +542,8 @@ export class CitaService {
                 cita: {
                     include: {
                         paciente: { include: { usuario: true } },
-                        consultorio: true
+                        consultorio: true,
+                        servicio: true
                     }
                 }
             }
@@ -375,25 +563,61 @@ export class CitaService {
             throw new ForbiddenException('Solo el paciente puede responder esta solicitud');
         }
 
+        // Validar que esté pendiente
+        if (reprogramacion.status !== 'pendiente') {
+            throw new BadRequestException('Esta solicitud ya fue procesada');
+        }
+
         const cita = reprogramacion.cita;
+        
         return await this.prisma.$transaction(async (tx) => {
             if (dto.aceptar) {
+                //Convertir DateTime a string en formato correcto
+                const fechaStr = this.formatearFechaDB(reprogramacion.nueva_fecha);
+                const horaInicioStr = this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora) + ':00');
+                const horaFinStr = this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora_fin) + ':00');
+
+                // Revalidar con formato correcto
+                await this.validarHorarioConsultorio(
+                    fechaStr,
+                    horaInicioStr,
+                    horaFinStr,
+                    cita.id_consultorio
+                );
+
+                await this.validarEventos(
+                    fechaStr,
+                    horaInicioStr,
+                    horaFinStr,
+                    cita.id_consultorio
+                );
+
+                await this.validarDisponibilidad(
+                    fechaStr,
+                    horaInicioStr,
+                    horaFinStr,
+                    cita.id_consultorio,
+                    reprogramacion.id_cita
+                );
+
                 await tx.cita.update({
                     where: { id_cita: reprogramacion.id_cita },
                     data: {
                         fecha: reprogramacion.nueva_fecha,
                         hora_inicio: reprogramacion.nueva_hora,
-                        status: StatusCitas.PROGRAMADA
+                        hora_fin: reprogramacion.nueva_hora_fin,
+                        status: 'programada'
                     }
                 });
 
                 await tx.reprogramacion_cita.update({
                     where: { id_reprogramacion: idReprogramacion },
-                    data: { status: StatusCitaReprog.ACEPTADA }
+                    data: { status: 'aceptada' }
                 });
 
                 const { logoUrl, nombreDoc } = this.extraerDatosConsultorio(cita.consultorio);
                 const destinatario = solicitante === 'paciente' ? cita.paciente.usuario.correo : cita.consultorio.correo;
+                const nombreDocFinal = solicitante === 'paciente' ? nombreDoc : 'Odontix 🦷';
 
                 this.enviarCorreoSeguro(() =>
                     this.mailerService.enviarNotificacionReprogramacion(
@@ -402,11 +626,11 @@ export class CitaService {
                         {
                             fechaOriginal: this.formatearFechaDB(reprogramacion.fecha_original),
                             horaOriginal: this.formatearHoraDB(reprogramacion.hora_original),
-                            nuevaFecha: this.formatearFechaDB(reprogramacion.nueva_fecha),
-                            nuevaHora: this.formatearHoraDB(reprogramacion.nueva_hora),
+                            nuevaFecha: fechaStr,
+                            nuevaHora: horaInicioStr,
                         },
                         logoUrl,
-                        nombreDoc
+                        nombreDocFinal
                     )
                 );
 
@@ -415,16 +639,17 @@ export class CitaService {
                 // Rechazar reprogramación: volver status a programada
                 await tx.cita.update({
                     where: { id_cita: reprogramacion.id_cita },
-                    data: { status: StatusCitas.PROGRAMADA }
+                    data: { status: 'programada' }
                 });
 
                 await tx.reprogramacion_cita.update({
                     where: { id_reprogramacion: idReprogramacion },
-                    data: { status: StatusCitaReprog.CANCELADA }
+                    data: { status: 'cancelada' }
                 });
 
                 const { logoUrl, nombreDoc } = this.extraerDatosConsultorio(cita.consultorio);
                 const destinatario = solicitante === 'paciente' ? cita.paciente.usuario.correo : cita.consultorio.correo;
+                const nombreDocFinal = solicitante === 'paciente' ? nombreDoc : 'Odontix 🦷';
 
                 this.enviarCorreoSeguro(() =>
                     this.mailerService.enviarNotificacionReprogramacion(
@@ -434,10 +659,10 @@ export class CitaService {
                             fechaOriginal: this.formatearFechaDB(reprogramacion.fecha_original),
                             horaOriginal: this.formatearHoraDB(reprogramacion.hora_original),
                             nuevaFecha: this.formatearFechaDB(reprogramacion.nueva_fecha),
-                            nuevaHora: this.formatearHoraDB(reprogramacion.nueva_hora),
+                            nuevaHora: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora) + ':00'),
                         },
                         logoUrl,
-                        nombreDoc
+                        nombreDocFinal
                     )
                 );
 
@@ -446,84 +671,156 @@ export class CitaService {
         });
     }
 
+    //Validar que la hora esté dentro del horario activo del consultorio
+    private async validarHorarioConsultorio(
+        fecha: string, 
+        hora_inicio: string,
+        hora_fin: string,
+        id_consultorio: number
+    ) {
+        const fechaDate = this.convertirFechaSoloDia(fecha);
+        const dia = fechaDate.getDay();
+        const diaSemana = dia === 0 ? 7 : dia; // 1=Lunes, 7=Domingo
+
+        const horariosDelDia = await this.prisma.horario.findMany({
+            where: {
+            id_consultorio,
+            dia: diaSemana,
+            status: 'activo'
+            }
+        });
+
+        if (horariosDelDia.length === 0) {
+            throw new BadRequestException('El consultorio no tiene horario activo para este día');
+        }
+
+        // Verificar si la cita cae dentro de algún horario activo
+        const dentroDeHorario = horariosDelDia.some(horario => {
+            // La hora de inicio debe estar dentro del horario
+            const inicioValido = this.horaEnRango(hora_inicio, horario.hora_inicio, horario.hora_fin);
+            // La hora de fin también debe estar dentro del horario (o justo al final)
+            const finValido = this.horaEnRango(hora_fin, horario.hora_inicio, horario.hora_fin) ||
+                            hora_fin === this.convertir12hA24h(horario.hora_fin);
+            
+            return inicioValido && finValido;
+        });
+
+        if (!dentroDeHorario) {
+            const horarios = horariosDelDia.map(h => `${h.hora_inicio} - ${h.hora_fin}`).join(', ');
+            throw new BadRequestException(
+                `La cita debe estar dentro del horario del consultorio: ${horarios}`
+            );
+        }
+    }
+
     // CONSULTAS Y LISTADOS
     // CONSULTAR DISPONIBILIDAD (PACIENTE)
     async consultarDisponibilidad(dto: ConsultarDisponibilidadDto, id_consultorio: number) {
-        const fecha = new Date(dto.fecha);
-        // Obtener día de la semana 1–7 (1 Lunes, 7 Domingo)
-        const dia = fecha.getDay(); // 0 = Domingo, 6 = Sábado
-        const diaSemana = dia === 0 ? 7 : dia; // Convierte Domingo (0) a 7
+        const fechaStr = dto.fecha.toString().slice(0, 10); // yyyy-mm-dd seguro
+        const [y, m, d] = fechaStr.split("-").map(Number);
+        const fechaConsulta = new Date(y, m - 1, d); // SIEMPRE local sin desfase
 
-        // Obtener horario del consultorio
-        const consultorio = await this.prisma.consultorio.findUnique({
-            where: { id_consultorio },
-            include: { horario: true }
+        const hoy = new Date();
+        const soloHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+
+        if (fechaConsulta < soloHoy) {
+            throw new BadRequestException("No puedes consultar disponibilidad de fechas pasadas");
+        }
+
+        const dia = fechaConsulta.getDay();
+        const diaSemana = dia === 0 ? 7 : dia;
+
+        const horariosDelDia = await this.prisma.horario.findMany({
+            where: {
+            id_consultorio,
+            dia: diaSemana,
+            status: "activo",
+            },
         });
 
-        if (!consultorio) {
-            throw new NotFoundException('Consultorio no encontrado');
-        }
-
-        // Filtrar horarios del día consultado
-        const horariosDelDia = consultorio.horario.filter(h => h.dia === diaSemana);
-
         if (horariosDelDia.length === 0) {
-            return { horasDisponibles: [], mensaje: 'El consultorio no atiende este día' };
+            return {
+            horasDisponibles: [],
+            mensaje: "El consultorio no atiende este día",
+            };
         }
 
-        // Generar horas disponibles (cada 30 min por defecto)
         const horasDisponibles: string[] = [];
+
         for (const horario of horariosDelDia) {
-            let horaActual = this.parseHora(horario.hora_inicio);
-            const horaFin = this.parseHora(horario.hora_fin);
+            const inicio24 = this.convertir12hA24h(horario.hora_inicio);
+            const fin24 = this.convertir12hA24h(horario.hora_fin);
+
+            let horaActual = new Date(`2000-01-01T${inicio24}`);
+            const horaFin = new Date(`2000-01-01T${fin24}`);
 
             while (horaActual < horaFin) {
-                horasDisponibles.push(this.formatHora(horaActual));
-                horaActual.setMinutes(horaActual.getMinutes() + 30);
+            const horaStr = `${String(horaActual.getHours()).padStart(2, "0")}:${String(
+                horaActual.getMinutes()
+            ).padStart(2, "0")}:00`;
+
+            horasDisponibles.push(this.convertir24hA12h(horaStr));
+            horaActual.setMinutes(horaActual.getMinutes() + 30);
             }
         }
 
         const [citasDelDia, eventosDelDia] = await Promise.all([
             this.prisma.cita.findMany({
-                where: {
-                    fecha: new Date(dto.fecha),
-                    id_consultorio,
-                    status: { in: [StatusCitas.PROGRAMADA, StatusCitas.PENDIENTE] }
-                }
+            where: {
+                fecha: fechaConsulta, // CORREGIDO
+                id_consultorio,
+                status: {
+                in: [StatusCitas.PROGRAMADA, StatusCitas.REPROGRAMADA],
+                },
+            },
+            select: {
+                hora_inicio: true,
+                hora_fin: true,
+            },
             }),
+
             this.prisma.evento.findMany({
-                where: {
-                    id_consultorio,
-                    fecha_inicio: { lte: new Date(dto.fecha) },
-                    fecha_fin: { gte: new Date(dto.fecha) },
-                    status: StatusEvento.ACTIVO
-                }
-            })
+            where: {
+                id_consultorio,
+                fecha_inicio: { lte: fechaConsulta }, // CORREGIDO
+                fecha_fin: { gte: fechaConsulta },     // CORREGIDO
+                status: StatusEvento.ACTIVO,
+            },
+            }),
         ]);
 
-        const horasOcupadas = citasDelDia.map(c => this.formatearHoraDB(c.hora_inicio));
-
-        const horasOcupadasPorEventos: string[] = [];
-        for (const evento of eventosDelDia) {
-            if (evento.evento_todo_el_dia === 'si') {
-                horasOcupadasPorEventos.push(...horasDisponibles);
-            } else if (evento.hora_inicio && evento.hora_fin) {
-                let horaEv = this.parseHora(evento.hora_inicio);
-                const horaFinEv = this.parseHora(evento.hora_fin);
-
-                while (horaEv < horaFinEv) {
-                    horasOcupadasPorEventos.push(this.formatHora(horaEv));
-                    horaEv.setMinutes(horaEv.getMinutes() + 30);
-                }
-            }
+        if (eventosDelDia.some((e) => e.evento_todo_el_dia === "si")) {
+            return {
+            horasDisponibles: [],
+            mensaje: "No hay horarios disponibles debido a un evento",
+            };
         }
 
-        const horasLibres = horasDisponibles.filter(
-            h => !horasOcupadas.includes(h) && !horasOcupadasPorEventos.includes(h)
-        );
+        const horasLibres = horasDisponibles.filter((horaDisp) => {
+            const hora24 = this.convertir12hA24h(horaDisp);
+
+            /** ---- A) Ocupada por cita ---- */
+            const ocupadaPorCita = citasDelDia.some((cita) => {
+            const inicioStr = this.formatearHoraDB(cita.hora_inicio) + ":00";
+            const finStr = this.formatearHoraDB(cita.hora_fin) + ":00";
+            return hora24 >= inicioStr && hora24 < finStr;
+            });
+
+            if (ocupadaPorCita) return false;
+
+            /** ---- B) Ocupada por evento ---- */
+            const ocupadaPorEvento = eventosDelDia.some((evento) => {
+            if (!evento.hora_inicio || !evento.hora_fin) return false;
+
+            return this.horaEnRango(horaDisp, evento.hora_inicio, evento.hora_fin);
+            });
+
+            return !ocupadaPorEvento;
+        });
 
         return { horasDisponibles: horasLibres };
     }
+
 
     // LISTAR CITAS (CON FILTROS) AQUI ME QUEDE
     // ============================================
@@ -606,7 +903,9 @@ export class CitaService {
 
     // OBTENER CITAS DEL DÍA (DENTISTA)
     async obtenerCitasDelDia(idUsuario: number, fecha?: string) {
-        const fechaBusqueda = fecha ? new Date(fecha) : new Date();
+        //const fechaBusqueda = fecha ? new Date(fecha) : new Date();
+        const fechaBusqueda = fecha ? this.convertirFechaSoloDia(fecha) : new Date();
+
         fechaBusqueda.setHours(0, 0, 0, 0);
 
         const fechaFin = new Date(fechaBusqueda);
@@ -761,7 +1060,7 @@ export class CitaService {
 
 
     // OBTENER REPROGRAMACIONES PENDIENTES
-    async obtenerReprogramacionesPendientes(idUsuario?: number, rol?: 'dentista' | 'paciente', id_consultorio?: number) {
+    async obtenerReprogramacionesPendientes(idUsuario: number, rol?: 'dentista' | 'paciente', id_consultorio?: number) {
         let where: any = {
             status: StatusCitaReprog.PENDIENTE // pendiente de aprobación
         };
@@ -789,15 +1088,29 @@ export class CitaService {
 
         return await this.prisma.reprogramacion_cita.findMany({
             where,
-            include: {
-                cita: {
-                    include: {
-                        paciente: { include: { usuario: true } },
-                        motivo_consulta: true,
-                        consultorio: { include: { usuario: true } }
+                select: {
+                    id_reprogramacion: true,
+                    id_cita: true,
+                    fecha_solicitud: true,
+                    nueva_fecha: true,
+                    nueva_hora: true,
+                    solicitada_por: true,
+                    cita: {
+                        select: {
+                            fecha: true,
+                            hora_inicio: true,
+                            paciente: {
+                                select: {
+                                    usuario: {
+                                        select: {
+                                            correo: true
+                                        }
+                                    }
+                                }
+                            },
+                        }
                     }
-                }
-            },
+                },
             orderBy: { fecha_solicitud: 'desc' }
         });
     }
@@ -845,7 +1158,7 @@ export class CitaService {
         idCitaExcluir?: number
     ): Promise<{ disponible: boolean; mensaje?: string }> {
         try {
-            await this.validarDisponibilidad(fecha, horaInicio, idConsultorio, idCitaExcluir);
+            //await this.validarDisponibilidad(fecha, horaInicio, idConsultorio, idCitaExcluir);
             return { disponible: true };
         } catch (error) {
             return {
@@ -857,12 +1170,13 @@ export class CitaService {
 
     // OBTENER HORARIOS OCUPADOS DE UN DÍA
     async obtenerHorariosOcupados(fecha: string, idConsultorio: number) {
+        const fechaLocal = this.convertirFechaSoloDia(fecha);
         const [citas, eventos] = await Promise.all([
             this.prisma.cita.findMany({
                 where: {
-                    fecha: new Date(fecha),
+                    fecha: this.convertirFechaSoloDia(fecha),
                     id_consultorio: idConsultorio,
-                    status: { in: [StatusCitas.PROGRAMADA, StatusCitas.PENDIENTE] }
+                    status: { in: [StatusCitas.PROGRAMADA, StatusCitas.REPROGRAMADA] }
                 },
                 select: {
                     hora_inicio: true,
@@ -880,8 +1194,8 @@ export class CitaService {
             this.prisma.evento.findMany({
                 where: {
                     id_consultorio: idConsultorio,
-                    fecha_inicio: { lte: new Date(fecha) },
-                    fecha_fin: { gte: new Date(fecha) },
+                    fecha_inicio: { lte: fechaLocal },
+                    fecha_fin: { gte: fechaLocal },
                     status: 'activo'
                 },
                 select: {
@@ -966,48 +1280,96 @@ export class CitaService {
     }
 
     //-----------------------METODOS AUXILIARES PARA VALIDAR Y SIMPLIFICAR FLUJO REPETIDO------------------------
+    
+    //Valida que no haya conflictos con otras citas
     private async validarDisponibilidad(
         fecha: string, 
-        hora: string, 
-        idConsultorio: number,
-        idCitaExcluir?: number
+        hora_inicio: string, 
+        hora_fin: string,
+        id_consultorio: number,
+        id_cita_excluir?: number
     ) {
-        const fechaHora = new Date(`${fecha}T${hora}`);
+        // Convertir a DateTime completos
+        const horaInicioDate = this.convertirHoraADateTime(fecha, hora_inicio);
+        const horaFinDate = this.convertirHoraADateTime(fecha, hora_fin);
 
-        const citaExistente = await this.prisma.cita.findFirst({
+        const citasConflicto = await this.prisma.cita.findFirst({
             where: {
-                fecha: new Date(fecha),
-                hora_inicio: fechaHora,
-                id_consultorio: idConsultorio,
-                status: { in: [StatusCitas.PROGRAMADA, StatusCitas.PENDIENTE] },
-                ...(idCitaExcluir && { id_cita: { not: idCitaExcluir } })
-            }
-        });
-
-        if (citaExistente) {
-            throw new BadRequestException('Ya existe una cita programada en ese horario');
-        }
-
-        const eventoConflicto = await this.prisma.evento.findFirst({
-            where: {
-                id_consultorio: idConsultorio,
-                fecha_inicio: { lte: new Date(fecha) },
-                fecha_fin: { gte: new Date(fecha) },
-                status: 'activo',
-                OR: [
-                    { evento_todo_el_dia: 'si' },
-                    {
-                        AND: [
-                            { hora_inicio: { lte: hora } },
-                            { hora_fin: { gt: hora } }
-                        ]
-                    }
+            id_consultorio,
+            fecha: this.convertirFechaSoloDia(fecha),
+            status: { 
+                in: [StatusCitas.PROGRAMADA, ] 
+            },
+            ...(id_cita_excluir && { id_cita: { not: id_cita_excluir } }),
+            OR: [
+                // Caso 1: La nueva cita inicia durante una cita existente
+                {
+                AND: [
+                    { hora_inicio: { lte: horaInicioDate } },
+                    { hora_fin: { gt: horaInicioDate } }
                 ]
+                },
+                // Caso 2: La nueva cita termina durante una cita existente
+                {
+                AND: [
+                    { hora_inicio: { lt: horaFinDate } },
+                    { hora_fin: { gte: horaFinDate } }
+                ]
+                },
+                // Caso 3: La nueva cita envuelve completamente una cita existente
+                {
+                AND: [
+                    { hora_inicio: { gte: horaInicioDate } },
+                    { hora_fin: { lte: horaFinDate } }
+                ]
+                }
+            ]
             }
         });
 
-        if (eventoConflicto) {
-            throw new BadRequestException('Existe un evento programado que bloquea ese horario');
+        if (citasConflicto) {
+            throw new ConflictException(
+            `Ya existe una cita programada en ese horario (${this.formatearHoraDB(citasConflicto.hora_inicio)} - ${this.formatearHoraDB(citasConflicto.hora_fin)})`
+            );
+        }
+    }
+
+    //Valida que no haya eventos bloqueando el horario
+    private async validarEventos(
+        fecha: string,
+        hora_inicio: string,
+        hora_fin: string,
+        id_consultorio: number
+    ) {
+        const fechaLocal = this.convertirFechaSoloDia(fecha);
+        const eventosDelDia = await this.prisma.evento.findMany({
+            where: {
+            id_consultorio,
+            fecha_inicio: { lte: fechaLocal },
+            fecha_fin: { gte: fechaLocal },
+            status: StatusEvento.ACTIVO
+            }
+        });
+
+        for (const evento of eventosDelDia) {
+            // Evento todo el día bloquea cualquier horario
+            if (evento.evento_todo_el_dia === 'si') {
+            throw new BadRequestException(
+                `No se pueden agendar citas este día debido al evento: ${evento.titulo}`
+            );
+            }
+
+            // Verificar traslape de horarios
+            if (evento.hora_inicio && evento.hora_fin) {
+            const inicioEnEvento = this.horaEnRango(hora_inicio, evento.hora_inicio, evento.hora_fin);
+            const finEnEvento = this.horaEnRango(hora_fin, evento.hora_inicio, evento.hora_fin);
+            
+            if (inicioEnEvento || finEnEvento) {
+                throw new BadRequestException(
+                    `El horario está bloqueado por el evento: ${evento.titulo} (${evento.hora_inicio} - ${evento.hora_fin})`
+                );
+            }
+            }
         }
     }
 
@@ -1076,6 +1438,12 @@ export class CitaService {
         return fecha.toISOString().split('T')[0];
     }
 
+    private convertirFechaSoloDia(fecha: string): Date {
+        const [y, m, d] = fecha.split("-").map(Number);
+        return new Date(y, m - 1, d); // esto NO desfasa
+    }
+
+
     private parseHora(hora: string): Date {
         const [h, m] = hora.split(':').map(Number);
         const date = new Date();
@@ -1106,4 +1474,5 @@ export class CitaService {
             // No lanzar error para no bloquear operación principal
         }
     }
+
 }

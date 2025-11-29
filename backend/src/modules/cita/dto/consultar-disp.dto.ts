@@ -5,7 +5,7 @@ export class ConsultarDisponibilidadDto {
     @IsNotEmpty()
     fecha: string;
 
-    @IsInt()
-    @IsNotEmpty()
-    id_consultorio: number;
+    //@IsInt()
+    //@IsNotEmpty()
+    //id_consultorio: number;
 }

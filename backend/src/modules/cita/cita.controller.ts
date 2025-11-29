@@ -25,15 +25,16 @@ export class CitaController {
         return this.citaService.crearCita(dto, id_consultorio);
     }
 
-    //Confirmar(programar) o rechazar cita pendiente (solo dentista)
-    @Patch(':id/actualizar-status')
-    @Roles(Rol.DENTISTA)
-    async actualizarStatusCita(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() dto: ActualizarStatusCitaDto,
-        @Req() req: any
-    ) {
-        return this.citaService.actualizarStatusCita(id, dto, req.user.id_usuario, req.user.id_consultorio);
+    
+    //Obtener reprogramaciones pendientes de respuesta
+    @Get('reprogramaciones-pendientes')
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
+    async obtenerReprogramacionesPendientes(@Req() req: any) {
+        return this.citaService.obtenerReprogramacionesPendientes(
+            req.user.id_usuario,
+            req.user.rol,
+            req.user.id_consultorio
+        );
     }
 
     //Listar citas del dentista con filtros opcionales
@@ -69,18 +70,6 @@ export class CitaController {
     async obtenerCitasPendientes(@Req() req: any) {
         return this.citaService.obtenerCitasPendientes(req.user.id_consultorio);
     }
-
-
-    //Marcar una cita como completada
-    @Patch(':id/completar')
-    @Roles(Rol.DENTISTA)
-    async marcarCitaCompletada(
-        @Param('id', ParseIntPipe) id: number,
-        @Req() req: any
-    ) {
-        return this.citaService.marcarCitaCompletada(id, req.user.id_usuario);
-    }
-
 
     //Obtener estadísticas de citas del consultorio
     @Get('dentista/estadisticas')
@@ -140,15 +129,6 @@ export class CitaController {
         @Body() dto: ConsultarDisponibilidadDto,
         @Req() req: any
     ) {
-        // Validar que la fecha no sea pasada
-        const fechaConsulta = new Date(dto.fecha);
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
-        
-        if (fechaConsulta < hoy) {
-            throw new BadRequestException('No puedes consultar disponibilidad de fechas pasadas');
-        }
-
         const id_consultorio = req.user.id_consultorio;
         return this.citaService.consultarDisponibilidad(dto, id_consultorio);
     }
@@ -179,6 +159,55 @@ export class CitaController {
         );
     }
 
+    //Solicitar reprogramación de cita 
+    @Post('reprogramar')
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
+    async solicitarReprogramacion(
+        @Body() dto: ReprogramarCitaDto,
+        @Req() req: any
+    ) {
+        const usuarioAuth = req.user; 
+        return this.citaService.solicitarReprogramacion(dto, usuarioAuth.id_usuario, usuarioAuth.rol, usuarioAuth.id_consultorio);
+    }
+
+    //Verificar si hay conflictos de horario
+    @Post('verificar-conflictos')
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
+    async verificarConflictos(
+        @Body() body: { fecha: string; horaInicio: string; idCitaExcluir?: number },
+        @Req() req: any
+    ) {
+        this.validarFechaFutura(body.fecha, body.horaInicio);
+        return this.citaService.verificarConflictos(
+            body.fecha,
+            body.horaInicio,
+            req.user.id_consultorio,
+            body.idCitaExcluir
+        );
+    }
+
+    //Confirmar(programar) o rechazar cita pendiente (solo dentista)
+    @Patch(':id/actualizar-status')
+    @Roles(Rol.DENTISTA)
+    async actualizarStatusCita(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: ActualizarStatusCitaDto,
+        @Req() req: any
+    ) {
+        return this.citaService.actualizarStatusCita(id, dto, req.user.id_usuario, req.user.id_consultorio);
+    }
+
+    //Marcar una cita como completada
+    @Patch(':id/completar')
+    @Roles(Rol.DENTISTA)
+    async marcarCitaCompletada(
+        @Param('id', ParseIntPipe) id: number,
+        @Req() req: any
+    ) {
+        return this.citaService.marcarCitaCompletada(id, req.user.id_usuario);
+    }
+
+
     //-------------------------------------------ENDPOINTS COMPARTIDOS (AMBOS ROLES)
     
     //Obtener detalle de una cita específica 
@@ -202,17 +231,6 @@ export class CitaController {
         return this.citaService.cancelarCita( id, usuarioAuth.id_usuario, usuarioAuth.rol );
     }
 
-    //Solicitar reprogramación de cita 
-    @Post('reprogramar')
-    @Roles(Rol.DENTISTA, Rol.PACIENTE)
-    async solicitarReprogramacion(
-        @Body() dto: ReprogramarCitaDto,
-        @Req() req: any
-    ) {
-        const usuarioAuth = req.user; 
-        return this.citaService.solicitarReprogramacion(dto, usuarioAuth.id_usuario, usuarioAuth.rol, usuarioAuth.id_consultorio);
-    }
-
     //Aceptar o rechazar reprogramación (rol contrario al solicitante)
     @Patch('reprogramacion/:id/responder')
     @Roles(Rol.DENTISTA, Rol.PACIENTE)
@@ -223,35 +241,6 @@ export class CitaController {
     ) {
         const usuarioAuth = req.user; 
         return this.citaService.responderReprogramacion(id, dto, usuarioAuth.id_usuario, usuarioAuth.rol);
-    }
-
-    
-    //Obtener reprogramaciones pendientes de respuesta
-    @Get('reprogramaciones-pendientes')
-    @Roles(Rol.DENTISTA, Rol.PACIENTE)
-    async obtenerReprogramacionesPendientes(@Req() req: any) {
-        return this.citaService.obtenerReprogramacionesPendientes(
-            req.user.id_usuario,
-            req.user.rol,
-            req.user.id_consultorio
-        );
-    }
-
-    
-    //Verificar si hay conflictos de horario
-    @Post('verificar-conflictos')
-    @Roles(Rol.DENTISTA, Rol.PACIENTE)
-    async verificarConflictos(
-        @Body() body: { fecha: string; horaInicio: string; idCitaExcluir?: number },
-        @Req() req: any
-    ) {
-        this.validarFechaFutura(body.fecha, body.horaInicio);
-        return this.citaService.verificarConflictos(
-            body.fecha,
-            body.horaInicio,
-            req.user.id_consultorio,
-            body.idCitaExcluir
-        );
     }
 
     
