@@ -22,11 +22,13 @@ import { AlergiaModule } from './modules/alergia/alergia.module';
 import { CondicionMedicaModule } from './modules/condicion-medica/condicion-medica.module';
 import { IngresoModule } from './modules/ingreso/ingreso.module';
 import { FormularioModule } from './modules/formulario/formulario.module';
+import { CitaModule } from './modules/cita/cita.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule, 
             EgresoModule, ServicioModule, AuthModule, HorarioModule, ArchivoModule, HistorialClinicoModule, AlergiaModule, CondicionMedicaModule,
-            IngresoModule, FormularioModule],
+            IngresoModule, FormularioModule, CitaModule, ScheduleModule.forRoot(), ],
   controllers: [AppController],
   providers: [AppService, MailerService]//, { provide: APP_GUARD, useClass: RolesGuard }],
 })

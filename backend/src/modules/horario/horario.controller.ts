@@ -14,7 +14,7 @@ export class HorarioController {
     constructor(private readonly horarioService: HorarioService) {}
 
     @Get()
-    @Roles(Rol.DENTISTA)
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
     listar(@Req() req: any) {
         const usuario = req.user;
         return this.horarioService.obtenerHorarios(usuario.id_consultorio);

@@ -1,0 +1,192 @@
+/* calendario.component.css */
+
+/* Contenedor general del calendario */
+:host ::ng-deep .fc {
+    font-family: inherit;
+}
+
+/* Toolbar superior - Botones y título */
+:host ::ng-deep .fc-toolbar {
+    padding: 1rem;
+    background: #1D8F93 !important;
+    border-radius: 0.75rem 0.75rem 0 0;
+    margin-bottom: 0 !important;
+}
+
+:host ::ng-deep .fc-toolbar-title {
+    color: white !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    text-transform: capitalize;
+}
+
+/* Botones del toolbar */
+:host ::ng-deep .fc-button {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    text-transform: capitalize !important;
+}
+
+:host ::ng-deep .fc-button:hover {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:host ::ng-deep .fc-button:active,
+:host ::ng-deep .fc-button-active {
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+:host ::ng-deep .fc-button:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+}
+
+/* Contenido del calendario */
+:host ::ng-deep .fc-view-harness {
+    background: white;
+    border-radius: 0 0 0.75rem 0.75rem;
+    overflow: hidden;
+}
+
+/* Headers de los días - STICKY */
+:host ::ng-deep .fc-col-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 3 !important;
+    background: #f8fafc !important;
+}
+
+:host ::ng-deep .fc-col-header-cell {
+    background: #dde0eb !important;
+    border-color: #e2e8f0 !important;
+    padding: 1rem 0.5rem !important;
+    font-weight: 600 !important;
+    color: #115153 !important;
+    text-transform: uppercase;
+    font-size: 0.90rem;
+    letter-spacing: 0.05em;
+}
+
+/* Celdas de tiempo */
+:host ::ng-deep .fc-timegrid-slot {
+    height: 3.5rem !important;
+    border-color: #e2e8f0 !important;
+}
+
+:host ::ng-deep .fc-timegrid-axis {
+    width: 70px !important;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* ========== HORARIOS DISPONIBLES ========== */
+:host ::ng-deep .fc-bg-event.horario-disponible {
+    opacity: 0.5 !important;
+    background: #ffffff !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+/* Efecto hover en horarios disponibles */
+:host ::ng-deep .fc-timegrid-col:hover .fc-bg-event.horario-disponible {
+    opacity: 0.7 !important;
+}
+
+/* ========== HORARIOS BLOQUEADOS ========== */
+:host ::ng-deep .fc-bg-event.horario-bloqueado {
+    opacity: 0.8 !important;
+    background: repeating-linear-gradient(
+        45deg,
+        #f3f4f6,
+        #f3f4f6 8px,
+        #e5e7eb 8px,
+        #e5e7eb 16px
+    ) !important;
+    cursor: not-allowed !important;
+    border: none !important;
+}
+
+/* Línea de hora actual */
+:host ::ng-deep .fc-timegrid-now-indicator-line {
+    border-color: #ef4444 !important;
+    border-width: 2px !important;
+}
+
+/* Borde general */
+:host ::ng-deep .fc-theme-standard td,
+:host ::ng-deep .fc-theme-standard th {
+    border-color: #e2e8f0 !important;
+}
+
+/* Días de fin de semana */
+:host ::ng-deep .fc-day-sun {
+    background-color: #C3F2F3 !important;
+}
+
+/* ========== SCROLL CONTAINER - TABLET Y DESKTOP ========== */
+@media (min-width: 768px) {
+    /* Contenedor con altura fija */
+    :host ::ng-deep .fc-view-harness {
+        height: 450px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Hacer que el header de días sea sticky */
+    :host ::ng-deep .fc-col-header {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Scrollbar personalizado */
+    :host ::ng-deep .fc-view-harness::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    :host ::ng-deep .fc-view-harness::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 0 0 0.75rem 0;
+    }
+
+    :host ::ng-deep .fc-view-harness::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 5px;
+    }
+
+    :host ::ng-deep .fc-view-harness::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+}
+
+/* ========== MOBILE - SIN ALTURA FIJA ========== */
+@media (max-width: 767px) {
+    :host ::ng-deep .fc-view-harness {
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    :host ::ng-deep .fc-toolbar {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    :host ::ng-deep .fc-toolbar-title {
+        font-size: 1.25rem !important;
+    }
+
+    :host ::ng-deep .fc-button {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.75rem !important;
+    }
+}

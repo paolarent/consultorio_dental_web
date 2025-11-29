@@ -54,15 +54,20 @@ export class CitaService {
 
     //Convierte hora 24h (08:00:00) a 12h (8:00 AM)
     private convertir24hA12h(hora24h: string): string {
-        const [horaStr, minStr] = hora24h.split(':');
+        // Acepta HH:MM o HH:MM:SS
+        const partes = hora24h.split(':');
+        const horaStr = partes[0];
+        const minStr = partes[1];
+
         let hora = parseInt(horaStr);
         const minutos = minStr || '00';
         
         const periodo = hora >= 12 ? 'PM' : 'AM';
-        hora = hora % 12 || 12; // Convierte 0 a 12, 13 a 1, etc.
-        
+        hora = hora % 12 || 12;
+
         return `${hora}:${minutos} ${periodo}`;
     }
+
 
     //Calcula la hora de fin sumando la duración del servicio
     private calcularHoraFin(horaInicio: string, duracionMinutos: number): string {
@@ -126,30 +131,38 @@ export class CitaService {
         return hora24 >= inicio24 && hora24 < fin24;
     }
 
-    //Valida que la fecha y hora no sean en el pasado
-    private validarFechaHoraFutura(fecha: string, hora_inicio: string, minutosAnticipacionMinima: number = 60) {
-    // Convertir hora a 24h si viene en 12h
-    const hora24 = hora_inicio.includes('AM') || hora_inicio.includes('PM') 
-        ? this.convertir12hA24h(hora_inicio) 
-        : hora_inicio;
+    private validarFechaHoraFutura(fecha: string, hora_inicio: string, minutosAnticipacionMinima: number = 60) 
+    {
+        // Convertir AM/PM → 24 horas
+        const hora24 = hora_inicio.includes('AM') || hora_inicio.includes('PM')
+            ? this.convertir12hA24h(hora_inicio)
+            : hora_inicio;
+
+        // Crear fecha local REAL sin que se interprete en UTC
+        const [y, m, d] = fecha.split("-").map(Number);
+        const [hh, mm] = hora24.split(":").map(Number);
+
+        const fechaHoraCita = new Date(y, m - 1, d, hh, mm, 0);
     
-    // Construir DateTime completo de la cita
-    const fechaHoraCita = new Date(`${fecha}T${hora24}`);
-    const ahora = new Date();
-    
-    // Calcular tiempo mínimo requerido
-    const tiempoMinimo = new Date(ahora.getTime() + minutosAnticipacionMinima * 60000);
-    
-    if (fechaHoraCita <= ahora) {
-        throw new BadRequestException('No se pueden agendar citas en el pasado');
+        const now = new Date();
+        const ahoraLocal = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+
+        // Tiempo mínimo requerido
+        const tiempoMinimo = new Date(ahoraLocal.getTime() + minutosAnticipacionMinima * 60000);
+
+        // Validar fecha pasada
+        if (fechaHoraCita <= ahoraLocal) {
+            throw new BadRequestException('No se pueden agendar citas en el pasado');
+        }
+
+        // Validar anticipación
+        if (fechaHoraCita < tiempoMinimo) {
+            throw new BadRequestException(
+                `La cita debe agendarse con al menos ${minutosAnticipacionMinima} minutos de anticipación`
+            );
+        }
     }
-    
-    if (fechaHoraCita < tiempoMinimo) {
-        throw new BadRequestException(
-        `La cita debe agendarse con al menos ${minutosAnticipacionMinima} minutos de anticipación`
-        );
-    }
-    }
+
 
     // CREAR CITA (DENTISTA)
     async crearCita(dto: CrearCitaDto, id_consultorio: number) {
@@ -169,6 +182,9 @@ export class CitaService {
         );
 
         // VALIDACIONES EN ORDEN:
+        //Validar que no sea en el pasado (mínimo 60 min de anticipación)
+        this.validarFechaHoraFutura(dto.fecha, dto.hora_inicio, 60);
+
         //Validar que esté dentro del horario del consultorio
         await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
         
@@ -257,6 +273,7 @@ export class CitaService {
         );
 
          // Validar disponibilidad
+        this.validarFechaHoraFutura(dto.fecha, dto.hora_inicio, 60);
         await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
         await this.validarEventos(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
         await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
@@ -473,6 +490,7 @@ export class CitaService {
         // Calcular nueva_hora_fin
         const nueva_hora_fin = this.calcularHoraFin(dto.nueva_hora, cita.servicio.duracion_base);
 
+        this.validarFechaHoraFutura(dto.nueva_fecha, dto.nueva_hora, 60);
         // Validar horario del consultorio
         await this.validarHorarioConsultorio(dto.nueva_fecha, dto.nueva_hora, nueva_hora_fin, id_consultorio);
 
@@ -535,7 +553,12 @@ export class CitaService {
     }
 
     // RESPONDER REPROGRAMACIÓN (ROL CONTRARIO)
-    async responderReprogramacion(idReprogramacion: number, dto: ResponderReprogramacionDto, idUsuario: number, rol: 'dentista' | 'paciente') {
+    async responderReprogramacion(
+        idReprogramacion: number, 
+        dto: ResponderReprogramacionDto, 
+        idUsuario: number, 
+        rol: 'dentista' | 'paciente'
+    ) {
         const reprogramacion = await this.prisma.reprogramacion_cita.findUnique({
             where: { id_reprogramacion: idReprogramacion },
             include: {
@@ -553,7 +576,6 @@ export class CitaService {
             throw new NotFoundException('Solicitud de reprogramación no encontrada');
         }
 
-        // Validar que el usuario sea el destinatario correcto
         const solicitante = reprogramacion.solicitada_por;
         if (solicitante === 'paciente' && rol !== 'dentista') {
             throw new ForbiddenException('Solo el dentista puede responder esta solicitud');
@@ -563,7 +585,6 @@ export class CitaService {
             throw new ForbiddenException('Solo el paciente puede responder esta solicitud');
         }
 
-        // Validar que esté pendiente
         if (reprogramacion.status !== 'pendiente') {
             throw new BadRequestException('Esta solicitud ya fue procesada');
         }
@@ -572,34 +593,7 @@ export class CitaService {
         
         return await this.prisma.$transaction(async (tx) => {
             if (dto.aceptar) {
-                //Convertir DateTime a string en formato correcto
-                const fechaStr = this.formatearFechaDB(reprogramacion.nueva_fecha);
-                const horaInicioStr = this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora) + ':00');
-                const horaFinStr = this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora_fin) + ':00');
-
-                // Revalidar con formato correcto
-                await this.validarHorarioConsultorio(
-                    fechaStr,
-                    horaInicioStr,
-                    horaFinStr,
-                    cita.id_consultorio
-                );
-
-                await this.validarEventos(
-                    fechaStr,
-                    horaInicioStr,
-                    horaFinStr,
-                    cita.id_consultorio
-                );
-
-                await this.validarDisponibilidad(
-                    fechaStr,
-                    horaInicioStr,
-                    horaFinStr,
-                    cita.id_consultorio,
-                    reprogramacion.id_cita
-                );
-
+                
                 await tx.cita.update({
                     where: { id_cita: reprogramacion.id_cita },
                     data: {
@@ -616,7 +610,9 @@ export class CitaService {
                 });
 
                 const { logoUrl, nombreDoc } = this.extraerDatosConsultorio(cita.consultorio);
-                const destinatario = solicitante === 'paciente' ? cita.paciente.usuario.correo : cita.consultorio.correo;
+                const destinatario = solicitante === 'paciente' 
+                    ? cita.paciente.usuario.correo 
+                    : cita.consultorio.correo;
                 const nombreDocFinal = solicitante === 'paciente' ? nombreDoc : 'Odontix 🦷';
 
                 this.enviarCorreoSeguro(() =>
@@ -625,9 +621,9 @@ export class CitaService {
                         'aceptada',
                         {
                             fechaOriginal: this.formatearFechaDB(reprogramacion.fecha_original),
-                            horaOriginal: this.formatearHoraDB(reprogramacion.hora_original),
-                            nuevaFecha: fechaStr,
-                            nuevaHora: horaInicioStr,
+                            horaOriginal: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.hora_original) + ':00'),
+                            nuevaFecha: this.formatearFechaDB(reprogramacion.nueva_fecha),
+                            nuevaHora: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora) + ':00'),
                         },
                         logoUrl,
                         nombreDocFinal
@@ -636,7 +632,6 @@ export class CitaService {
 
                 return { mensaje: 'Reprogramación aceptada exitosamente' };
             } else {
-                // Rechazar reprogramación: volver status a programada
                 await tx.cita.update({
                     where: { id_cita: reprogramacion.id_cita },
                     data: { status: 'programada' }
@@ -648,7 +643,9 @@ export class CitaService {
                 });
 
                 const { logoUrl, nombreDoc } = this.extraerDatosConsultorio(cita.consultorio);
-                const destinatario = solicitante === 'paciente' ? cita.paciente.usuario.correo : cita.consultorio.correo;
+                const destinatario = solicitante === 'paciente' 
+                    ? cita.paciente.usuario.correo 
+                    : cita.consultorio.correo;
                 const nombreDocFinal = solicitante === 'paciente' ? nombreDoc : 'Odontix 🦷';
 
                 this.enviarCorreoSeguro(() =>
@@ -657,7 +654,7 @@ export class CitaService {
                         'rechazada',
                         {
                             fechaOriginal: this.formatearFechaDB(reprogramacion.fecha_original),
-                            horaOriginal: this.formatearHoraDB(reprogramacion.hora_original),
+                            horaOriginal: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.hora_original) + ':00'),
                             nuevaFecha: this.formatearFechaDB(reprogramacion.nueva_fecha),
                             nuevaHora: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora) + ':00'),
                         },
