@@ -403,4 +403,10 @@ export class Calendario implements OnInit {
 
   }
 
+  onCitaCreada(citaCreada: any) {
+    console.log("Cita creada, actualizando calendario...", citaCreada);
+    // Recargar todas las citas
+    this.cargarTodasCitas();
+  }
+
 }

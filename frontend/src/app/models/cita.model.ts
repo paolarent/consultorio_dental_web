@@ -8,3 +8,11 @@ export interface CrearCitaDto {
     frecuencia?: FrecuenciaServicio;
     notas?: string;
 }
+
+export interface SolicitarCitaDto {
+    id_motivo: number;
+    fecha: string;
+    hora_inicio: string;
+    notas?: string;
+}
+

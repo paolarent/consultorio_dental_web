@@ -855,7 +855,6 @@ export class CitaService {
             where.id_consultorio = paciente.id_consultorio;
         }
 
-
         if (filtros.rol === 'dentista') {
             const id_consultorio = await this.obtenerConsultorioDentista(filtros.idUsuario);
             where.id_consultorio = id_consultorio;
@@ -872,21 +871,41 @@ export class CitaService {
         const citas = await this.prisma.cita.findMany({
             where,
             include: {
-                paciente: { include: { usuario: true } },
-                motivo_consulta: true,
-                consultorio: { 
-                    include:  {
-                        usuario: {
-                            where: { rol: 'dentista' },
-                            select: { id_usuario: true, correo: true }
-                        }
-                    }
-                }
+                paciente: { 
+                    select: { 
+                        nombre: true,
+                        apellido1: true,
+                        apellido2: true
+                    },
+                },
+                servicio: {
+                    select: { nombre: true }
+                },
+                //consultorio: { 
+                  //  include:  {
+                  //      usuario: {
+                  //          where: { rol: 'dentista' },
+                  //          select: { id_usuario: true, correo: true }
+                  //      }
+                   // }
+                //}
             },
             orderBy: { fecha: 'asc' }
         });
 
-        return citas;
+        const citasLimpias = citas.map(c => ({
+            id_cita: c.id_cita,
+            paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
+            servicio: c.servicio!.nombre,
+            fecha: c.fecha.toISOString().split('T')[0],
+            hora_inicio: c.hora_inicio,
+            notas: c.notas ?? '',
+            status: c.status
+        }));
+
+        return citasLimpias;
+
+        //return citas;
     }
 
     // OBTENER CITA POR ID
@@ -1357,9 +1376,7 @@ export class CitaService {
         });
 
         if (citasConflicto) {
-            throw new ConflictException(
-            `Ya existe una cita programada en ese horario (${this.formatearHoraDB(citasConflicto.hora_inicio)} - ${this.formatearHoraDB(citasConflicto.hora_fin)})`
-            );
+            throw new ConflictException(`Ya existe una cita programada en ese horario.`);   //(${this.formatearHoraDB(citasConflicto.hora_inicio)} - ${this.formatearHoraDB(citasConflicto.hora_fin)})
         }
     }
 

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { CrearCitaDto } from '../models/cita.model';
+import { CrearCitaDto, SolicitarCitaDto } from '../models/cita.model';
 
 @Injectable({ 
     providedIn: 'root' 
@@ -25,5 +25,23 @@ export class CitaService {
     crearCita(dto: CrearCitaDto): Observable<any> {
         return this.http.post<any>(`${this.baseUrl}/crear`, dto, { withCredentials: true });
     }
+
+    //SOLICITAR CITA (PACIENTE)
+    solicitarCita(dto: SolicitarCitaDto): Observable<any> {
+        return this.http.post<any>(`${this.baseUrl}/solicitar`, dto, { withCredentials: true });
+    }
+
+    listarCitasDentista(status?: string, fecha?: string) {
+        let params: any = {};
+
+        if (status) params.status = status;
+        if (fecha) params.fecha = fecha;
+
+        return this.http.get<any[]>(`${this.baseUrl}/dentista/mis-citas`, {
+            params,
+            withCredentials: true
+        });
+    }
+
 
 }

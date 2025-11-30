@@ -8,6 +8,7 @@
         [fechaInicial]="fechaSeleccionada()"
         [horaInicial]="horaSeleccionada()"
         (cerrar)="modalCrearCita.set(false)"
+        (crear)="onCitaCreada($event)"
         >
     </app-modal-create-cita>
 }

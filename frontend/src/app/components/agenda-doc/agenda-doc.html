@@ -42,7 +42,6 @@
 
         </div>
 
-
         <!-- Columna derecha (3/4) - Calendario -->
         <div class="md:col-span-3 rounded-2xl">
             <app-calendario></app-calendario>
@@ -50,6 +49,158 @@
 
     </div>
 </section>
+
+<section>
+    <div class="bg-[#C3F2F3] rounded-lg p-6 max-h-[500px] flex flex-col">
+
+        <!-- BUSCADOR + FILTRO -->
+        <div class="px-4 mb-4 mt-6 w-full flex items-center gap-6 flex-shrink-0">
+
+            <!-- BUSCADOR -->
+            <div class="relative flex-1 max-w-7xl -translate-y-3">
+                <input
+                type="text"
+                placeholder="Buscar..."
+                (input)="actualizarBusqueda($event)"
+                class="w-full pl-16 pr-4 rounded-xl border border-gray-300 shadow-sm text-base xl:text-xl
+                    focus:outline-none focus:ring-2 focus:ring-teal-600 h-14"
+                />
+                <img
+                src="assets/icons/buscar.svg"
+                class="w-6 h-6 xl:w-8 xl:h-8 absolute left-4 top-1/2 -translate-y-1/2 opacity-70"
+                />
+            </div>
+
+            <!-- FILTRO -->
+            <mat-form-field appearance="outline" class="w-80 custom-select">
+                <mat-select placeholder="Filtrar" [value]="filtroEstado()" (selectionChange)="cambiarFiltro($event.value)">
+                    <mat-option value="todas">Todas</mat-option>
+                    <mat-option value="pendiente">Pendientes</mat-option>
+                    <mat-option value="programada">Programadas</mat-option>
+                    <mat-option value="reprogramada">Reprogramadas</mat-option>
+                    <mat-option value="completada">Completadas</mat-option>
+                    <mat-option value="cancelada">Canceladas</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+        </div>
+
+        <div class="flex-1 overflow-y-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @for(cita of citasFiltradas(); track cita.id_cita){
+                <div class="bg-white rounded-xl shadow-md p-5 border border-gray-200 hover:shadow-lg transition relative min-h-[180px]">
+
+                    <!-- CONTENIDO PRINCIPAL (lado izquierdo) -->
+                    <div class="pr-40">
+                    
+                    <!-- NOMBRE -->
+                    <div class="flex items-center gap-4 mb-1">
+                        <h2 class="text-2xl font-extrabold text-black mb-1">
+                        {{ cita.paciente }}
+                        </h2>
+                        
+                        <!-- BADGE ESTADO (al lado del nombre) -->
+                        <span class="px-3 py-1 rounded-xl text-md font-bold text-center whitespace-nowrap"
+                            [ngClass]="{
+                            'bg-yellow-100 text-yellow-700': cita.status === 'pendiente',
+                            'bg-cyan-100 text-teal-900': cita.status === 'programada',
+                            'bg-purple-100 text-purple-700': cita.status === 'reprogramada',
+                            'bg-green-100 text-green-700': cita.status === 'completada',
+                            'bg-red-100 text-red-700': cita.status === 'cancelada'
+                        }">
+                        {{ cita.status }}
+                        </span>
+                    </div>
+
+                    <!-- SERVICIO -->
+                    <p class="text-neutral-600 text-md font-normal mb-4">
+                        {{ cita.servicio ?? 'Sin especificar' }}
+                    </p>
+
+                    <!-- FECHA -->
+                    <div class="flex items-center gap-2 text-neutral-600 mb-2">
+                        <!-- Icono Calendario -->
+                        <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+                        <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+                        <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+                        </svg>
+                        <p class="text-base font-normal">
+                        {{ cita.fecha | date:'EEEE, d \'de\' MMMM \'de\' yyyy':'':'es' }}
+                        </p>
+                    </div>
+
+                    <!-- HORA -->
+                    <div class="flex items-center gap-2 text-neutral-600 mb-4">
+                        <!-- Icono Reloj -->
+                        <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                        <polyline points="12 6 12 12 16 14" stroke-width="2"/>
+                        </svg>
+                        <p class="text-base font-normal">
+                        {{ cita.hora_inicio | date:'hh:mm a' }}
+                        </p>
+                    </div>
+
+                    <!-- NOTAS -->
+                    @if(cita.notas){
+                        <p class="text-neutral-600 text-base font-normal">
+                        {{ cita.notas }}
+                        </p>
+                    }
+                    </div>
+
+                    <!-- BOTONES (esquina inferior derecha) -->
+                    <div class="absolute bottom-5 right-5 flex flex-col gap-3">
+                    
+                    <!-- PENDIENTE: Confirmar, Cancelar, Reprogramar -->
+                    @if(cita.status === 'pendiente') {
+                        <button class="w-32 h-9 bg-teal-900 rounded-lg shadow-md text-white text-base font-bold hover:bg-teal-800 transition">
+                        Programar
+                        </button>
+                        <button class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
+                        Cancelar
+                        </button>
+                        <button class="w-32 h-9 bg-purple-950 rounded-lg shadow-md text-white text-base font-bold hover:bg-indigo-900 transition">
+                        Reprogramar
+                        </button>
+                    }
+
+                    <!-- PROGRAMADA: Completar, Cancelar, Reprogramar -->
+                    @if(cita.status === 'programada') {
+                        <button class="w-32 h-9 bg-green-800 rounded-lg shadow-md text-white text-base font-bold hover:bg-green-900 transition">
+                        Completar
+                        </button>
+                        <button class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
+                        Cancelar
+                        </button>
+                        <button class="w-32 h-9 bg-purple-950 rounded-lg shadow-md text-white text-base font-bold hover:bg-indigo-900 transition">
+                        Reprogramar
+                        </button>
+                    }
+
+                    <!-- REPROGRAMADA: Confirmar, Cancelar -->
+                    @if(cita.status === 'reprogramada') {
+                        <button class="w-32 h-9 bg-teal-900 rounded-lg shadow-md text-white text-base font-bold hover:bg-teal-800 transition">
+                        Programar
+                        </button>
+                        <button class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
+                        Cancelar
+                        </button>
+                    }
+
+                    </div>
+
+                </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
 
 <!-- MODAL PARA EDITAR HORARIO -->
 @if (modalHorario()) {
