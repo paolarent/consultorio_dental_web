@@ -11,11 +11,11 @@ export class AuthGuard implements CanActivate {
     canActivate(): Observable<boolean> {
         return this.auth.usuario$.pipe(
             switchMap(user => {
-            if (user) return of(true);
-                return this.auth.getMe().pipe(
-                    map(() => true),
-                    catchError(() => of(false))
-                );
+                if (user) return of(true);
+                    return this.auth.getMe().pipe(
+                        map(() => true),
+                        catchError(() => of(false))
+                    );
             }),
             
             tap(isLoggedIn => {

@@ -28,12 +28,18 @@ export class AuthController {
         const { accessToken, refreshToken, usuario } = await this.authService.login(dto.correo, dto.contrasena);
         //const { accessToken, refreshToken, usuario } = await this.authService.login(dto.correo, dto.contrasena);
         
+        // << LOGS para depuración >>
+        //console.log('Login: accessToken:', accessToken);
+        //console.log('Login: refreshToken:', refreshToken);
+
+
         // cookie de access token (corto plazo)
         res.cookie('access_token', accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: (Number(process.env.ACCESS_TOKEN_EXP_MINUTES || 10) * 60 * 1000),
             sameSite: 'lax',
+            path: '/', // asegurarse que reemplace la cookie correctamente
         });
 
         // cookie de refresh token (más larga duración)
@@ -42,6 +48,7 @@ export class AuthController {
             secure: process.env.NODE_ENV === 'production',
             maxAge: (parseInt(process.env.REFRESH_TOKEN_EXP_DAYS || '7') * 24 * 60 * 60 * 1000),
             sameSite: 'lax',
+            path: '/', // asegurarse que reemplace la cookie correctamente
         });
 
         //const { usuario } = await this.authService.login(dto.correo, dto.contrasena);
@@ -77,12 +84,18 @@ export class AuthController {
             // authService.refreshToken valida el refresh token y devuelve nuevos tokens
             const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await this.authService.refreshToken(refreshToken);
             
+            // << LOGS para depuración >>
+            //console.log('Refresh: token recibido:', refreshToken);
+            //console.log('Refresh: newAccessToken:', newAccessToken);
+            //console.log('Refresh: newRefreshToken:', newRefreshToken);
+
             // Setear cookies con los tokens nuevos
             res.cookie('access_token', newAccessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: Number(process.env.ACCESS_TOKEN_EXP_MINUTES || 10) * 60 * 1000,
                 sameSite: 'lax',
+                path: '/',
             });
 
             res.cookie('refresh_token', newRefreshToken, {
@@ -90,6 +103,7 @@ export class AuthController {
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: (parseInt(process.env.REFRESH_TOKEN_EXP_DAYS || '7', 10) * 24 * 60 * 60 * 1000),
                 sameSite: 'lax',
+                path: '/',
             });
 
             return { accessToken: newAccessToken };

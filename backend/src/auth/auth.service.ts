@@ -122,7 +122,7 @@ export class AuthService {
             const sesiones = await this.prisma.sesion.findMany({
                 where: { id_usuario: payload.id_usuario, activo: true },
             });
-
+            // Buscar cuál sesión coincide con el hash
             const sesion = await Promise.all(
                 sesiones.map(async (s) => {
                     const match = await bcrypt.compare(refreshToken, s.refresh_token_hash);
@@ -152,23 +152,18 @@ export class AuthService {
 
             const newRefreshTokenHash = await bcrypt.hash(newRefreshToken, 10);
 
-            // Desactivar sesión antigua y crear nueva
-            await this.prisma.$transaction([
-                this.prisma.sesion.update({
-                    where: { id_sesion: sesion.id_sesion },
-                    data: { activo: false },
-                }),
-                this.prisma.sesion.create({
-                    data: {
-                    id_usuario: usuario.id_usuario,
+            // Actualizar LA MISMA sesión
+            await this.prisma.sesion.update({
+                where: { id_sesion: sesion.id_sesion },
+                data: {
                     refresh_token_hash: newRefreshTokenHash,
                     fecha_expira: new Date(
-                        Date.now() + Number(process.env.REFRESH_TOKEN_EXP_DAYS ?? 7) * 24 * 60 * 60 * 1000,
+                        Date.now() +
+                        Number(process.env.REFRESH_TOKEN_EXP_DAYS ?? 7) * 24 * 60 * 60 * 1000
                     ),
-                    activo: true,
-                    },
-                }),
-            ]);
+                    activo: true, // ya era true, pero lo dejamos explícito
+                },
+            });
 
             return { accessToken: newAccessToken, refreshToken: newRefreshToken };
         } catch (error) {

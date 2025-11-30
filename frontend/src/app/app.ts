@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -10,9 +11,21 @@ import { AuthService } from './auth/auth.service';
 })
 export class App implements OnInit {
   //protected readonly title = signal('Paola :)');
-  private auth = inject(AuthService);
+    private auth = inject(AuthService);
+    private router = inject(Router);
 
-  ngOnInit() {
-    this.auth.initAuthCheck();
+    ngOnInit() {
+    const publicRoutes = ['/login', '/login/paciente', '/login/forgot-password', '/login/restore-password'];
+
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      if (!publicRoutes.some(route => event.url.startsWith(route))) {
+        this.auth.getMe().subscribe({
+          next: () => {},
+          error: () => this.auth.clearSession()
+        });
+      }
+    });
   }
 }
