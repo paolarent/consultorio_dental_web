@@ -2,15 +2,17 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Calendario } from '../calendario/calendario';
 import { ModalConfigHorario } from '../modal-config-horario/modal-config-horario';
+import { ModalCreateCita } from '../modal-create-cita/modal-create-cita';
 
 @Component({
   selector: 'app-agenda-doc',
-  imports: [RouterModule, Calendario, ModalConfigHorario],
+  imports: [RouterModule, Calendario, ModalConfigHorario, ModalCreateCita],
   templateUrl: './agenda-doc.html',
   styleUrl: './agenda-doc.css'
 })
 export class AgendaDoc {
-  mostrarModalHorario = signal(false);
+  modalHorario = signal(false);
+  modalCrearCita = signal(false);
 
   constructor(private router: Router) {}
 
@@ -19,10 +21,20 @@ export class AgendaDoc {
   }
 
   abrirModalHorario() {
-    this.mostrarModalHorario.set(true);
+    this.modalHorario.set(true);
   }
 
-  cerrarModal() {
-    this.mostrarModalHorario.set(false);
+  cerrarModalHorario() {
+    this.modalHorario.set(false);
   }
+
+  abrirModalCrearCita() {
+    this.modalCrearCita.set(true);
+  }
+
+  cerrarModalCrearCita() {
+    this.modalCrearCita.set(false);
+  }
+
+
 }

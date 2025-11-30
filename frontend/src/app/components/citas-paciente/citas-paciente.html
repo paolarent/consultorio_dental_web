@@ -12,7 +12,7 @@
                 Gestiona tus citas médicas
             </p>
 
-            <button
+            <button (click)="abrirModal()"
                 class="bg-[#C3F2F3] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider rounded-lg shadow-md px-16 py-3 hover:scale-105 transition-transform duration-300"
             >
                 Nueva Cita
@@ -106,6 +106,12 @@
     </div>
 
 </section>
+
+@if (modalSolicCita()) {
+    <app-modal-solic-cita
+        (cerrar)="cerrarModal()">
+    </app-modal-solic-cita>
+}
 
 
 

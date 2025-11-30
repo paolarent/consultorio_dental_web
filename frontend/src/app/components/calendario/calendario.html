@@ -3,3 +3,22 @@
 </div>
 
 
+@if (modalCrearCita()) {
+    <app-modal-create-cita
+        [fechaInicial]="fechaSeleccionada()"
+        [horaInicial]="horaSeleccionada()"
+        (cerrar)="modalCrearCita.set(false)"
+        >
+    </app-modal-create-cita>
+}
+
+@if (modalSolicCita()) {
+    <app-modal-solic-cita
+        [fechaInicial]="fechaSeleccionada()"
+        [horaInicial]="horaSeleccionada()"
+        (cerrar)="modalSolicCita.set(false)"
+        >
+    </app-modal-solic-cita>
+}
+
+

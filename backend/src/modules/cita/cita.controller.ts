@@ -6,7 +6,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { CrearCitaDto } from './dto/create-cita.dto';
 import { ActualizarStatusCitaDto } from './dto/act-status-cita.dto';
 import { SolicitarCitaDto } from './dto/solicitar-cita.dto';
-import { Rol } from 'src/common/enums';
+import { Rol, StatusCitas } from 'src/common/enums';
 import { ConsultarDisponibilidadDto } from './dto/consultar-disp.dto';
 import { ReprogramarCitaDto } from './dto/reprogramar-cita.dto';
 import { ResponderReprogramacionDto } from './dto/resp-reprog-cita.dto';
@@ -15,6 +15,14 @@ import { ResponderReprogramacionDto } from './dto/resp-reprog-cita.dto';
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CitaController {
     constructor ( private readonly citaService: CitaService ) {}
+
+    @Get('motivos')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.PACIENTE)
+    listarMotivos(@Req() req) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.citaService.listarMotivos(id_consultorio);
+    }
 
     //----------------------------------ENDPOINTS DENTISTA----------------------------------------------------------------
     //Crear cita directamente (solo dentista)
@@ -35,22 +43,6 @@ export class CitaController {
             req.user.rol,
             req.user.id_consultorio
         );
-    }
-
-    //Listar citas del dentista con filtros opcionales
-    @Get('dentista/mis-citas')
-    @Roles(Rol.DENTISTA)
-    async listarCitasDentista(
-        @Query('fecha') fecha?: string,
-        @Query('status') status?: string,
-        @Req() req?: any
-    ) {
-        return this.citaService.listarCitas({
-            idUsuario: req.user.id_usuario,
-            rol: Rol.DENTISTA,
-            fecha,
-            status: status as any
-        });
     }
 
     //Obtener citas del día actual o de una fecha específica
@@ -121,6 +113,35 @@ export class CitaController {
             status: status as any
         });
     }
+
+    //Listar citas del dentista con filtros opcionales
+    @Get('dentista/mis-citas')
+    @Roles(Rol.DENTISTA,)
+    async listarCitasDentista(
+        @Query('fecha') fecha?: string,
+        @Query('status') status?: string,
+        @Req() req?: any
+    ) {
+        return this.citaService.listarCitas({
+            idUsuario: req.user.id_usuario,
+            rol: Rol.DENTISTA,
+            fecha,
+            status: status as any
+        });
+    }
+
+    @Get('calendario/citas')
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
+    async listarCitasCalendario(@Req() req?: any) {
+        const idUsuario = req.user.id_usuario;
+        const rol = req.user.rol as 'dentista' | 'paciente';
+        return this.citaService.listarCitas({
+            idUsuario,
+            rol,
+            status: StatusCitas.PROGRAMADA // Podrías opcionalmente filtrar por fecha
+        });
+    }
+
 
     //Consultar horarios disponibles para agendar (paciente)
     @Post('disponibilidad')

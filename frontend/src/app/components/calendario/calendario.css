@@ -1,5 +1,3 @@
-/* calendario.component.css */
-
 /* Contenedor general del calendario */
 :host ::ng-deep .fc {
     font-family: inherit;
@@ -78,7 +76,7 @@
 /* Celdas de tiempo */
 :host ::ng-deep .fc-timegrid-slot {
     height: 3.5rem !important;
-    border-color: #e2e8f0 !important;
+    border-color: #000000 !important;
 }
 
 :host ::ng-deep .fc-timegrid-axis {
@@ -190,3 +188,31 @@
         padding: 0.4rem 0.75rem !important;
     }
 }
+
+::ng-deep {
+    .fc-timegrid-slot.horario-disponible {
+        background-color: #C3F2F3 !important;
+    }
+
+    
+    .fc-timegrid-slot.cita-ocupada {
+        background-color: #ab2a2a !important; 
+        cursor: not-allowed !important;
+        
+    }
+
+    
+    .fc-timegrid-slot.horario-bloqueado {
+        background-color: #E5E7EB !important;
+        cursor: not-allowed !important;
+    }
+
+
+    .fc-timegrid-slot:not(.cita-ocupada):not(.horario-bloqueado):hover {
+        background-color: #A5F3FC !important;
+        cursor: pointer;
+    }
+
+}
+
+

@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { MailerService } from 'src/common/mail/mail.service';
 import { CrearCitaDto } from './dto/create-cita.dto';
 import { SolicitarCitaDto } from './dto/solicitar-cita.dto';
-import { ReprogSolicitadaPor, Rol, StatusCitaReprog, StatusCitas, StatusEvento } from 'src/common/enums';
+import { ReprogSolicitadaPor, Rol, Status, StatusCitaReprog, StatusCitas, StatusEvento } from 'src/common/enums';
 import { ActualizarStatusCitaDto } from './dto/act-status-cita.dto';
 import { ReprogramarCitaDto } from './dto/reprogramar-cita.dto';
 import { ConsultarDisponibilidadDto } from './dto/consultar-disp.dto';
@@ -18,6 +18,20 @@ export class CitaService {
         private prisma: PrismaService,
         private mailerService: MailerService
     ) {}
+
+    async listarMotivos(id_consultorio: number) {
+        return this.prisma.motivo_consulta.findMany({
+        where: {
+            status: Status.ACTIVO,
+            id_consultorio
+        },
+        select: {
+                id_motivo: true,
+                nombre: true,
+                id_servicio: true,
+            }
+        });
+    }
 
     // DEFINICIÓN DE TRANSICIONES VÁLIDAS
     private readonly TRANSICIONES_VALIDAS: Record<string, StatusCitas[]> = {
@@ -830,9 +844,17 @@ export class CitaService {
         const where: any = {};
 
         if (filtros.rol === 'paciente') {
-            const id_paciente = await this.obtenerIdPaciente(filtros.idUsuario);
-            where.id_paciente = id_paciente;
+            const paciente = await this.prisma.paciente.findUnique({
+                where: { id_usuario: filtros.idUsuario },
+                select: { id_consultorio: true }
+            });
+
+            if (!paciente) throw new NotFoundException('Paciente no encontrado');
+
+            // Paciente ve todas las citas de su consultorio
+            where.id_consultorio = paciente.id_consultorio;
         }
+
 
         if (filtros.rol === 'dentista') {
             const id_consultorio = await this.obtenerConsultorioDentista(filtros.idUsuario);
@@ -1204,11 +1226,21 @@ export class CitaService {
             })
         ]);
 
-        const horariosOcupados = citas.map(c => ({
+        /*const horariosOcupados = citas.map(c => ({
             hora: this.formatearHoraDB(c.hora_inicio),
             tipo: 'cita',
             descripcion: c.motivo_consulta?.nombre ?? 'Sin motivo'
-        }));
+        }));*/
+        const horariosOcupados = citas.map(c => {
+            const horaLocal24 = this.extraerHoraLocal(c.hora_inicio); // ← REAL timezone
+            const hora12 = this.convertir24hA12h(horaLocal24);
+
+            return {
+                hora: hora12,
+                tipo: 'cita',
+                descripcion: c.motivo_consulta?.nombre ?? 'Sin motivo'
+            };
+        });
 
         eventos.forEach(evento => {
             if (evento.evento_todo_el_dia === 'si') {
@@ -1439,6 +1471,13 @@ export class CitaService {
         const [y, m, d] = fecha.split("-").map(Number);
         return new Date(y, m - 1, d); // esto NO desfasa
     }
+
+    private extraerHoraLocal(dateObj: Date): string {
+        const horas = dateObj.getHours().toString().padStart(2, "0");
+        const minutos = dateObj.getMinutes().toString().padStart(2, "0");
+        return `${horas}:${minutos}`; // → "09:00"
+    }
+
 
 
     private parseHora(hora: string): Date {
