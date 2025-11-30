@@ -294,8 +294,8 @@ export class MailerService {
             <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 40px;">
                 <img src="${logoUrl}" alt="Logo" style="width: 220px; margin: 0 auto 20px; display: block; border-radius:10px" />
                 <h2 style="color: #000000; font-size: 24px; margin-bottom: 20px; text-align: center;">Recordatorio de cita</h2>
-                <div style="background-color: #DBEAFE; padding: 20px; border-radius: 8px; border-left: 4px solid #3B82F6; margin-bottom: 20px;">
-                    <p style="color: #1E40AF; font-size: 16px; margin: 0 0 10px 0; font-weight: bold;">
+                <div style="background-color: #b6eff1ff; padding: 20px; border-radius: 8px; border-left: 4px solid #1D8F93; margin: 20px 20px;">
+                    <p style="color: #115153; font-size: 18px; margin: 0 0 10px 0; font-weight: bold;">
                         Tienes una cita mañana
                     </p>
                     <p style="color: #374151; font-size: 16px; margin: 0; line-height: 1.6;">
@@ -304,7 +304,7 @@ export class MailerService {
                         <strong>Dentista:</strong> Dr. ${datos.nombreDentista}
                     </p>
                 </div>
-                <div style="background-color: #FEF3C7; padding: 15px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 20px 30px;">
+                <div style="background-color: #FEF3C7; padding: 15px; border-radius: 8px; border-left: 4px solid #F59E0B; margin: 20px 20px;">
                     <p style="color: #330101; font-size: 16px; margin: 0;">
                         ⏰ <strong>Recomendación:</strong> Te sugerimos llegar 10 minutos antes de tu cita.
                     </p>

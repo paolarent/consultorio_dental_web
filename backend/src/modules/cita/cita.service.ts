@@ -117,15 +117,15 @@ export class CitaService {
 
     //Convierte una hora string a DateTime para la fecha dada
     private convertirHoraADateTime(fecha: string, hora: string): Date {
-    // Convertir a formato 24h si viene en 12h
-    const hora24 = hora.includes('AM') || hora.includes('PM') 
-        ? this.convertir12hA24h(hora) 
-        : hora;
-    
-    // Asegurar formato HH:MM:SS
-    const horaCompleta = hora24.length === 5 ? `${hora24}:00` : hora24;
-    
-    return new Date(`${fecha}T${horaCompleta}`);
+        // Convertir a formato 24h si viene en 12h
+        const hora24 = hora.includes('AM') || hora.includes('PM') 
+            ? this.convertir12hA24h(hora) 
+            : hora;
+        
+        // Asegurar formato HH:MM:SS
+        const horaCompleta = hora24.length === 5 ? `${hora24}:00` : hora24;
+        
+        return new Date(`${fecha}T${horaCompleta}`);
     }
 
 
@@ -1281,7 +1281,7 @@ export class CitaService {
     }
 
     // CRON JOB - RECORDATORIOS
-    @Cron(CronExpression.EVERY_DAY_AT_9AM)
+    @Cron(CronExpression.EVERY_MINUTE)
     async enviarRecordatorios() {
         this.logger.log('Ejecutando envío de recordatorios de citas...');
 
@@ -1476,9 +1476,17 @@ export class CitaService {
     }
 
     // MÉTODOS HELPER - FORMATO DE FECHAS/HORAS
-    private formatearHoraDB(fecha: Date): string {
+    /*private formatearHoraDB(fecha: Date): string {
         return fecha.toISOString().substring(11, 16);
+    }*/
+    private formatearHoraDB(fecha: Date): string {
+        return new Date(fecha).toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true
+        });
     }
+
 
     private formatearFechaDB(fecha: Date): string {
         return fecha.toISOString().split('T')[0];
@@ -1494,7 +1502,6 @@ export class CitaService {
         const minutos = dateObj.getMinutes().toString().padStart(2, "0");
         return `${horas}:${minutos}`; // → "09:00"
     }
-
 
 
     private parseHora(hora: string): Date {
