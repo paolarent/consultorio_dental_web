@@ -247,9 +247,7 @@ export class Calendario implements OnInit {
   }
 
 
-  // ============================================
   // CONVERTIR CITAS A EVENTOS DE BLOQUEO
-  // ============================================
   convertirCitasAEventos(citas: any[]): any[] {
     return citas.map(cita => {
       const fecha = cita.fecha.split('T')[0]; // "2025-11-28"

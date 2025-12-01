@@ -7,7 +7,7 @@ import { EventoService } from '../../services/evento.service';
 import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
-import { Evento } from '../../models/evento.model';
+import { CreateEventoDto, Evento } from '../../models/evento.model';
 import { SiONo } from '../../../../../backend/src/common/enums';
 import { NotificationService } from '../../services/notification.service';
 
@@ -118,7 +118,7 @@ export class ModalEvento {
     }
 
     this.cargando.set(true);
-    const evento: Evento = {
+    const evento: CreateEventoDto = {
       titulo: this.titulo,
       id_tipo_evento: this.id_tipo_evento,
       fecha_inicio: this.fecha_inicio,

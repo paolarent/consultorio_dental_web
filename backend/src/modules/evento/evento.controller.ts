@@ -5,6 +5,7 @@ import { Rol, StatusEvento } from 'src/common/enums';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { UpdateEventoDto } from './dto/update-evento.dto';
 
 @Controller('evento')
 export class EventoController {
@@ -14,7 +15,7 @@ export class EventoController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA, Rol.PACIENTE)
     listarActivos(@Req() req: any) {
-    return this.eventoService.listarEventosActivos(req.user.id_consultorio);
+        return this.eventoService.listarEventosActivos(req.user.id_consultorio);
     }
 
     @Get('tipos')
@@ -29,6 +30,18 @@ export class EventoController {
     create(@Body() data: CreateEventoDto, @Req() req: any) {
         const id_consultorio = req.user.id_consultorio;
         return this.eventoService.createEvento(data, id_consultorio);
+    }
+
+    @Patch(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+    update(
+        @Param('id') id: string, 
+        @Body() data: UpdateEventoDto, 
+        @Req() req: any
+    ) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.eventoService.updateEventoCompleto(Number(id), data, id_consultorio);
     }
 
     @Patch(':id/cancelar')
