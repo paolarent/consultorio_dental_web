@@ -156,37 +156,37 @@
                     
                     <!-- PENDIENTE: Confirmar, Cancelar, Reprogramar -->
                     @if(cita.status === 'pendiente') {
-                        <button class="w-32 h-9 bg-teal-900 rounded-lg shadow-md text-white text-base font-bold hover:bg-teal-800 transition">
-                        Programar
+                        <button (click)="abrirModalAUS(cita, 'programar')" class="w-32 h-9 bg-teal-900 rounded-lg shadow-md text-white text-base font-bold hover:bg-teal-800 transition">
+                            Programar
                         </button>
-                        <button class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
-                        Cancelar
+                        <button (click)="abrirModalAUS(cita, 'cancelar')" class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
+                            Cancelar
                         </button>
-                        <button class="w-32 h-9 bg-purple-950 rounded-lg shadow-md text-white text-base font-bold hover:bg-indigo-900 transition">
-                        Reprogramar
+                        <button (click)="abrirModalReprogramar(cita)"  class="w-32 h-9 bg-purple-950 rounded-lg shadow-md text-white text-base font-bold hover:bg-indigo-900 transition">
+                            Reprogramar
                         </button>
                     }
 
                     <!-- PROGRAMADA: Completar, Cancelar, Reprogramar -->
                     @if(cita.status === 'programada') {
-                        <button class="w-32 h-9 bg-green-800 rounded-lg shadow-md text-white text-base font-bold hover:bg-green-900 transition">
-                        Completada
+                        <button (click)="abrirModalAUS(cita, 'completar')" class="w-32 h-9 bg-green-800 rounded-lg shadow-md text-white text-base font-bold hover:bg-green-900 transition">
+                            Completada
                         </button>
-                        <button class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
-                        Cancelar
+                        <button (click)="abrirModalAUS(cita, 'cancelar')" class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
+                            Cancelar
                         </button>
-                        <button class="w-32 h-9 bg-purple-950 rounded-lg shadow-md text-white text-base font-bold hover:bg-indigo-900 transition">
-                        Reprogramar
+                        <button (click)="abrirModalReprogramar(cita)"  class="w-32 h-9 bg-purple-950 rounded-lg shadow-md text-white text-base font-bold hover:bg-indigo-900 transition">
+                            Reprogramar
                         </button>
                     }
 
                     <!-- REPROGRAMADA: Confirmar, Cancelar -->
                     @if(cita.status === 'reprogramada') {
-                        <button class="w-32 h-9 bg-teal-900 rounded-lg shadow-md text-white text-base font-bold hover:bg-teal-800 transition">
-                        Programar
+                        <button (click)="abrirModalAUS(cita, 'programar')" class="w-32 h-9 bg-teal-900 rounded-lg shadow-md text-white text-base font-bold hover:bg-teal-800 transition">
+                            Programar
                         </button>
-                        <button class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
-                        Cancelar
+                        <button (click)="abrirModalAUS(cita, 'cancelar')" class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white text-base font-bold hover:bg-red-800 transition">
+                            Cancelar
                         </button>
                     }
 
@@ -201,7 +201,6 @@
 </section>
 
 
-
 <!-- MODAL PARA EDITAR HORARIO -->
 @if (modalHorario()) {
     <app-modal-config-horario (cerrar)="cerrarModalHorario()"></app-modal-config-horario>
@@ -211,4 +210,26 @@
     <app-modal-create-cita
         (cerrar)="cerrarModalCrearCita()">
     </app-modal-create-cita>
+}
+
+@if (modalVisible()) {
+    <app-modal-confirmar-logdelete
+    [titulo]="modalTitulo()"
+    [texto]="modalTexto()"
+    [tipo]="modalTipo()"
+    (confirm)="confirmarModal()"
+    (cancel)="cancelarModal()"
+    >
+    </app-modal-confirmar-logdelete>
+}
+
+@if(modalReprogramar()) {
+    <app-modal-reprog-cita
+        [cita]="citaParaReprogramar"
+        (cerrar)="cerrarModalReprogramar()"
+        [mostrarPaciente]="true"
+        [mostrarServicio]="true"
+        (reprogramar)="reprogramarCita($event)"
+        >
+    </app-modal-reprog-cita>
 }

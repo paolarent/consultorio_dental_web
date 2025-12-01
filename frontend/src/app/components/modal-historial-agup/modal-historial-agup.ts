@@ -46,20 +46,26 @@ export class ModalHistorialAgup implements AfterViewInit {
   }
 
   private cargarDatosParaEdicion() {
-      this.id_servicio = this.historial?.id_servicio ?? 0;
-      this.fecha = this.historial?.fecha || '';
-      this.notas = this.historial?.descripcion || '';
-      this.archivos = (this.historial?.fotografia_historial || []).map((f, idx) => ({
-          file: null as any, // No hay File local, solo preview
-          preview: f.url_fotografia,
-          id_foto: f.id_foto
+    if (!this.historial) return;
+
+    // Posponer la asignación de propiedades para evitar ExpressionChangedAfterItHasBeenCheckedError
+    Promise.resolve().then(() => {
+      this.id_servicio = this.historial!.id_servicio ?? 0;
+      this.fecha = this.historial!.fecha || '';
+      this.notas = this.historial!.descripcion || '';
+      this.archivos = (this.historial!.fotografia_historial || []).map(f => ({
+        file: null as any,
+        preview: f.url_fotografia,
+        id_foto: f.id_foto
       }));
 
-      // Si ya se inicializo la cosa flatpickr, actualizar su valor
+      // Actualizar flatpickr si ya se inicializó
       if (this.fpInstance && this.fecha) {
-          this.fpInstance.setDate(this.fecha, false);
+        this.fpInstance.setDate(this.fecha, false);
       }
+    });
   }
+
 
   private initFlatpickr() {
     if (!this.fechaInput) return;

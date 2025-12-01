@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateEventoDto } from './dto/create-evento.dto';
-import { StatusEvento } from 'src/common/enums';
+import { Status, StatusEvento } from 'src/common/enums';
 import { status_evento } from '@prisma/client';
 
 @Injectable()
@@ -25,6 +25,19 @@ export class EventoService {
             ...(id_consultorio && { id_consultorio }), // solo agrega si existe
             },
             orderBy: { fecha_inicio: 'asc' },
+        });
+    }
+
+    async listarTiposEvento() {
+        return this.prisma.tipo_evento.findMany({
+            where: { status: Status.ACTIVO },
+            select: {
+                id_tipo_evento: true,
+                nombre: true
+            },
+                orderBy: {
+                id_tipo_evento: 'asc'
+            }
         });
     }
 

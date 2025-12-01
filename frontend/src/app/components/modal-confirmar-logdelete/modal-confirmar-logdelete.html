@@ -3,7 +3,7 @@
         <!-- Encabezado -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
-                <img src="assets/icons/simbolo-eliminar.svg" alt="icono-eliminar" class="w-12 h-12" />
+                <img [src]="icono" alt="Icono" class="w-12 h-12" />
             
                 <h2 class="text-3xl font-semibold text-black">{{ titulo }}</h2>
             </div>
@@ -26,7 +26,8 @@
 
             <button
                 (click)="onConfirm()"
-                class="w-44 h-12 bg-red-700 hover:bg-red-800 rounded-lg text-white text-xl font-semibold tracking-wider"
+                [ngClass]="colorBotonConfirm"
+                class="w-44 h-12 rounded-lg text-white text-xl font-semibold tracking-wider"
             >
                 Confirmar
             </button>

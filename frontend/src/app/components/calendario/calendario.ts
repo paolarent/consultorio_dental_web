@@ -231,11 +231,12 @@ export class Calendario implements OnInit {
     
     return `${horas}:${minutos}`;
   }
+  
 
   // Color según status de la cita
   obtenerColorPorStatus(status: string): string {
     const colores: { [key: string]: string } = {
-      'programada': '#991616',    // Rojo (ocupado)
+      'programada': '#620303ff',    // Rojo (ocupado)
       //'pendiente': '#06879bff',     // Amarillo (pendiente de confirmar)
       'completada': '#005effff',    // Gris claro (pasada)
       //'cancelada': '#26ac45ff',     // Gris muy claro (cancelada)

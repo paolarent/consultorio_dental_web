@@ -18,6 +18,12 @@ export class EventoController {
         }
     }
 
+    @Get('tipos')
+    //@Public()
+    listarTipos() {
+        return this.eventoService.listarTiposEvento();
+    }
+
     @Post()
     create(@Body() data: CreateEventoDto) {
         return this.eventoService.createEvento(data);

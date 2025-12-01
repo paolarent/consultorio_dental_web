@@ -1,0 +1,58 @@
+<div class="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
+    <div class="w-[560px] bg-white rounded-[20px] relative p-6 shadow-xl">
+
+        <!-- Encabezado -->
+        <div class="flex justify-center gap-3 mb-4">
+            <img src="assets/icons/icon-reprog.svg" alt="Icono" class="w-10 h-10" />
+            <h2 class="text-3xl font-semibold text-black">Reprogramación de Cita</h2>
+        </div>
+
+        <!-- Contenido -->
+        <div class="bg-[#C3F2F3] p-6 rounded-xl mx-4 mb-4 flex flex-col gap-4">
+        <p class="text-black text-md text-center">
+            Está solicitando reprogramar la fecha y hora de la siguiente cita:
+        </p>
+
+        <div class="flex flex-col gap-1">
+            <span class="text-black font-semibold text-lg">Paciente</span>
+            <span class="text-black text-md">{{ paciente }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <span class="text-black font-semibold text-lg">Servicio</span>
+            <span class="text-black text-md">{{ servicio }}</span>
+        </div>
+        
+        <div class="flex flex-col gap-1">
+            <span class="text-black font-semibold text-lg">Cita Pospuesta</span>
+            <span class="text-black text-md">{{ fecha_actual | date:'EEEE, d \'de\' MMMM \'de\' yyyy':'':'es' }}</span>
+            <span class="text-black text-md">{{ hora_actual | date:'hh:mm a' }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <span class="text-black font-semibold text-lg">Nueva Cita</span>
+            <span class="text-black text-md">{{ fecha_nueva | date:'EEEE, d \'de\' MMMM \'de\' yyyy':'':'es' }}</span>
+            <span class="text-black text-md">{{ hora_nueva }}</span>
+        </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-4 mt-6">
+            <button
+                class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                (click)="cancelar.emit()"
+            >
+                <span class="text-center text-white text-lg font-semibold tracking-wider">Cancelar</span>
+            </button>
+
+            <button
+                class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                (click)="confirmarClick()"
+            >
+                <span class="text-center text-white text-lg font-semibold tracking-wider">Confirmar</span>
+            </button>
+        </div>
+
+    </div>
+</div>
+

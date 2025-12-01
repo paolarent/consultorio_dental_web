@@ -16,3 +16,16 @@ export interface SolicitarCitaDto {
     notas?: string;
 }
 
+export interface ReprogramarCitaData {
+    id_cita: number;
+    pacienteNombre: string;
+    servicioNombre: string;
+    fechaOriginal: string;
+    horaOriginal: string;
+}
+
+export interface ResponderReprogramacionDto {
+    aceptar: boolean;
+}
+
+

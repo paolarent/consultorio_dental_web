@@ -51,6 +51,49 @@
     </div>
 </section>
 
+<section>
+    <div class="bg-[#C3F2F3] rounded-lg p-6 max-h-[500px] flex flex-col">
+
+        <!-- BUSCADOR + FILTRO -->
+        <div class="px-4 mb-4 mt-6 w-full flex items-center gap-6 flex-shrink-0">
+
+            <!-- BUSCADOR -->
+            <div class="relative flex-1 max-w-7xl -translate-y-3">
+                <input
+                type="text"
+                placeholder="Buscar..."
+                
+                class="w-full pl-16 pr-4 rounded-xl border border-gray-300 shadow-sm text-base xl:text-xl
+                    focus:outline-none focus:ring-2 focus:ring-teal-600 h-14"
+                />
+                <img
+                src="assets/icons/buscar.svg"
+                class="w-6 h-6 xl:w-8 xl:h-8 absolute left-4 top-1/2 -translate-y-1/2 opacity-70"
+                />
+            </div>
+
+            <!-- FILTRO -->
+            <mat-form-field appearance="outline" class="w-80 custom-select">
+                <mat-select placeholder="Filtrar">
+                    <mat-option value="todas">Todas</mat-option>
+                    <mat-option value="pendiente">Pendientes</mat-option>
+                    <mat-option value="programada">Programadas</mat-option>
+                    <mat-option value="reprogramada">Reprogramadas</mat-option>
+                    <mat-option value="completada">Completadas</mat-option>
+                    <mat-option value="cancelada">Canceladas</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+        </div>
+
+        <div class="flex-1 overflow-y-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </div>
+        </div>
+
+    </div>
+</section>
+
 <!-- MODAL PARA EDITAR HORARIO -->
 @if (mostrarModalHorario()) {
     <app-modal-config-horario (cerrar)="cerrarModal()"></app-modal-config-horario>

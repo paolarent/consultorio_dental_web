@@ -98,7 +98,6 @@ export class ModalCreateCita implements OnInit, AfterViewInit {
   }
 
   //-----------------PACIENTES--------------------
-  // ---------------- PACIENTES ----------------
   pacientesFiltrados: any[] = [];
   busquedaPaciente: string = '';
   id_paciente: number | null = null;

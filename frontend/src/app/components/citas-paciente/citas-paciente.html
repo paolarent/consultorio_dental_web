@@ -29,48 +29,106 @@
 </section>
 
 <section class="w-full px-10 max-w-8xl mx-auto mt-6 flex flex-col md:flex-row gap-12 mb-14">
-
     <!-- TARJETA: Próximas Citas -->
     <div class="relative flex-1">
 
         <!-- Título flotante -->
         <h2 class="text-[#1D8F93] text-4xl font-extrabold bg-white px-3 inline-block relative z-10 -mb-4 ml-2">
-            Próximas Citas
+        Próximas Citas
         </h2>
 
-        <!-- Contenedor azul -->
-        <div class="bg-[#C3F2F3] rounded-xl shadow-md p-6">
+        <!-- Contenedor azul con scroll -->
+        <div class="bg-[#C3F2F3] rounded-xl shadow-md p-6 overflow-y-auto max-h-[500px]">
+        <div class="space-y-6">
+            @for(cita of citasProximas(); track cita.id_cita){
+            <div class="bg-white rounded-xl shadow-md p-5 border border-gray-200 hover:shadow-lg transition relative min-h-[180px]">
 
-            <!-- Card de cita -->
-            <div class="space-y-6">
-                <div class="bg-white rounded-xl shadow-md p-4 flex justify-between items-start">
-                    <!-- Información -->
-                    <div>
-                        <h3 class="text-black text-xl font-extrabold">Tratamiento en curso</h3>
-                        <p class="text-neutral-600 text-base">martes, 18 de noviembre de 2025</p>
-                        <p class="text-neutral-600 text-base">09:00 am</p>
-                    </div>
+            <!-- Contenido principal -->
+            <div class="pr-40">
 
-                    <!-- Estado + botones -->
-                    <div class="flex items-center gap-3">
-
-                        <span class="px-3 py-1.5 bg-lime-200 rounded-md font-bold text-yellow-900">
-                            Pendiente
-                        </span>
-
-                        <button class="w-12 h-12 bg-[#25BEC4] rounded-lg shadow-md"></button>
-                        <button class="w-12 h-12 bg-red-700 rounded-lg shadow-md"></button>
-
-                    </div>
+                <!-- Servicio + Status -->
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-black text-xl font-extrabold">
+                        {{ cita.servicio ?? 'Sin especificar' }}
+                    </h3>
+                    <span class="px-3 py-1 rounded-xl text-md font-bold"
+                        [ngClass]="{
+                        'bg-yellow-100 text-yellow-700': cita.status === 'pendiente',
+                        'bg-cyan-100 text-teal-900': cita.status === 'programada',
+                        'bg-purple-100 text-purple-700': cita.status === 'reprogramada'
+                        }">
+                        {{ cita.status }}
+                    </span>
                 </div>
 
-                <!-- *** puedes duplicar más tarjetas aquí *** -->
+                <!-- Fecha -->
+                <div class="flex items-center gap-2 text-neutral-600 mb-2">
+                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+                        <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+                        <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+                    </svg>
+                    <p class="text-base font-normal">
+                        {{ cita.fecha | date:'EEEE, d \'de\' MMMM \'de\' yyyy':'':'es' }}
+                    </p>
+                </div>
+
+                <!-- Hora -->
+                <div class="flex items-center gap-2 text-neutral-600 mb-4">
+                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                        <polyline points="12 6 12 12 16 14" stroke-width="2"/>
+                    </svg>
+                    <p class="text-base font-normal">
+                        {{ cita.hora_inicio | date:'hh:mm a' }}
+                    </p>
+                </div>
+
+                <!-- Notas -->
+                @if(cita.notas){
+                    <p class="text-neutral-600 text-base font-normal mb-2">
+                    {{ cita.notas }}
+                    </p>
+                }
 
             </div>
 
+            <!-- Botones (esquina inferior derecha) -->
+            <div class="absolute bottom-5 right-5 flex flex-col gap-3">
+                @if(cita.status === 'pendiente') {
+                <button (click)="abrirModalReprogramar(cita)" class="w-32 h-9 bg-purple-950 rounded-lg shadow-md text-white font-bold hover:bg-indigo-900 transition">
+                    Reprogramar
+                </button>
+                <button (click)="abrirModalAUS(cita, 'cancelar')" class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white font-bold hover:bg-red-800 transition">
+                    Cancelar
+                </button>
+                }
+
+                @if(cita.status === 'programada') {
+                <button (click)="abrirModalReprogramar(cita)" class="w-32 h-9 bg-purple-950 rounded-lg shadow-md text-white font-bold hover:bg-indigo-900 transition">
+                    Reprogramar
+                </button>
+                <button (click)="abrirModalAUS(cita, 'cancelar')" class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white font-bold hover:bg-red-800 transition">
+                    Cancelar
+                </button>
+                }
+
+                @if(cita.status === 'reprogramada') {
+                <button (click)="abrirModalAUS(cita, 'programar')" class="w-32 h-9 bg-teal-900 rounded-lg shadow-md text-white font-bold hover:bg-teal-800 transition">
+                    Programar
+                </button>
+                <button (click)="abrirModalAUS(cita, 'cancelar')" class="w-32 h-9 bg-red-700 rounded-lg shadow-md text-white font-bold hover:bg-red-800 transition">
+                    Cancelar
+                </button>
+                }
+            </div>
+
+            </div>
+            }
+        </div>
         </div>
     </div>
-
 
     <!-- TARJETA: Historial de Citas -->
     <div class="relative flex-1">
@@ -80,32 +138,71 @@
             Historial de Citas
         </h2>
 
-        <!-- Contenedor azul -->
-        <div class="bg-[#C3F2F3] rounded-xl shadow-md p-6">
+        <!-- Contenedor azul con scroll -->
+        <div class="bg-[#C3F2F3] rounded-xl shadow-md p-6 overflow-y-auto max-h-[500px]">
+        <div class="space-y-6">
+            @for(cita of citasHistorial(); track cita.id_cita){
+            <div class="bg-white rounded-xl shadow-md p-5 border border-gray-200 hover:shadow-lg transition relative min-h-[180px]">
 
-            <!-- Card historial -->
-            <div class="space-y-6">
+            <!-- Contenido principal -->
+            <div class="pr-40">
 
-                <div class="bg-white rounded-xl shadow-md p-4 flex justify-between items-start">
-                    <div>
-                        <h3 class="text-black text-xl font-extrabold">Primera cita</h3>
-                        <p class="text-neutral-600 text-base">martes, 11 de noviembre de 2024</p>
-                        <p class="text-neutral-600 text-base">10:00 am</p>
-                    </div>
-
-                    <span class="px-4 py-1.5 bg-green-200 rounded-md font-bold text-green-950">
-                        Completada
-                    </span>
+                <!-- Servicio + Status -->
+                <div class="flex items-center justify-between mb-4">
+                <h3 class="text-black text-xl font-extrabold">
+                    {{ cita.servicio ?? 'Sin especificar' }}
+                </h3>
+                <span class="px-3 py-1 rounded-xl text-md font-bold"
+                    [ngClass]="{
+                    'bg-green-200 text-green-950': cita.status === 'completada',
+                    'bg-red-200 text-red-700': cita.status === 'cancelada'
+                    }">
+                    {{ cita.status }}
+                </span>
                 </div>
 
-                <!-- duplicar las siguientes tarjetas igual que en el mockup -->
+                <!-- Fecha -->
+                <div class="flex items-center gap-2 text-neutral-600 mb-2">
+                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+                    <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+                    <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+                </svg>
+                <p class="text-base font-normal">
+                    {{ cita.fecha | date:'EEEE, d \'de\' MMMM \'de\' yyyy':'':'es' }}
+                </p>
+                </div>
+
+                <!-- Hora -->
+                <div class="flex items-center gap-2 text-neutral-600 mb-2">
+                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                    <polyline points="12 6 12 12 16 14" stroke-width="2"/>
+                </svg>
+                <p class="text-base font-normal">
+                    {{ cita.hora_inicio | date:'hh:mm a' }}
+                </p>
+                </div>
+
+                <!-- Notas -->
+                @if(cita.notas){
+                <p class="text-neutral-600 text-base font-normal mb-2">
+                {{ cita.notas }}
+                </p>
+                }
 
             </div>
 
+            </div>
+            }
+        </div>
         </div>
     </div>
 
 </section>
+
+
 
 @if (modalSolicCita()) {
     <app-modal-solic-cita
@@ -113,5 +210,24 @@
     </app-modal-solic-cita>
 }
 
+@if (modalVisible()) {
+    <app-modal-confirmar-logdelete
+    [titulo]="modalTitulo()"
+    [texto]="modalTexto()"
+    [tipo]="modalTipo()"
+    (confirm)="confirmarModal()"
+    (cancel)="cancelarModal()"
+    >
+    </app-modal-confirmar-logdelete>
+}
 
-
+@if(modalReprogramar()) {
+    <app-modal-reprog-cita
+        [cita]="citaParaReprogramar"
+        (cerrar)="cerrarModalReprogramar()"
+        [mostrarPaciente]="false"
+        [mostrarServicio]="false"
+        (reprogramar)="reprogramarCita($event)"
+        >
+    </app-modal-reprog-cita>
+}

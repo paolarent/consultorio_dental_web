@@ -635,9 +635,9 @@ export class CitaService {
                         'aceptada',
                         {
                             fechaOriginal: this.formatearFechaDB(reprogramacion.fecha_original),
-                            horaOriginal: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.hora_original) + ':00'),
+                            horaOriginal: this.formatearHoraDB(reprogramacion.hora_original),
                             nuevaFecha: this.formatearFechaDB(reprogramacion.nueva_fecha),
-                            nuevaHora: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora) + ':00'),
+                            nuevaHora: this.formatearHoraDB(reprogramacion.nueva_hora),
                         },
                         logoUrl,
                         nombreDocFinal
@@ -668,9 +668,9 @@ export class CitaService {
                         'rechazada',
                         {
                             fechaOriginal: this.formatearFechaDB(reprogramacion.fecha_original),
-                            horaOriginal: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.hora_original) + ':00'),
+                            horaOriginal: this.formatearHoraDB(reprogramacion.hora_original),
                             nuevaFecha: this.formatearFechaDB(reprogramacion.nueva_fecha),
-                            nuevaHora: this.convertir24hA12h(this.formatearHoraDB(reprogramacion.nueva_hora) + ':00'),
+                            nuevaHora: this.formatearHoraDB(reprogramacion.nueva_hora),
                         },
                         logoUrl,
                         nombreDocFinal
@@ -846,13 +846,14 @@ export class CitaService {
         if (filtros.rol === 'paciente') {
             const paciente = await this.prisma.paciente.findUnique({
                 where: { id_usuario: filtros.idUsuario },
-                select: { id_consultorio: true }
+                select: { id_paciente: true, id_consultorio: true }
             });
 
             if (!paciente) throw new NotFoundException('Paciente no encontrado');
 
             // Paciente ve todas las citas de su consultorio
             where.id_consultorio = paciente.id_consultorio;
+            where.id_paciente = paciente.id_paciente;
         }
 
         if (filtros.rol === 'dentista') {
@@ -870,38 +871,89 @@ export class CitaService {
 
         const citas = await this.prisma.cita.findMany({
             where,
-            include: {
+            select: {
+                id_cita: true,
+                fecha: true,
+                hora_inicio: true,
+                hora_fin: true,
+                status: true,
+                notas: true,
                 paciente: { 
                     select: { 
+                        id_paciente: true,
                         nombre: true,
                         apellido1: true,
                         apellido2: true
-                    },
+                    }
                 },
                 servicio: {
                     select: { nombre: true }
                 },
-                //consultorio: { 
-                  //  include:  {
-                  //      usuario: {
-                  //          where: { rol: 'dentista' },
-                  //          select: { id_usuario: true, correo: true }
-                  //      }
-                   // }
-                //}
+                reprogramacion_cita: {
+                    where: {
+                        status: 'pendiente'
+                    },
+                    orderBy: {
+                        fecha_solicitud: 'desc'
+                    },
+                    take: 1,  // Solo la más reciente
+                    select: {
+                        id_reprogramacion: true,
+                        solicitada_por: true,
+                        nueva_fecha: true,
+                        nueva_hora: true,
+                        nueva_hora_fin: true,
+                        fecha_solicitud: true
+                    }
+                }
             },
             orderBy: { fecha: 'asc' }
         });
 
-        const citasLimpias = citas.map(c => ({
-            id_cita: c.id_cita,
-            paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
-            servicio: c.servicio!.nombre,
-            fecha: c.fecha.toISOString().split('T')[0],
-            hora_inicio: c.hora_inicio,
-            notas: c.notas ?? '',
-            status: c.status
-        }));
+        const citasLimpias = citas
+            .map(c => {
+                const reprog = c.reprogramacion_cita[0]; // La más reciente
+
+                // FILTRO: Si es reprogramada, verificar quién la solicitó
+                if (c.status === 'reprogramada' && reprog) {
+                    // Dentista solo ve las solicitadas por paciente
+                    if (filtros.rol === 'dentista' && reprog.solicitada_por !== 'paciente') {
+                        return null;
+                    }
+                    
+                    // Paciente solo ve las solicitadas por dentista
+                    if (filtros.rol === 'paciente' && reprog.solicitada_por !== 'dentista') {
+                        return null;
+                    }
+
+                    // Si pasa el filtro, usar los NUEVOS datos de la reprogramación
+                    return {
+                        id_cita: c.id_cita,
+                        id_reprogramacion: reprog.id_reprogramacion,
+                        paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
+                        servicio: c.servicio?.nombre ?? 'Sin servicio',
+                        fecha: reprog.nueva_fecha.toISOString().split('T')[0], // Fecha NUEVA
+                        hora_inicio: reprog.nueva_hora,                         // Hora NUEVA
+                        hora_fin: reprog.nueva_hora_fin,                        // Hora fin NUEVA
+                        notas: c.notas ?? '',
+                        status: c.status,
+                        solicitada_por: reprog.solicitada_por // Para mostrar quién solicitó
+                    };
+                }
+
+                // Citas normales (no reprogramadas)
+                return {
+                    id_cita: c.id_cita,
+                    paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
+                    servicio: c.servicio?.nombre ?? 'Sin servicio',
+                    fecha: c.fecha.toISOString().split('T')[0],
+                    hora_inicio: c.hora_inicio,
+                    hora_fin: c.hora_fin,
+                    notas: c.notas ?? '',
+                    status: c.status
+                };
+            })
+            .filter(cita => cita !== null); //Eliminar las que no pasaron el filtro
 
         return citasLimpias;
 
@@ -1281,7 +1333,7 @@ export class CitaService {
     }
 
     // CRON JOB - RECORDATORIOS
-    @Cron(CronExpression.EVERY_MINUTE)
+    @Cron(CronExpression.EVERY_DAY_AT_9AM)
     async enviarRecordatorios() {
         this.logger.log('Ejecutando envío de recordatorios de citas...');
 

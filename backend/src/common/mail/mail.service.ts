@@ -237,12 +237,12 @@ export class MailerService {
             
             case 'aceptada':
                 asunto = 'Cita Reprogramada';
-                mensaje = `Tu solicitud de reprogramación ha sido aceptada. La cita ahora está programada para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${this.formatearHora(datos.nuevaHora)}</strong>.`;
+                mensaje = `Tu solicitud de reprogramación ha sido aceptada. La cita ahora está programada para el <strong>${this.formatearFecha(datos.nuevaFecha)}</strong> a las <strong>${datos.nuevaHora}</strong>.`;
                 break;
             
             case 'rechazada':
                 asunto = 'Solicitud de Reprogramación Rechazada';
-                mensaje = `Tu solicitud de reprogramación ha sido rechazada. Tu cita permanece en la fecha original: <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${this.formatearHora(datos.horaOriginal)}</strong>. Si no podra asistir por favor ingrese y cancele.`;
+                mensaje = `Tu solicitud de reprogramación ha sido rechazada. Tu cita permanece en la fecha original: <strong>${this.formatearFecha(datos.fechaOriginal)}</strong> a las <strong>${datos.horaOriginal}</strong>. Si no podra asistir por favor ingrese y cancele.`;
                 break;
         }
 
