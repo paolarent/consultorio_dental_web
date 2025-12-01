@@ -9,6 +9,7 @@ import { CitaService } from '../../services/cita.service';
 import { AuthService } from '../../auth/auth.service';
 import { ModalSolicCita } from '../modal-solic-cita/modal-solic-cita';
 import { ModalCreateCita } from '../modal-create-cita/modal-create-cita';
+import { EventoService } from '../../services/evento.service';
 
 @Component({
   selector: 'app-calendario',
@@ -26,6 +27,7 @@ export class Calendario implements OnInit {
   constructor(
     private horarioService: HorarioService,
     private citaService: CitaService,
+    private eventoService: EventoService,
     private authService: AuthService // Para saber si es dentista o paciente
   ) {}
 
@@ -153,8 +155,8 @@ export class Calendario implements OnInit {
             id: `cita-${cita.id_cita}`,
             start: `${fecha}T${horaInicio}:00`,
             end: `${fecha}T${horaFin}:00`,
-            display: 'background',
-            color: '#991616', // rojo ocupado
+            display: 'block',
+            color: '#b74545ff', // rojo ocupado
             classNames: ['cita-ocupada'],
             extendedProps: {
               tipo: 'cita',
@@ -164,10 +166,84 @@ export class Calendario implements OnInit {
           };
         });
 
-        this.actualizarEventosCalendario(eventosCitas);
+        this.cargarEventosActivos(eventosCitas);
       },
       error: (err) => console.error('Error cargando citas:', err)
     });
+  }
+
+  // helper: suma 1 día a una fecha "YYYY-MM-DD"
+  private addOneDay(fechaIso: string) {
+    const d = new Date(fechaIso + 'T00:00:00');
+    d.setUTCDate(d.getUTCDate() + 1);
+    return d.toISOString().split('T')[0];  // YYYY-MM-DD
+  }
+
+  cargarEventosActivos(eventosCitas: any[]) {
+    this.eventoService.listarEventosActivos().subscribe({
+      next: eventos => {
+
+        const eventosCalendario = eventos.map(ev => {
+          const esTodoDia = ev.evento_todo_el_dia === 'si';
+
+          const fechaInicio = ev.fecha_inicio.split('T')[0];
+          const fechaFin = ev.fecha_fin.split('T')[0];
+
+          const horaInicio = this.convertirHora12a24(ev.hora_inicio);
+          const horaFin = this.convertirHora12a24(ev.hora_fin);
+
+          // EVENTO QUE BLOQUEA TODO EL DÍA (franja completa)
+          if (esTodoDia) {
+            return {
+              id: `evento-${ev.id_evento}`,
+              title: '', // sin texto para que sea solo franja
+              start: `${fechaInicio}T00:00:00`,
+              end: `${fechaInicio}T23:59:00`,
+              allDay: false,                 
+              display: 'block',              
+              color: '#7997d8ff',
+              classNames: ['evento-activo-dia-completo'],
+              extendedProps: {
+                tipo: 'evento',
+                notas: ev.notas
+              }
+            };
+          }
+
+          //Evento normal con horario
+          return {
+            id: `evento-${ev.id_evento}`,
+            title: ev.titulo,
+            start: `${fechaInicio}T${horaInicio}`,
+            end: `${fechaFin}T${horaFin}`,
+            allDay: false,
+            display: 'block',
+            color: '#7997d8ff',
+            classNames: ['evento-activo'],
+            extendedProps: {
+              tipo: 'evento',
+              notas: ev.notas
+            }
+          };
+        });
+
+        const eventosTotales = [...eventosCitas, ...eventosCalendario];
+        this.actualizarEventosCalendario(eventosTotales);
+      },
+      error: err => console.error('Error cargando eventos:', err)
+    });
+  }
+
+  convertirHora12a24(hora12: string | null): string | null {
+    if (!hora12) return null;
+
+    const [horaMin, ampm] = hora12.split(' ');
+    let [hora, min] = horaMin.split(':').map(n => parseInt(n, 10));
+
+    if (ampm.toLowerCase() === 'pm' && hora !== 12) hora += 12;
+    if (ampm.toLowerCase() === 'am' && hora === 12) hora = 0;
+
+    return `${hora.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:00`;
   }
 
 
@@ -200,21 +276,21 @@ export class Calendario implements OnInit {
   // ============================================
   // ACTUALIZAR EVENTOS DEL CALENDARIO
   // ============================================
-  actualizarEventosCalendario(eventosCitas: any[]) {
-    // Obtener eventos base (horarios disponibles y bloqueados)
+  actualizarEventosCalendario(eventos: any[]) {
     const eventosBase = this.calendarOptions.events.filter(
-      (e: any) => e.classNames?.includes('horario-disponible') || 
-                  e.classNames?.includes('horario-bloqueado')
+      (e: any) => 
+        e.classNames?.includes('horario-disponible') ||
+        e.classNames?.includes('horario-bloqueado')
     );
 
-    // Combinar con citas
     this.calendarOptions = {
       ...this.calendarOptions,
-      events: [...eventosBase, ...eventosCitas]
+      events: [...eventosBase, ...eventos]
     };
 
-    console.log(`Calendario actualizado con ${eventosCitas.length} citas`);
+    console.log("Total de eventos visibles:", eventos.length);
   }
+
 
   // ============================================
   // HELPERS PARA PROCESAR CITAS

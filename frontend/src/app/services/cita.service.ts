@@ -15,9 +15,12 @@ export class CitaService {
         const url = `${this.baseUrl}/calendario/citas`;
         return this.http.get<any[]>(url, { withCredentials: true });
     }*/
-    listarCitasCalendario(soloCalendario: boolean = false): Observable<any[]> { 
+    /*listarCitasCalendario(soloCalendario: boolean = false): Observable<any[]> { 
         const url = `${this.baseUrl}/calendario/citas?soloCalendario=${soloCalendario}`;
         return this.http.get<any[]>(url, { withCredentials: true });
+    }*/
+    listarCitasCalendario() {
+        return this.http.get<any[]>(`${this.baseUrl}/calendario`, { withCredentials: true });
     }
 
     listarMotivos(): Observable<{ id_motivo: number; nombre: string; id_servicio: number | null; }[]> 
@@ -41,18 +44,19 @@ export class CitaService {
         if (status) params.status = status;
         if (fecha) params.fecha = fecha;
 
-        return this.http.get<any[]>(`${this.baseUrl}/dentista/mis-citas`, {
+        return this.http.get<any[]>(`${this.baseUrl}/mis-citas`, {
             params,
             withCredentials: true
         });
     }
+
 
     listarCitasPaciente(status?: string, fecha?: string) {
         const params: any = {};
         if (status) params.status = status;
         if (fecha) params.fecha = fecha;
 
-        return this.http.get<any[]>(`${this.baseUrl}/paciente/mis-citas`, {
+        return this.http.get<any[]>(`${this.baseUrl}/mis-citas`, {
             params,
             withCredentials: true
         });

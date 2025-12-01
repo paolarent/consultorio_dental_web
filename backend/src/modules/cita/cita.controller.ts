@@ -130,7 +130,18 @@ export class CitaController {
         });
     }
 
-    @Get('calendario/citas')
+    @Get('mis-citas')
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
+    listarMisCitas(@Req() req, @Query() query) {
+        return this.citaService.listarCitas({
+            idUsuario: req.user.id_usuario,
+            rol: req.user.rol,
+            fecha: query.fecha,
+            status: query.status
+        });
+    }
+
+    /*@Get('calendario/citas')
     @Roles(Rol.DENTISTA, Rol.PACIENTE)
     async listarCitasCalendario(@Req() req?: any) {
         const idUsuario = req.user.id_usuario;
@@ -139,6 +150,15 @@ export class CitaController {
             idUsuario,
             rol,
             status: StatusCitas.PROGRAMADA // Podrías opcionalmente filtrar por fecha
+        });
+    }*/
+
+    @Get('calendario')
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
+    listarCitasCalendario(@Req() req) {
+        return this.citaService.listarCitasCalendario({
+            idUsuario: req.user.id_usuario,
+            rol: req.user.rol
         });
     }
 

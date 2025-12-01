@@ -36,18 +36,17 @@ export class ModalAgGasto implements OnInit, AfterViewInit {
   constructor(private egresoService: EgresoService) {}
 
   ngOnInit(): void {
-  this.egresoService.listarTiposEgreso().subscribe({
-    next: (tipos) => {
-      // seguridad: forzar a array
-      this.tiposGasto = Array.isArray(tipos) ? tipos : [];
-    },
-    error: (err) => {
-      console.error('Error al cargar tipos de gasto', err);
-      this.tiposGasto = [];
-    }
-  });
-}
-
+    this.egresoService.listarTiposEgreso().subscribe({
+      next: (tipos) => {
+        // seguridad: forzar a array
+        this.tiposGasto = Array.isArray(tipos) ? tipos : [];
+      },
+      error: (err) => {
+        console.error('Error al cargar tipos de gasto', err);
+        this.tiposGasto = [];
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     if (!this.fechaInput) return;

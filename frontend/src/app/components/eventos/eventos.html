@@ -14,7 +14,7 @@
                     Eventos
                 </p>
 
-                <button
+                <button (click)="abrirModalEvento()"
                 class="bg-[#C3F2F3] text-[#545454] text-lg md:text-xl font-bold tracking-wider rounded-xl shadow-md px-16 py-4 hover:scale-105 transition-transform duration-300"
                 >
                     Agregar Evento
@@ -97,4 +97,11 @@
 <!-- MODAL PARA EDITAR HORARIO -->
 @if (mostrarModalHorario()) {
     <app-modal-config-horario (cerrar)="cerrarModal()"></app-modal-config-horario>
+}
+
+@if (modalEvento()) {
+    <app-modal-evento
+    (cerrar)="cerrarModalEvento()"
+
+    ></app-modal-evento>
 }

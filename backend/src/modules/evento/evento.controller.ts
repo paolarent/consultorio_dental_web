@@ -1,21 +1,20 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, BadRequestException, UseGuards, Req } from '@nestjs/common';
 import { EventoService } from './evento.service';
 import { CreateEventoDto } from './dto/create-evento.dto';
-import { StatusEvento } from 'src/common/enums';
+import { Rol, StatusEvento } from 'src/common/enums';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('evento')
 export class EventoController {
     constructor(private readonly eventoService: EventoService) {}
 
-    @Get('activo')
-    async findAllActive(@Query('id_consultorio') id_consultorio?: string) {
-        try {
-            return await this.eventoService.findAllActive(
-                id_consultorio ? Number(id_consultorio) : undefined
-            );
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
+    @Get('activos')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA, Rol.PACIENTE)
+    listarActivos(@Req() req: any) {
+    return this.eventoService.listarEventosActivos(req.user.id_consultorio);
     }
 
     @Get('tipos')
@@ -25,16 +24,23 @@ export class EventoController {
     }
 
     @Post()
-    create(@Body() data: CreateEventoDto) {
-        return this.eventoService.createEvento(data);
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+    create(@Body() data: CreateEventoDto, @Req() req: any) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.eventoService.createEvento(data, id_consultorio);
     }
 
     @Patch(':id/cancelar')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
     cancelar(@Param('id') id: string) {
         return this.eventoService.updateEvento(Number(id), StatusEvento.CANCELADO);
     }
 
     @Patch(':id/finalizar')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
     finalizar(@Param('id') id: string) {
         return this.eventoService.updateEvento(Number(id), StatusEvento.FINALIZADO);
     }
