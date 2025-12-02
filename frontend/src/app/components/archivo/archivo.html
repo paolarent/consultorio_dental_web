@@ -15,7 +15,7 @@
     </div>
 
     <!-- Fondo contenedor de las cards -->
-    <div class="bg-[#DDE0EB] rounded-lg p-6 max-h-[500px] overflow-y-auto">
+    <div class="bg-[#DDE0EB] rounded-lg p-6 min-h-[250px] max-h-[500px] overflow-y-auto">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @for (archivo of archivos; track archivo.id_archivo; let i = $index) {
             <div class="bg-white rounded-xl shadow-md cursor-pointer hover:scale-105 transition-transform duration-300 flex flex-col">
@@ -51,6 +51,12 @@
                 </div>
             </div>
             }
+            <!-- Empty state -->
+                @if(!cargando && archivos.length === 0) {
+                <div class="col-span-full text-center text-lg sm:text-xl font-semibold text-neutral-600 italic mt-16">
+                    Aún no hay archivos registrados.
+                </div>
+                }
 
         </div>
     </div>

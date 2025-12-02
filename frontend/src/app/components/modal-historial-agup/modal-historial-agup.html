@@ -2,7 +2,7 @@
     <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[500px]">
         <div class="grid gap-4">
     
-            <h2 class="text-4xl font-bold mt-2 mb-2 text-[#105053]">
+            <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-2 text-[#105053]">
                 {{ historial ? 'Editar tratamiento' : 'Registrar tratamiento' }}
             </h2>
 
@@ -84,7 +84,7 @@
                 (click)="guardarTratamiento()"  [disabled]="guardando()"
                 >
                 <span class="text-white text-lg font-semibold tracking-wider">
-                    {{ historial ? 'Guardar cambios' : 'Registrar' }}
+                    {{ historial ? 'Guardar' : 'Registrar' }}
                 </span>
                 </button>
             </div>
