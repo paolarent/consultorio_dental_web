@@ -193,7 +193,7 @@ export class ModalEvento {
       },
       error: (err) => {
         console.error(err);
-        this.notify.error('Error al actualizar evento');
+        this.notify.error(err.error?.message || 'Error al actualizar evento');
         this.cargando.set(false);
       },
       complete: () => this.cargando.set(false)
@@ -218,7 +218,7 @@ export class ModalEvento {
         },
         error: (err) => {
           console.error(err);
-          this.notify.error('Error al crear evento');
+          this.notify.error(err.error?.message || 'Error al crear evento');
           this.cargando.set(false); 
         },
         complete: () => this.cargando.set(false)
