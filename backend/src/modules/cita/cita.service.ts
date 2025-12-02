@@ -128,8 +128,33 @@ export class CitaService {
         return new Date(`${fecha}T${horaCompleta}`);
     }
 
+    //Verifica si dos rangos de horarios se traslapan retorna true si hay traslape, false si no
+    private verificarTraslapeHorarios(
+        inicio1: string,
+        fin1: string,
+        inicio2: string,
+        fin2: string
+    ): boolean {
+        // Dos rangos se traslapan si:
+        // - El inicio de uno está antes del fin del otro, Y
+        // - El fin de uno está después del inicio del otro
+        
+        // Casos de traslape:
+        // 1. [----cita----]
+        //      [--evento--]
+        
+        // 2.    [--cita--]
+        //    [----evento----]
+        
+        // 3. [----cita----]
+        //         [--evento--]
+        
+        // 4.      [--cita--]
+        //    [--evento--]
+        
+        return inicio1 < fin2 && fin1 > inicio2;
+    }
 
-    //Compara si una hora está dentro de un rango
     private horaEnRango(hora: string, inicio: string, fin: string): boolean {
         // Convertir todas a formato 24h para comparar
         const hora24 = hora.includes('AM') || hora.includes('PM') 
@@ -1657,33 +1682,104 @@ async listarCitas(filtros: {
         id_consultorio: number
     ) {
         const fechaLocal = this.convertirFechaSoloDia(fecha);
+        
+        // Buscar eventos que intersectan con la fecha de la cita
         const eventosDelDia = await this.prisma.evento.findMany({
             where: {
-            id_consultorio,
-            fecha_inicio: { lte: fechaLocal },
-            fecha_fin: { gte: fechaLocal },
-            status: StatusEvento.ACTIVO
+                id_consultorio,
+                // El evento debe abarcar la fecha de la cita
+                fecha_inicio: { lte: fechaLocal },
+                fecha_fin: { gte: fechaLocal },
+                status: StatusEvento.ACTIVO
+            },
+            include: {
+                tipo_evento: true
             }
         });
 
-        for (const evento of eventosDelDia) {
-            // Evento todo el día bloquea cualquier horario
-            if (evento.evento_todo_el_dia === 'si') {
-            throw new BadRequestException(
-                `No se pueden agendar citas este día debido al evento: ${evento.titulo}`
-            );
-            }
+        // Si no hay eventos, no hay bloqueos
+        if (eventosDelDia.length === 0) {
+            return;
+        }
 
-            // Verificar traslape de horarios
-            if (evento.hora_inicio && evento.hora_fin) {
-            const inicioEnEvento = this.horaEnRango(hora_inicio, evento.hora_inicio, evento.hora_fin);
-            const finEnEvento = this.horaEnRango(hora_fin, evento.hora_inicio, evento.hora_fin);
-            
-            if (inicioEnEvento || finEnEvento) {
+        for (const evento of eventosDelDia) {
+            // CASO 1: Evento de todo el día
+            if (evento.evento_todo_el_dia === 'si') {
                 throw new BadRequestException(
-                    `El horario está bloqueado por el evento: ${evento.titulo} (${evento.hora_inicio} - ${evento.hora_fin})`
+                    `No se pueden agendar citas debido al evento programado de todo el día: "${evento.titulo}"`
                 );
             }
+
+            // CASO 2: Evento con horario específico
+            if (evento.hora_inicio && evento.hora_fin) {
+                const fechaCita = this.convertirFechaSoloDia(fecha);
+                const fechaInicioEvento = new Date(evento.fecha_inicio);
+                const fechaFinEvento = new Date(evento.fecha_fin);
+
+                // Normalizar fechas a medianoche para comparación
+                fechaCita.setHours(0, 0, 0, 0);
+                fechaInicioEvento.setHours(0, 0, 0, 0);
+                fechaFinEvento.setHours(0, 0, 0, 0);
+
+                const esPrimerDia = fechaCita.getTime() === fechaInicioEvento.getTime();
+                const esUltimoDia = fechaCita.getTime() === fechaFinEvento.getTime();
+                const esDiaIntermedio = fechaCita > fechaInicioEvento && fechaCita < fechaFinEvento;
+
+                // CASO 2A: Día intermedio del evento (bloquea todo)
+                if (esDiaIntermedio) {
+                    throw new BadRequestException(
+                        `No se pueden agendar citas hay un evento programado`
+                    );
+                }
+
+                // CASO 2B: Primer día del evento (bloquea desde hora_inicio en adelante)
+                if (esPrimerDia) {
+                    const citaInicio24 = this.convertirA24h(hora_inicio);
+                    const citaFin24 = this.convertirA24h(hora_fin);
+                    const eventoInicio24 = this.convertirA24h(evento.hora_inicio);
+
+                    // Si la cita empieza antes de que termine el evento
+                    if (citaInicio24 >= eventoInicio24 || citaFin24 > eventoInicio24) {
+                        throw new BadRequestException(
+                            `El horario está bloqueado por un evento`
+                        );
+                    }
+                }
+
+                // CASO 2C: Último día del evento (bloquea hasta hora_fin)
+                if (esUltimoDia) {
+                    const citaInicio24 = this.convertirA24h(hora_inicio);
+                    const citaFin24 = this.convertirA24h(hora_fin);
+                    const eventoFin24 = this.convertirA24h(evento.hora_fin);
+
+                    // Si la cita termina después de que empiece el último día
+                    if (citaFin24 <= eventoFin24 || citaInicio24 < eventoFin24) {
+                        throw new BadRequestException(
+                            `El horario está bloqueado por un evento`
+                        );
+                    }
+                }
+
+                // CASO 2D: Evento de un solo día con horario específico
+                if (esPrimerDia && esUltimoDia) {
+                    const citaInicio24 = this.convertirA24h(hora_inicio);
+                    const citaFin24 = this.convertirA24h(hora_fin);
+                    const eventoInicio24 = this.convertirA24h(evento.hora_inicio);
+                    const eventoFin24 = this.convertirA24h(evento.hora_fin);
+
+                    const hayTraslape = this.verificarTraslapeHorarios(
+                        citaInicio24,
+                        citaFin24,
+                        eventoInicio24,
+                        eventoFin24
+                    );
+
+                    if (hayTraslape) {
+                        throw new BadRequestException(
+                            `El horario está bloqueado por un evento`
+                        );
+                    }
+                }
             }
         }
     }
@@ -1745,9 +1841,6 @@ async listarCitas(filtros: {
     }
 
     // MÉTODOS HELPER - FORMATO DE FECHAS/HORAS
-    /*private formatearHoraDB(fecha: Date): string {
-        return fecha.toISOString().substring(11, 16);
-    }*/
     private formatearHoraDB(fecha: Date): string {
         return new Date(fecha).toLocaleTimeString('en-US', { 
             hour: '2-digit', 
@@ -1761,6 +1854,14 @@ async listarCitas(filtros: {
         return fecha.toISOString().split('T')[0];
     }
 
+    //Formatea una fecha a DD/MM/YYYY
+    private formatearFecha(fecha: Date): string {
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const año = fecha.getFullYear();
+        return `${dia}/${mes}/${año}`;
+    }
+
     private convertirFechaSoloDia(fecha: string): Date {
         const [y, m, d] = fecha.split("-").map(Number);
         return new Date(y, m - 1, d); // esto NO desfasa
@@ -1772,16 +1873,20 @@ async listarCitas(filtros: {
         return `${horas}:${minutos}`; // → "09:00"
     }
 
-
-    private parseHora(hora: string): Date {
-        const [h, m] = hora.split(':').map(Number);
-        const date = new Date();
-        date.setHours(h, m, 0, 0);
-        return date;
-    }
-
-    private formatHora(date: Date): string {
-        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    private convertirA24h(hora: string): string {
+        // Si ya tiene AM/PM, usar el método existente
+        if (hora.includes('AM') || hora.includes('PM')) {
+            return this.convertir12hA24h(hora);
+        }
+        
+        // Si ya está en formato 24h, normalizarlo a HH:MM:SS
+        const match = hora.trim().match(/^(\d{1,2}):(\d{2})(:\d{2})?$/);
+        if (match) {
+            const [_, horas, minutos] = match;
+            return `${horas.padStart(2, '0')}:${minutos.padStart(2, '0')}:00`;
+        }
+        
+        throw new BadRequestException(`Formato de hora inválido: ${hora}`);
     }
 
     // MÉTODOS HELPER - DATOS DE CONSULTORIO
