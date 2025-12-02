@@ -32,6 +32,14 @@ export class EventoController {
         return this.eventoService.createEvento(data, id_consultorio);
     }
 
+    @Get(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Rol.DENTISTA)
+    obtenerEvento(@Param('id') id: string, @Req() req: any) {
+        const id_consultorio = req.user.id_consultorio;
+        return this.eventoService.obtenerEvento(Number(id), id_consultorio);
+    }
+
     @Patch(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
@@ -48,14 +56,14 @@ export class EventoController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     cancelar(@Param('id') id: string) {
-        return this.eventoService.updateEvento(Number(id), StatusEvento.CANCELADO);
+        return this.eventoService.updateStatusEvento(Number(id), StatusEvento.CANCELADO);
     }
 
     @Patch(':id/finalizar')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Rol.DENTISTA)
     finalizar(@Param('id') id: string) {
-        return this.eventoService.updateEvento(Number(id), StatusEvento.FINALIZADO);
+        return this.eventoService.updateStatusEvento(Number(id), StatusEvento.FINALIZADO);
     }
 }
 

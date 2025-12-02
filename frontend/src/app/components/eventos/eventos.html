@@ -14,10 +14,11 @@
                     Eventos
                 </p>
 
-                <button (click)="abrirModalEvento()"
-                class="bg-[#C3F2F3] text-[#545454] text-lg md:text-xl font-bold tracking-wider rounded-xl shadow-md px-16 py-4 hover:scale-105 transition-transform duration-300"
+                <button (click)="abrirModalCrearEvento()"
+                class="bg-[#C3F2F3] text-[#545454] text-lg md:text-xl font-semibold tracking-wider rounded-xl shadow-md px-16 py-4 
+                hover:scale-105 transition-transform duration-300"
                 >
-                    Agregar Evento
+                    Agendar Evento
                 </button>
             </div>
 
@@ -63,12 +64,12 @@
                     type="text"
                     placeholder="Buscar por título o notas..."
                     (input)="actualizarBusqueda($event.target.value)"
-                    class="w-full pl-16 pr-4 rounded-xl border border-gray-300 shadow-sm text-base xl:text-xl
-                        focus:outline-none focus:ring-2 focus:ring-teal-600 h-14"
+                    class="w-full pl-16 pr-4 rounded-xl border border-gray-300 shadow-sm text-base xl:text-lg
+                        focus:outline-none focus:ring-2 focus:ring-teal-600 h-12"
                 />
                 <img
                     src="assets/icons/buscar.svg"
-                    class="w-6 h-6 xl:w-8 xl:h-8 absolute left-4 top-1/2 -translate-y-1/2 opacity-70"
+                    class="w-6 h-6 xl:w-6 xl:h-6 absolute left-4 top-1/2 -translate-y-1/2 opacity-70"
                 />
             </div>
 
@@ -86,9 +87,7 @@
             </mat-form-field>
         </div>
 
-
-    
-
+        <!-- CARDS CON LOS EVENTOS -->
         <div class="flex-1 overflow-y-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @for (ev of eventosFiltrados(); track ev.id_evento) {
@@ -103,19 +102,33 @@
                         </h3>
                         
                         <!-- Badge + Botón (se apilan en móvil, en línea en desktop) -->
-                        <div class="flex items-center gap-3 flex-shrink-0">
+                        <div class="flex items-center gap-8 flex-shrink-0">
                             <!-- Badge de tipo -->
-                            <div class="bg-fuchsia-950/30 rounded-md px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center">
-                            <span class="text-pink-950/90 text-sm sm:text-base font-bold whitespace-nowrap">
-                                {{ ev.tipo_evento.nombre }}
-                            </span>
+                            <div
+                                class="rounded-full px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center"
+                                [ngClass]="{
+                                    'bg-green-200 text-green-950': ev.tipo_evento.nombre === 'Curso',
+                                    'bg-purple-100 text-purple-700': ev.tipo_evento.nombre === 'Congreso',
+                                    'bg-amber-100 text-yellow-800': ev.tipo_evento.nombre === 'Vacaciones',
+                                    'bg-cyan-100 text-teal-900': ev.tipo_evento.nombre === 'Conferencia',
+                                    'bg-red-200 text-red-700': ev.tipo_evento.nombre === 'Capacitación',
+                                    'bg-pink-200 text-pink-900': ev.tipo_evento.nombre === 'Personal',
+                                    'bg-blue-200 text-blue-950 ': ev.tipo_evento.nombre === 'Otro'
+                                }"
+                                >
+                                    <span class="text-sm sm:text-base font-bold whitespace-nowrap">
+                                        {{ ev.tipo_evento.nombre }}
+                                    </span>
                             </div>
 
+
                             <!-- Botón de acción -->
-                            <button class="bg-teal-400 hover:bg-teal-500 rounded-lg shadow-md p-2.5 sm:p-3 transition-colors duration-300">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                            </svg>
+                            <button (click)="abrirModalEditarEvento(ev)" class="bg-[#25BEC4] hover:bg-[#115153] rounded-xl shadow-md p-2.5 sm:p-3 transition-colors duration-300">
+                                <img src="assets/icons/edit.svg" alt="Editar" class="w-7 h-7" />
+                            </button>
+
+                            <button (click)="abrirModalEliminar(ev.id_evento)" class="bg-[#BC0E0E] hover:bg-[#600606] rounded-xl shadow-md p-2 sm:p-3 transition-colors duration-300">
+                                <img src="assets/icons/cancelar.svg" alt="Editar" class="w-7 h-7" />
                             </button>
                         </div>
                         
@@ -126,20 +139,20 @@
                         
                         <!-- Fecha -->
                         <div class="flex items-center gap-2.5 sm:gap-3">
-                            <svg class="w-7 h-7 sm:w-9 sm:h-9 text-neutral-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 sm:w-7 sm:h-7 text-neutral-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
                             <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
                             <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
                             <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
                             </svg>
                             <span class="text-neutral-600 text-sm sm:text-base">
-                            {{ ev.fecha_inicio | date:'dd/MM/yyyy' }} - {{ ev.fecha_fin | date:'dd/MM/yyyy' }}
+                            {{ toLocalDate(ev.fecha_inicio) | date:'dd/MMM/yyyy':'':'es' }} - {{ toLocalDate(ev.fecha_fin) | date:'dd/MMM/yyyy':'':'es' }}
                             </span>
                         </div>
 
                         <!-- Hora -->
                         <div class="flex items-center gap-2.5 sm:gap-3">
-                            <svg class="w-7 h-7 sm:w-9 sm:h-9 text-neutral-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 sm:w-7 sm:h-7 text-neutral-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10" stroke-width="2"/>
                             <polyline points="12 6 12 12 16 14" stroke-width="2"/>
                             </svg>
@@ -157,7 +170,7 @@
 
                         <!-- Descripción / Notas -->
                         <p class="text-neutral-600 text-sm sm:text-base leading-relaxed">
-                        {{ ev.notas || 'Sin Notas' }}
+                            {{ ev.notas || 'Sin Notas' }}
                         </p>
 
                     </div>
@@ -171,12 +184,27 @@
 
 <!-- MODAL PARA EDITAR HORARIO -->
 @if (mostrarModalHorario()) {
-    <app-modal-config-horario (cerrar)="cerrarModal()"></app-modal-config-horario>
+    <app-modal-config-horario 
+    (cerrar)="cerrarModal()">
+    </app-modal-config-horario>
 }
 
+<!-- Modal -->
 @if (modalEvento()) {
     <app-modal-evento
-    (cerrar)="cerrarModalEvento()"
-
+        [modoEdicion]="modoEdicion()"
+        [idEventoEditar]="idEventoEditar"
+        (cerrar)="cerrarModalEvento()"
+        (guardar)="guardarEvento($event)"
     ></app-modal-evento>
 }
+
+@if (modalEliminarLD()) {
+    <app-modal-confirmar-logdelete
+        [visible]="modalEliminarLD()"
+        (confirm)="confirmarEliminacion()"
+        (cancel)="cerrarModalSD()"
+        [titulo]="'Eliminar Evento'"
+        [texto]="'¿Está seguro de eliminar este evento?'">
+    </app-modal-confirmar-logdelete>
+} 

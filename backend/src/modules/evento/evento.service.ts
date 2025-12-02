@@ -15,11 +15,34 @@ export class EventoService {
                 id_consultorio,
                 status: StatusEvento.ACTIVO
             },
-        include: {
-            tipo_evento: true
-        }
+            include: {
+                tipo_evento: true
+            },
+                orderBy: {
+                fecha_inicio: 'asc'
+            }
         });
     }
+
+    async obtenerEvento(id_evento: number, id_consultorio: number) {
+        const evento = await this.prisma.evento.findUnique({
+            where: { id_evento },
+            include: {
+                tipo_evento: true
+            }
+        });
+
+        if (!evento) {
+            throw new Error('Evento no encontrado');
+        }
+
+        if (evento.id_consultorio !== id_consultorio) {
+            throw new Error('No tienes permiso para ver este evento');
+        }
+
+        return evento;
+    }
+
 
     async listarTiposEvento() {
         return this.prisma.tipo_evento.findMany({
@@ -96,11 +119,26 @@ export class EventoService {
         if (data.id_tipo_evento !== undefined) updateData.id_tipo_evento = data.id_tipo_evento;
         if (data.fecha_inicio !== undefined) updateData.fecha_inicio = new Date(data.fecha_inicio);
         if (data.fecha_fin !== undefined) updateData.fecha_fin = new Date(data.fecha_fin);
-        if (data.evento_todo_el_dia !== undefined) updateData.evento_todo_el_dia = data.evento_todo_el_dia;
-        if (data.hora_inicio !== undefined) updateData.hora_inicio = data.hora_inicio;
-        if (data.hora_fin !== undefined) updateData.hora_fin = data.hora_fin;
+
+        if (data.evento_todo_el_dia !== undefined) {
+            updateData.evento_todo_el_dia = data.evento_todo_el_dia;
+
+            if (data.evento_todo_el_dia === 'si') {
+                // Todo el día → limpiar horas
+                updateData.hora_inicio = null;
+                updateData.hora_fin = null;
+            } else {
+                // No es todo el día → tomar horas del payload si vienen
+                if (data.hora_inicio !== undefined) updateData.hora_inicio = data.hora_inicio;
+                if (data.hora_fin !== undefined) updateData.hora_fin = data.hora_fin;
+            }
+        } else {
+            // No se envió el cambio de todo el día → actualizar horas solo si vienen
+            if (data.hora_inicio !== undefined) updateData.hora_inicio = data.hora_inicio;
+            if (data.hora_fin !== undefined) updateData.hora_fin = data.hora_fin;
+        }
+
         if (data.notas !== undefined) updateData.notas = data.notas;
-        if (data.status !== undefined) updateData.status = data.status;
 
         return this.prisma.evento.update({
             where: { id_evento },
@@ -108,7 +146,7 @@ export class EventoService {
         });
     }
 
-    async updateEvento(id_evento: number, nuevoStatus: status_evento) {
+    async updateStatusEvento(id_evento: number, nuevoStatus: status_evento) {
         return this.prisma.evento.update({
             where: { id_evento },
             data: { status: nuevoStatus }

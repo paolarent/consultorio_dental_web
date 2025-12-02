@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, inject, Output, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Input, Output, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -22,6 +22,9 @@ export class ModalEvento {
 
   @Output() cerrar = new EventEmitter<void>();
   @Output() guardar = new EventEmitter<any>();
+
+  @Input() modoEdicion = false;
+  @Input() idEventoEditar: number | null = null;
 
   titulo: string = '';
   id_tipo_evento!: number;
@@ -58,6 +61,12 @@ export class ModalEvento {
 
   ngAfterViewInit() {
     this.initFlatpickr();
+
+    if (this.modoEdicion && this.idEventoEditar) {
+        this.cargarEventoParaEdicion();
+    } else {
+        this.limpiarCampos(); // para creación
+    }
   }
 
   // ------------------- Flatpickr -------------------
@@ -105,8 +114,43 @@ export class ModalEvento {
     }
   }
 
+  cargarEventoParaEdicion() {
+    this.eventoService.obtenerEvento(this.idEventoEditar!).subscribe({
+      next: ev => {
+
+        this.titulo = ev.titulo;
+        this.id_tipo_evento = ev.id_tipo_evento;
+
+        this.fecha_inicio = ev.fecha_inicio.split("T")[0];
+        this.fecha_fin = ev.fecha_fin.split("T")[0];
+
+        this.eventoFullDia.set(ev.evento_todo_el_dia === "si");
+
+        // Solo si NO es todo el día
+        this.hora_inicio = ev.hora_inicio || "";
+        this.hora_fin = ev.hora_fin || "";
+
+        this.notas = ev.notas || "";
+      },
+      error: err => console.error("Error cargando evento:", err)
+    });
+  }
+
+  private limpiarCampos() {
+    this.titulo = '';
+    this.id_tipo_evento = 0;
+    this.fecha_inicio = '';
+    this.fecha_fin = '';
+    this.hora_inicio = '';
+    this.hora_fin = '';
+    this.notas = '';
+    this.eventoFullDia.set(false);
+  }
+
+
   cancelar(): void {
     this.cerrar.emit();
+    this.limpiarCampos();
   }
 
   guardarEvento() {
@@ -118,6 +162,7 @@ export class ModalEvento {
     }
 
     this.cargando.set(true);
+
     const evento: CreateEventoDto = {
       titulo: this.titulo,
       id_tipo_evento: this.id_tipo_evento,
@@ -129,19 +174,57 @@ export class ModalEvento {
       notas: this.notas || undefined
     };
 
-    this.eventoService.createEvento(evento).subscribe({
-      next: (res) => {
-        this.notify.success('Evento creado correctamente');
-        this.guardar.emit(res);
-        this.cerrar.emit();
+    if (this.modoEdicion && this.idEventoEditar) {
+      // EDITAR
+      this.eventoService.actualizarEvento(this.idEventoEditar, evento).subscribe({
+      next: () => {
+        // Obtener el evento actualizado completo
+        this.eventoService.obtenerEvento(this.idEventoEditar!).subscribe({
+          next: evActualizado => {
+            this.notify.success('Evento actualizado correctamente');
+            this.guardar.emit(evActualizado);
+            setTimeout(() => this.cerrar.emit(), 50);
+          },
+          error: (err) => {
+            console.error('Error obteniendo evento actualizado', err);
+            this.notify.error('Evento actualizado pero hubo error al refrescar');
+          }
+        });
       },
       error: (err) => {
         console.error(err);
-        this.notify.error('Error al crear evento');
-        this.cargando.set(false); 
+        this.notify.error('Error al actualizar evento');
+        this.cargando.set(false);
       },
       complete: () => this.cargando.set(false)
-    });
+      });
+    } else {
+      // CREAR
+      this.eventoService.createEvento(evento).subscribe({
+        next: (res) => {
+          // Obtener el evento completo recién creado
+          this.eventoService.obtenerEvento(res.id_evento).subscribe({
+            next: (eventoCreado) => {
+              this.notify.success('Evento creado correctamente');
+              this.guardar.emit(eventoCreado);
+              // cerrar modal después de un pequeño delay
+              setTimeout(() => this.cerrar.emit(), 50);
+            },
+            error: (err) => {
+              console.error('Error obteniendo evento creado:', err);
+              this.notify.error('Evento creado, pero no se pudo actualizar la lista');
+            }
+          });
+        },
+        error: (err) => {
+          console.error(err);
+          this.notify.error('Error al crear evento');
+          this.cargando.set(false); 
+        },
+        complete: () => this.cargando.set(false)
+      });
+    }
   }
+
 
 }

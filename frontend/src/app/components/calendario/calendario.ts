@@ -1,5 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -18,6 +18,8 @@ import { EventoService } from '../../services/evento.service';
   styleUrl: './calendario.css'
 })
 export class Calendario implements OnInit {
+  @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
+
   modalSolicCita = signal(false);
   modalCrearCita = signal(false);
   // Signals para fecha y hora seleccionada
@@ -452,11 +454,6 @@ export class Calendario implements OnInit {
 
     // Celda disponible
     const fecha = infoStr.split('T')[0];
-    /*const hora = infoDate.toLocaleTimeString('es-MX', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true 
-    });*/
 
     const hora = infoDate.toLocaleTimeString('en-US', { 
       hour: '2-digit', 

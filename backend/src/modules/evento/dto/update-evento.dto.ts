@@ -35,7 +35,7 @@ export class UpdateEventoDto {
     @IsOptional()
     notas?: string;
 
-    @IsOptional()
+    /*@IsOptional()
     @IsEnum(StatusEvento)
-    status?: StatusEvento;
+    status?: StatusEvento;*/
 }

@@ -83,6 +83,12 @@ export class AgendaDoc {
     this.filtroEstado.set(valor);
   }
 
+  onCitaCreada(cita: any) {
+    // Actualizas la lista local
+    this.citas.update(list => [...list, cita]);
+    // Opcional: actualizar calendario si está en este componente
+  }
+
   irAEventos() {
     this.router.navigate(['doc/mi-agenda/eventos']);
   }

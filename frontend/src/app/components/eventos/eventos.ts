@@ -8,12 +8,14 @@ import { MatOptionModule } from '@angular/material/core';
 import { ModalEvento } from '../modal-evento/modal-evento';
 import { Evento } from '../../models/evento.model';
 import { EventoService } from '../../services/evento.service';
+import { DatePipe, NgClass } from '@angular/common';
+import { ModalLogDelete } from '../modal-confirmar-logdelete/modal-confirmar-logdelete';
 import { NotificationService } from '../../services/notification.service';
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-eventos',
-  imports: [RouterModule, Calendario, ModalConfigHorario, MatFormFieldModule, MatSelectModule, MatOptionModule, ModalEvento, DatePipe],
+  imports: [RouterModule, Calendario, ModalConfigHorario, MatFormFieldModule, MatSelectModule, MatOptionModule, 
+            ModalEvento, DatePipe, NgClass, ModalLogDelete],
   templateUrl: './eventos.html',
   styleUrl: './eventos.css'
 })
@@ -28,6 +30,13 @@ export class Eventos {
   eventos = signal<Evento[]>([]);        // lista original
   search = signal('');                  // texto del buscador
   filtro = signal('todos');             // tipo de filtro seleccionado
+
+  modoEdicion = signal(false);
+  idEventoEditar: number | null = null;
+
+  //modal para el softdelete
+  modalEliminarLD = signal(false);
+  eventoAEliminar: number | null = null;
 
   constructor(private router: Router) {}
   private eventoService = inject(EventoService);
@@ -81,8 +90,12 @@ export class Eventos {
     this.modalEvento.set(false);
   }
 
-  abrirModalEvento() {
-    this.modalEvento.set(true);
+  toLocalDate(fecha: string): string {
+    // Si termina en Z → quítalo para evitar conversión UTC
+    if (fecha.endsWith('Z')) {
+      return fecha.replace('Z', '');
+    }
+    return fecha;
   }
 
   cargarEventos() {
@@ -104,6 +117,61 @@ export class Eventos {
 
   actualizarFiltro(value: string) {
     this.filtro.set(value);
+  }
+
+  //MODAL DE EDICION VERSION
+  abrirModalCrearEvento() {
+      this.modoEdicion.set(false);
+      this.idEventoEditar = null;
+      this.modalEvento.set(true);  // abrir al final
+  }
+
+  abrirModalEditarEvento(ev: Evento) {
+      this.modoEdicion.set(true);
+      this.idEventoEditar = ev.id_evento;
+      this.modalEvento.set(true);  // abrir al final
+  }
+
+  guardarEvento(evento: Evento) {
+    // Si existe el evento en la lista, actualizarlo
+    const lista = this.eventos();
+    const index = lista.findIndex(e => e.id_evento === evento.id_evento);
+
+    if (index >= 0) {
+      lista[index] = evento; // actualización
+    } else {
+      lista.push(evento); // nuevo evento
+    }
+
+    this.eventos.set([...lista]); // disparar signal
+    this.modalEvento.set(false);
+  }
+
+  //MODAL LOG/SOFT DELETE
+  abrirModalEliminar(id: number) {
+    this.eventoAEliminar = id;
+    this.modalEliminarLD.set(true);
+  }
+
+  cerrarModalSD() {
+    this.modalEliminarLD.set(false);
+    this.eventoAEliminar = null;
+  }
+
+  confirmarEliminacion() {
+    if (!this.eventoAEliminar) return;
+
+    this.eventoService.cancelarEvento(this.eventoAEliminar).subscribe({
+      next: () => {
+        this.cargarEventos();   // recarga la lista
+        this.cerrarModalSD();       // cierra el modal correctamente
+
+        this.notify.success("Evento dado de baja correctamente");
+      },
+      error: () => {
+        this.notify.error("Ocurrió un error al dar de baja el evento");
+      }
+    });
   }
 
 }
