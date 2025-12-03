@@ -32,12 +32,17 @@ export class ServicioController {
     @Roles(Rol.DENTISTA)
     @UseInterceptors(FileInterceptor('imagen'))
     createServicio(@Body() dto: CreateServicioDto, @UploadedFile() file: Express.Multer.File, @Req() req: any) {
-        const usuarioAuth = req.user; 
-        
+        const usuarioAuth = req.user;
         dto.id_consultorio = usuarioAuth.id_consultorio;
+
+        //Parsear motivos recibidos como string
+        if (dto.motivos && typeof dto.motivos === 'string') {
+            dto.motivos = JSON.parse(dto.motivos);
+        }
 
         return this.servicioService.createServicio(dto, file);
     }
+
 
     @Patch(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)

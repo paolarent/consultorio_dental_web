@@ -8,6 +8,7 @@ import { TipoCobro } from '../../../../../backend/src/common/enums';
 import { ServicioService } from '../../services/servicio.service';
 import { NotificationService } from '../../services/notification.service';
 import { Servicio } from '../../models/servicio';
+import { IAService } from '../../services/ia.service';
 
 @Component({
   selector: 'app-modal-ag-servicio',
@@ -29,7 +30,13 @@ export class ModalAgServicio {
   tipoCobro = signal<TipoCobro | null>(null);
   file: File | null = null;
 
+  //IA
+  motivosIA = signal<string[]>([]);
+  motivosSeleccionados = signal<string[]>([]);
+  cargandoIA = signal(false);
+
   private servicioService = inject(ServicioService);
+  private iaService = inject(IAService);
   private notify = inject(NotificationService);
 
   private _servicioEditar: Servicio | null = null;
@@ -88,6 +95,12 @@ export class ModalAgServicio {
       return;
     }
 
+    // Validar que haya al menos 1 motivo
+    if (this.motivosSeleccionados().length === 0) {
+      this.notify.warning('Debes seleccionar al menos 1 motivo de consulta asociado');
+      return;
+    }
+
      // Bloqueamos el botón
     this.guardando.set(true);
 
@@ -97,6 +110,9 @@ export class ModalAgServicio {
     formData.append('tipo_cobro', this.tipoCobro()!);
     formData.append('precio_base', this.precio()?.toString()!);
     formData.append('duracion_base', this.duracion()?.toString()!);
+    // enviar motivos seleccionados al backend
+    formData.append('motivos', JSON.stringify(this.motivosSeleccionados()));
+
     if (this.file) formData.append('imagen', this.file);
 
     const observable = this.esEdicion
@@ -127,4 +143,65 @@ export class ModalAgServicio {
     this.file = null;
     this._servicioEditar = null;
   }
+
+  toggleMotivo(motivo: string) {
+    const seleccionados = this.motivosSeleccionados();
+
+    // ya estaba → quitarlo
+    if (seleccionados.includes(motivo)) {
+      this.motivosSeleccionados.set(
+        seleccionados.filter(m => m !== motivo)
+      );
+      return;
+    }
+
+    // máximo 3
+    if (seleccionados.length >= 3) {
+      this.notify.warning("Solo puedes seleccionar hasta 3 motivos.");
+      return;
+    }
+
+    // agregar
+    this.motivosSeleccionados.set([...seleccionados, motivo]);
+  }
+
+  usarMotivosSeleccionados() {
+    const seleccionados = this.motivosSeleccionados();
+    if (seleccionados.length === 0) {
+      this.notify.warning("Selecciona al menos un motivo.");
+      return;
+    }
+
+    this.descripcion.set(seleccionados.join(', '));
+  }
+
+  generarMotivosIA() {
+    if (!this.nombre()) {
+      this.notify.warning("Primero escribe el nombre del servicio.");
+      return;
+    }
+    if (!this.descripcion()) {
+      this.notify.warning("La descripción es obligatoria para generar los motivos.");
+      return;
+    }
+
+    this.cargandoIA.set(true);
+
+    this.iaService.generarMotivos({
+      nombre: this.nombre(),
+      descripcion: this.descripcion(),
+      n: 5
+    }).subscribe({
+      next: (res) => {
+        this.motivosIA.set(Array.isArray(res) ? res : []);
+        this.motivosSeleccionados.set([]);
+        this.cargandoIA.set(false);
+      },
+      error: () => {
+        this.notify.error("Ocurrió un error generando motivos.");
+        this.cargandoIA.set(false);
+      }
+    });
+  }
+
 }

@@ -13,8 +13,6 @@ import { EventoModule } from './modules/evento/evento.module';
 import { EgresoModule } from './modules/egreso/egreso.module';
 import { ServicioModule } from './modules/servicio/servicio.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './common/guards/roles.guard';
 import { HorarioModule } from './modules/horario/horario.module';
 import { ArchivoModule } from './modules/archivo/archivo.module';
 import { HistorialClinicoModule } from './modules/historial-clinico/historial-clinico.module';
@@ -24,11 +22,12 @@ import { IngresoModule } from './modules/ingreso/ingreso.module';
 import { FormularioModule } from './modules/formulario/formulario.module';
 import { CitaModule } from './modules/cita/cita.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { OpenrouterModule } from './common/openrouter/openrouter.module';
 
 @Module({
   imports: [PrismaModule, UsuarioModule, PacienteModule, RegistroModule, ConsultorioModule, CloudinaryModule, TipoEventoModule, EventoModule, 
             EgresoModule, ServicioModule, AuthModule, HorarioModule, ArchivoModule, HistorialClinicoModule, AlergiaModule, CondicionMedicaModule,
-            IngresoModule, FormularioModule, CitaModule, ScheduleModule.forRoot(), ],
+            IngresoModule, FormularioModule, CitaModule, ScheduleModule.forRoot(), OpenrouterModule],
   controllers: [AppController],
   providers: [AppService, MailerService]//, { provide: APP_GUARD, useClass: RolesGuard }],
 })

@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, IsInt, IsEnum, IsOptional, IsNumber, Min, MaxLength } from 'class-validator';
+import { IsString, IsInt, IsEnum, IsOptional, IsNumber, Min, MaxLength, IsArray } from 'class-validator';
 import { Status, TipoCobro } from 'src/common/enums';
 
 export class CreateServicioDto {
@@ -30,4 +30,10 @@ export class CreateServicioDto {
     @IsOptional()
     @IsEnum(Status)
     status?: Status;
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    motivos?: string[];
+
 }

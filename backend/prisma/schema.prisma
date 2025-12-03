@@ -208,7 +208,7 @@ model metodo_pago {
 }
 
 model motivo_consulta {
-  id_motivo      Int         @id
+  id_motivo      Int         @id @default(autoincrement())
   id_consultorio Int
   nombre         String      @db.VarChar(60)
   status         status      @default(activo)

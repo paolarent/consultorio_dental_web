@@ -1,7 +1,18 @@
 <div class="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
     <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-[500px]">
+
+        <!-- Spinner overlay mientras guarda -->
+    @if(guardando()) {
+        <div class="absolute inset-0 bg-black/40 z-50 flex items-center justify-center rounded-xl">
+            <div class="flex flex-col items-center gap-2">
+            <div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-white font-semibold">
+                {{ esEdicion ? 'Actualizando servicio...' : 'Creando servicio...' }}
+            </span>
+            </div>
+        </div>
+    }
         <div class="grid gap-4">
-    
         <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-2 text-[#105053]">
             {{ esEdicion ? 'Editar Servicio' : 'Agregar Servicio' }}
         </h2>
@@ -14,7 +25,8 @@
             type="text"
             placeholder="Servicio"
             required
-            [(ngModel)]="nombre"
+            [ngModel]="nombre()"
+            (ngModelChange)="nombre.set($event)"
             class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
             />
         </div>
@@ -25,7 +37,8 @@
             <textarea
             placeholder="Descripción del servicio"
             rows="3"
-            [(ngModel)]="descripcion"
+            [ngModel]="descripcion()"
+            (ngModelChange)="descripcion.set($event)"
             class="w-full border border-gray-300 bg-zinc-300/30 rounded-lg p-3 focus:ring-2 focus:ring-[#105053] focus:outline-none resize-none"
             ></textarea>
         </div>
@@ -37,7 +50,8 @@
             <mat-select
                 placeholder="Seleccione el tipo de cobro"
                 required
-                [(ngModel)]="tipoCobro"
+                [ngModel]="tipoCobro()"
+                (ngModelChange)="tipoCobro.set($event)"
             >
                 <mat-option [value]="TipoCobro.UNIDAD_ANATOMICA">Unidad Anatómica</mat-option>
                 <mat-option [value]="TipoCobro.PLAN_TERAPEUTICO">Plan Terapéutico</mat-option>
@@ -55,7 +69,8 @@
                 placeholder="Precio"
                 required
                 min="50"
-                [(ngModel)]="precio"
+                [ngModel]="precio()"
+                (ngModelChange)="precio.set($event)"
                 class="flex-1 h-full border-none bg-transparent outline-none p-2"
             />
             </div>
@@ -69,7 +84,8 @@
             placeholder="Duración"
             required
             min="15"
-            [(ngModel)]="duracion"
+            [ngModel]="duracion()"
+            (ngModelChange)="duracion.set($event)"
             class="w-full h-12 border border-gray-300 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none"
             />
         </div>
@@ -86,9 +102,9 @@
 
             <span class="text-gray-500 text-sm">
                 @if(preview()) {
-                Cambiar imagen
+                    Cambiar imagen
                 } @else {
-                Selecciona una imagen
+                    Selecciona una imagen
                 }
             </span>
 
@@ -100,6 +116,43 @@
             />
             </label>
         </div>
+
+        @if (!esEdicion) {
+            <!-- Motivos generados por IA -->
+            <div class="mb-4 border p-3 rounded-lg bg-zinc-300/20">
+
+            <div class="flex justify-between items-center mb-2 mt-2">
+                <label class="text-base font-medium text-[#545454]">
+                    Motivos de consulta sugeridos
+                </label>
+
+                <button
+                class="px-3 py-1 bg-[#1D8E92] text-white rounded-lg text-md hover:bg-[#105053]"
+                (click)="generarMotivosIA()"
+                [disabled]="cargandoIA()"
+                >
+                {{ cargandoIA() ? 'Generando...' : 'Generar con IA' }}
+                </button>
+            </div>
+
+            <!-- Lista de motivos -->
+            @if(motivosIA().length > 0) {
+                <div class="flex flex-col gap-2">
+                @for (motivo of motivosIA(); track motivo) {
+                    <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        [checked]="motivosSeleccionados().includes(motivo)"
+                        (change)="toggleMotivo(motivo)"
+                        class="h-4 w-4 accent-[#1D8E92]"
+                    />
+                    <span class="text-md text-gray-700">{{ motivo }}</span>
+                    </label>
+                }
+                </div>
+            }
+            </div>
+        }
 
         <!-- Botones -->
         <div class="flex justify-end gap-4 mt-6">
