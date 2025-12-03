@@ -11,14 +11,6 @@ export class CitaService {
     private http = inject(HttpClient);
     private baseUrl = `${environment.backendUrl}/cita`;
 
-    /*listarCitasCalendario(): Observable<any[]> { 
-        const url = `${this.baseUrl}/calendario/citas`;
-        return this.http.get<any[]>(url, { withCredentials: true });
-    }*/
-    /*listarCitasCalendario(soloCalendario: boolean = false): Observable<any[]> { 
-        const url = `${this.baseUrl}/calendario/citas?soloCalendario=${soloCalendario}`;
-        return this.http.get<any[]>(url, { withCredentials: true });
-    }*/
     listarCitasCalendario() {
         return this.http.get<any[]>(`${this.baseUrl}/calendario`, { withCredentials: true });
     }

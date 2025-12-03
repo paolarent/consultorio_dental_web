@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PacienteService } from '../../services/paciente.service';
 import { ModalEditarPaciente } from '../modal-editar-paciente/modal-editar-paciente';
-import { UpdatePaciente } from '../../models/update-paciente.model';
+import { Paciente, UpdatePaciente } from '../../models/paciente.model';
 import { AuthService } from '../../auth/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { Padecimientos } from '../padecimientos/padecimientos';
@@ -20,7 +20,7 @@ export class PerfilPaciente implements OnInit {
 
   modalEditar = signal(false);
 
-  paciente = signal<UpdatePaciente | null>(null);
+  paciente = signal<Paciente | null>(null);
 
   ngOnInit() {
     // Si ya hay un usuario en sesión, puede cargar el paciente desde aquí
@@ -64,23 +64,26 @@ export class PerfilPaciente implements OnInit {
   }
 
   actualizarPaciente(updated: UpdatePaciente) {
-    if (!updated.id_paciente) {
-      console.error('No se puede actualizar, falta el ID del paciente');
+    const usuario = this.authService.usuario();
+    const id_paciente = usuario?.paciente?.id_paciente;
+
+    if (!id_paciente) {
+      console.error('No se puede actualizar, falta ID del paciente en la sesión');
       return;
     }
+    
 
-    this.pacienteService.updatePaciente(updated.id_paciente, updated).subscribe({
+    this.pacienteService.updatePaciente(id_paciente, updated).subscribe({
       next: (dataGuardada) => {
         this.paciente.set(dataGuardada);
         this.notify.success('Datos actualizados con éxito.');
-        //console.log('Paciente actualizado en la BD con exito');
         this.cerrarModal();
       },
       error: (err) => {
         this.notify.error('Error al actualizar los datos.');
-        //console.error('Error al actualizar paciente en la BD', err)
+        this.cargarPaciente(id_paciente); 
       }
-    })
+    });
 
     //this.paciente.set(updated);
   }

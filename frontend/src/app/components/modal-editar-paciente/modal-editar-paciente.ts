@@ -4,7 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { UpdatePaciente } from '../../models/update-paciente.model';
+import { Paciente, UpdatePaciente } from '../../models/paciente.model';
 import { PacienteService } from '../../services/paciente.service';
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
@@ -29,12 +29,13 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   private pacienteService = inject(PacienteService);
 
   correoNuevo: string = '';
-
+  loading = false;
   contrasenaActual: string = '';
   contrasenaNueva: string = '';
   contrasenaConfirmar: string = '';
 
-  @Input() paciente!: UpdatePaciente;
+  @Input() paciente!: Paciente;
+
   @Output() actualizar = new EventEmitter<UpdatePaciente>();
   @Output() cerrar = new EventEmitter<void>();
 
@@ -55,7 +56,9 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   isStep1Valid = false;
 
   ngOnInit() {
-    this.tieneTutor = this.paciente.tiene_tutor === SiONo.SI;
+    const p = this.paciente;
+    this.tieneTutor = p?.tiene_tutor === SiONo.SI; 
+    //this.tieneTutor = this.paciente.tiene_tutor === SiONo.SI;
 
     const usuarioActual = this.auth.usuario(); 
     this.correoNuevo = usuarioActual?.correo ?? '';
@@ -121,6 +124,7 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
 
   toggleTutor() {
     this.tieneTutor = !this.tieneTutor;
+    this.paciente.tiene_tutor = this.tieneTutor ? SiONo.SI : SiONo.NO;
     if (!this.tieneTutor) {
       // Limpiar los campos del tutor para enviarle null al backend
       this.paciente.tutor_nombre = null;
@@ -183,6 +187,10 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
   }
 
   guardarCambios() {
+    // bloquear si ya se está guardando
+    if (this.loading) return;
+    this.loading = true;
+
     if (this.step === 3 && this.pacienteStep3Form?.invalid) {
       this.notify.warning('Debe completar los campos obligatorios');
       return;
@@ -211,11 +219,13 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
       // Validación frontend (ya esta validado en el back tmb)
       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,20}$/.test(this.contrasenaNueva)) {
         this.notify.warning('La nueva contraseña debe tener entre 8 y 20 caracteres, incluir mayúscula, minúscula, número y símbolo especial.');
+        this.loading = false;
         return;
       }
 
       if (this.contrasenaNueva !== this.contrasenaConfirmar) {
         this.notify.warning('Las contraseñas no coinciden.');
+        this.loading = false;
         return;
       }
 
@@ -243,7 +253,8 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
 
      // **Si no hay observables, igual emitimos el cambio de datos**
     if (observables.length === 0) {
-      this.actualizar.emit({ ...this.paciente, id_paciente: this.paciente.id_paciente });
+      this.actualizar.emit({ ...this.paciente });
+      this.loading = false;
       return;
     }
 
@@ -251,7 +262,7 @@ export class ModalEditarPaciente implements OnInit, AfterViewInit {
     forkJoin(observables).subscribe(results => {
       const hayErrores = results.some(r => r === null);
       if (!hayErrores) {
-        this.actualizar.emit({ ...this.paciente, id_paciente: this.paciente.id_paciente });
+        this.actualizar.emit({ ...this.paciente });
       }
     });
   }

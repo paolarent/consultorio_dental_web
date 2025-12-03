@@ -151,6 +151,12 @@ export class PacienteService {
             (data as any).fecha_nacimiento = new Date(data.fecha_nacimiento);
         }
 
+        delete (data as any).id_paciente;
+
+        if ((data as any).usuario) {
+            delete (data as any).usuario;
+        }
+
         return this.prisma.paciente.update({
             where: { id_paciente: id },
             data: { ...data },

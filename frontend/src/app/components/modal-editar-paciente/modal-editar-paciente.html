@@ -120,6 +120,7 @@
                             type="text"
                             name="tutor_nombre"
                             [(ngModel)]="paciente.tutor_nombre"
+                            (ngModelChange)="actualizarCampo($event, 'tutor_nombre')"
                             placeholder="Nombre tutor"
                             required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
@@ -132,6 +133,7 @@
                             type="text"
                             name="tutor_apellido1"
                             [(ngModel)]="paciente.tutor_apellido1"
+                            (ngModelChange)="actualizarCampo($event, 'tutor_apellido1')"
                             placeholder="Apellido1 tutor"
                             required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
@@ -144,6 +146,7 @@
                             type="text"
                             name="tutor_apellido2"
                             [(ngModel)]="paciente.tutor_apellido2"
+                            (ngModelChange)="actualizarCampo($event, 'tutor_apellido2')"
                             placeholder="Apellido2 tutor"
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
                         />
@@ -155,6 +158,7 @@
                             type="text"
                             name="tutor_telefono"
                             [(ngModel)]="paciente.tutor_telefono"
+                            (ngModelChange)="actualizarCampo($event, 'tutor_telefono')"
                             placeholder="Teléfono tutor"
                             required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
@@ -167,6 +171,7 @@
                             type="email"
                             name="tutor_correo"
                             [(ngModel)]="paciente.tutor_correo"
+                            (ngModelChange)="actualizarCampo($event, 'tutor_correo')"
                             placeholder="Correo tutor"
                             required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
@@ -179,6 +184,7 @@
                             type="text"
                             name="tutor_relacion"
                             [(ngModel)]="paciente.tutor_relacion"
+                            (ngModelChange)="actualizarCampo($event, 'tutor_relacion')"
                             placeholder="Relación"
                             required
                             class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base"
@@ -416,6 +422,7 @@
                         class="w-full sm:w-auto px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                         [ngClass]="pacienteStep3Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
                         (click)="guardarCambios()"
+                        [disabled]="loading"
                     >
                         <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Guardar</span>
                     </button>

@@ -134,24 +134,7 @@ export class CitaService {
         fin1: string,
         inicio2: string,
         fin2: string
-    ): boolean {
-        // Dos rangos se traslapan si:
-        // - El inicio de uno está antes del fin del otro, Y
-        // - El fin de uno está después del inicio del otro
-        
-        // Casos de traslape:
-        // 1. [----cita----]
-        //      [--evento--]
-        
-        // 2.    [--cita--]
-        //    [----evento----]
-        
-        // 3. [----cita----]
-        //         [--evento--]
-        
-        // 4.      [--cita--]
-        //    [--evento--]
-        
+    ): boolean {    
         return inicio1 < fin2 && fin1 > inicio2;
     }
 
@@ -418,7 +401,6 @@ export class CitaService {
     }
 
     // CANCELAR CITA (AMBOS ROLES)
-    // ============================================
     async cancelarCita(idCita: number, idUsuario: number, rol: 'dentista' | 'paciente') {
         const cita = await this.prisma.cita.findUnique({
             where: { id_cita: idCita },
@@ -857,134 +839,6 @@ export class CitaService {
         return { horasDisponibles: horasLibres };
     }
 
-
-    // LISTAR CITAS (CON FILTROS) 
-//=====================================================================================================================================================
-    async listarCitas2(filtros: {
-        idUsuario: number;
-        rol: 'paciente' | 'dentista';
-        fecha?: string;
-        status?: StatusCitas;
-    }) {
-        const where: any = {};
-
-        if (filtros.rol === 'paciente') {
-            const paciente = await this.prisma.paciente.findUnique({
-                where: { id_usuario: filtros.idUsuario },
-                select: { id_paciente: true, id_consultorio: true }
-            });
-
-            if (!paciente) throw new NotFoundException('Paciente no encontrado');
-
-            // Paciente ve todas las citas de su consultorio
-            where.id_consultorio = paciente.id_consultorio;
-            where.id_paciente = paciente.id_paciente;
-        }
-
-        if (filtros.rol === 'dentista') {
-            const id_consultorio = await this.obtenerConsultorioDentista(filtros.idUsuario);
-            where.id_consultorio = id_consultorio;
-        }
-
-        if (filtros.fecha) {
-            where.fecha = new Date(filtros.fecha);
-        }
-
-        if (filtros.status) {
-            where.status = filtros.status;
-        }
-
-        const citas = await this.prisma.cita.findMany({
-            where,
-            select: {
-                id_cita: true,
-                fecha: true,
-                hora_inicio: true,
-                hora_fin: true,
-                status: true,
-                notas: true,
-                paciente: { 
-                    select: { 
-                        id_paciente: true,
-                        nombre: true,
-                        apellido1: true,
-                        apellido2: true
-                    }
-                },
-                servicio: {
-                    select: { nombre: true }
-                },
-                reprogramacion_cita: {
-                    where: {
-                        status: 'pendiente'
-                    },
-                    orderBy: {
-                        fecha_solicitud: 'desc'
-                    },
-                    take: 1,  // Solo la más reciente
-                    select: {
-                        id_reprogramacion: true,
-                        solicitada_por: true,
-                        nueva_fecha: true,
-                        nueva_hora: true,
-                        nueva_hora_fin: true,
-                        fecha_solicitud: true
-                    }
-                }
-            },
-            orderBy: { fecha: 'asc' }
-        });
-
-        const citasLimpias = citas
-            .map(c => {
-                const reprog = c.reprogramacion_cita[0]; // La más reciente
-
-                // FILTRO: Si es reprogramada, verificar quién la solicitó
-                if (c.status === 'reprogramada' && reprog) {
-                    // Dentista solo ve las solicitadas por paciente
-                    if (filtros.rol === 'dentista' && reprog.solicitada_por !== 'paciente') {
-                        return null;
-                    }
-                    
-                    // Paciente solo ve las solicitadas por dentista
-                    if (filtros.rol === 'paciente' && reprog.solicitada_por !== 'dentista') {
-                        return null;
-                    }
-
-                    // Si pasa el filtro, usar los NUEVOS datos de la reprogramación
-                    return {
-                        id_cita: c.id_cita,
-                        id_reprogramacion: reprog.id_reprogramacion,
-                        paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
-                        servicio: c.servicio?.nombre ?? 'Sin servicio',
-                        fecha: reprog.nueva_fecha.toISOString().split('T')[0], // Fecha NUEVA
-                        hora_inicio: reprog.nueva_hora,                         // Hora NUEVA
-                        hora_fin: reprog.nueva_hora_fin,                        // Hora fin NUEVA
-                        notas: c.notas ?? '',
-                        status: c.status,
-                        solicitada_por: reprog.solicitada_por // Para mostrar quién solicitó
-                    };
-                }
-
-                // Citas normales (no reprogramadas)
-                return {
-                    id_cita: c.id_cita,
-                    paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
-                    servicio: c.servicio?.nombre ?? 'Sin servicio',
-                    fecha: c.fecha.toISOString().split('T')[0],
-                    hora_inicio: c.hora_inicio,
-                    hora_fin: c.hora_fin,
-                    notas: c.notas ?? '',
-                    status: c.status
-                };
-            })
-            .filter(cita => cita !== null); //Eliminar las que no pasaron el filtro
-
-        return citasLimpias;
-
-        //return citas;
-    }
-
     // OBTENER CITA POR ID
     async obtenerCitaPorId(idCita: number, idUsuario: number, rol: 'dentista' | 'paciente') {
         const cita = await this.prisma.cita.findUnique({
@@ -1296,8 +1150,6 @@ async listarCitas(filtros: {
 
     return citasLimpias;
 }
-
-
 
 //==========================================================================================================================================    
     // OBTENER HISTORIAL DE CITAS (PACIENTE)

@@ -269,9 +269,7 @@ export class Calendario implements OnInit {
     });
   }
 
-  // ============================================
   // ACTUALIZAR EVENTOS DEL CALENDARIO
-  // ============================================
   actualizarEventosCalendario(eventos: any[]) {
     const eventosBase = this.calendarOptions.events.filter(
       (e: any) => 
@@ -286,10 +284,7 @@ export class Calendario implements OnInit {
 
   }
 
-  // ============================================
   // HELPERS PARA PROCESAR CITAS
-  // ============================================
-
   // Extrae hora en formato HH:MM desde DateTime
   extraerHora(dateTime: string | Date): string {
     if (!dateTime) return '00:00';
@@ -316,9 +311,7 @@ export class Calendario implements OnInit {
     return colores[status] || '#c91a8cff';
   }
 
-  // ============================================
-  // MÉTODOS AUXILIARES (TU CÓDIGO EXISTENTE)
-  // ============================================
+  // MÉTODOS AUXILIARES
 
   crearEventosBloqueados(horarios: any[], minInicio: number, maxFin: number): any[] {
     const bloqueados: any[] = [];

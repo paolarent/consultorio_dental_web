@@ -117,7 +117,7 @@ input[type="radio"] {
     border: none !important;
 }
 
-/* Ajusta la altura para que combine con tus inputs */
+/* Ajusta la altura para que combine con el resto de inputs */
 .mat-mdc-form-field-flex {
     height: 3rem !important;
     border-radius: 0.5rem !important;
@@ -131,17 +131,15 @@ input[type="radio"] {
     height: 3rem !important;
 }
 
-/* ======== Ajusta el padding interno para que se vea como tus inputs ======== */
 .mat-mdc-form-field-infix {
     padding: 0.4rem 0.75rem !important;
-    min-height: 3rem !important; /* altura similar a tus inputs */
+    min-height: 3rem !important; 
     display: flex;
     align-items: center;
 }
 
-/* ======== Colores y borde para que coincidan con tus inputs personalizados ======== */
 .mat-mdc-text-field-wrapper {
-    background-color: rgba(244, 244, 244, 0.6) !important; /* gris clarito tipo bg-zinc-300/30 */
+    background-color: rgba(244, 244, 244, 0.6) !important; 
     border: 1px solid #0d9488 !important; /* teal-600 */
     border-radius: 0.5rem !important;
 }
@@ -151,7 +149,7 @@ input[type="radio"] {
     z-index: 9999 !important;
 }
 
-/* ======== Opcional: mejora el aspecto de las opciones ======== */
+/* ======== mejora el aspecto de las opciones ======== */
 .mat-mdc-option {
     font-size: 0.95rem;
     color: #333 !important;
@@ -163,18 +161,10 @@ input[type="radio"] {
 
 /* ======== Fondo sólido del panel desplegable ======== */
 .mat-mdc-select-panel {
-    background-color: #EBEBF0 !important; /* o usa #f4f4f4 si prefieres gris */
+    background-color: #EBEBF0 !important; 
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
     border-radius: 0.5rem !important;
 }
-
-/*  CALENDARIO    */
-
-
-
-
-
-
 
 /* NAVBAR */
 @keyframes slideInRight {

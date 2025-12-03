@@ -13,10 +13,40 @@ export class ModalMontoInicial {
 
   monto: number | null = null;
 
+  // Validar mientras el usuario escribe
+  onMontoChange(event: any) {
+    const valor = event.target.value;
+    
+    // Si es vacío, permitir null
+    if (valor === '' || valor === null) {
+      this.monto = null;
+      return;
+    }
+    
+    // Convertir a número y validar
+    const numero = parseFloat(valor);
+    
+    // Si es negativo o NaN, poner en 0
+    if (isNaN(numero) || numero < 0) {
+      this.monto = 0;
+      event.target.value = 0;
+      return;
+    }
+    
+    this.monto = numero;
+  }
+
   continuar() {
-    if (!this.monto || this.monto <= 0) return; 
+    // Validaciones finales antes de emitir
+    if (this.monto === null || this.monto === undefined) return;
+    if (this.monto < 0) {
+      this.monto = 0;
+      return;
+    }
+    
     this.aceptar.emit(this.monto);
   }
+
 
   volver() {
     this.cerrar.emit();
