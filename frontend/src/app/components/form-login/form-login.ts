@@ -35,6 +35,7 @@ export class FormLogin {
 
          // Verificar rol paciente para redirigir
         if (usuario.rol.toLowerCase() === 'paciente') {
+          this.auth.clearSession();
           this.notify.error('Este no es el login de paciente, redirigiendo');
           setTimeout(() => this.router.navigate(['/login/paciente'], { replaceUrl: true }), 1000);
           this.loading.set(false);

@@ -41,15 +41,16 @@ export class FormLoginPaciente {
 
     this.auth.login(this.correo, this.contrasena).subscribe({
       next: (usuario: any) => {
-        const nombre = usuario.paciente?.nombre || usuario.correo;
 
         if (usuario.rol.toLowerCase() !== 'paciente') {
+          this.auth.clearSession();
           this.notify.error('Este es el login para pacientes, redirigiendo');
           setTimeout(() => this.router.navigate(['/login'], { replaceUrl: true }), 1000);
           this.loading.set(false);
           return;
         }
 
+        const nombre = usuario.paciente?.nombre || usuario.correo;
         this.notify.success(`Bienvenido ${nombre}`, 'Inicio exitoso');
         this.auth.setUsuario(usuario); // Esto disparará el effect
       },

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { ServicioService } from '../../services/servicio.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-landing-page',
@@ -14,6 +15,7 @@ export class LandingPage implements OnInit {
   // Injecta AuthService para poder usarlo en el template
   auth = inject(AuthService);
   servicioService = inject(ServicioService);
+  private router = inject(Router);
 
   // Signals
   servicios = signal<any[]>([]);
@@ -37,5 +39,9 @@ export class LandingPage implements OnInit {
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
     });
+  }
+
+  goToCitas() {
+    this.router.navigate(['/home/citas'], { replaceUrl: true });
   }
 }
