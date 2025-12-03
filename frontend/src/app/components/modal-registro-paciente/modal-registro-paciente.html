@@ -5,78 +5,78 @@
         style="background-image: url('assets/images/consultorio_dental.png')">
     </div>
 
-    <div class="relative bg-white p-6 rounded-xl max-h-[90vh] overflow-y-auto w-3/4 max-w-3xl">
+    <div class="relative bg-white p-4 sm:p-6 rounded-xl max-h-[90vh] overflow-y-auto w-full sm:w-11/12 md:w-11/12 lg:w-3/4 max-w-3xl">
 
-        <h2 class="text-4xl font-bold mt-2 mb-6 text-[#105053]">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mt-2 mb-6 sm:mb-8 text-[#105053]">
             Registrar nuevo Paciente
         </h2>
 
         <!-- STEP 1 -->
         @if(step === 1) {
-            <label class="block text-lg font-semibold text-black mb-4">Complete los datos del paciente</label>
+            <label class="block text-base sm:text-lg font-semibold text-black mb-4">Complete los datos del paciente</label>
         <form>
-            <div class="grid grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <!-- Nombre -->
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Nombre</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Nombre</label>
                     <input type="text" name="nombre" placeholder="Ingresa el nombre" [(ngModel)]="nombre" required
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <!-- Apellido paterno -->
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Apellido Paterno</label>
                     <input type="text" name="apellido1" placeholder="Ingresa el primer apellido" [(ngModel)]="apellido1" required
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <!-- Apellido materno -->
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Apellido Materno</label>
                     <input type="text" name="apellido2" placeholder="Ingresa el segundo apellido" [(ngModel)]="apellido2"
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <!-- Teléfono -->
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Teléfono</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Teléfono</label>
                     <input type="text" name="telefono" placeholder="Ingresa teléfono" [(ngModel)]="telefono" required
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Correo</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Correo</label>
                     <input type="email" name="correo" placeholder="Ingresa correo" [(ngModel)]="correo" required
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <!-- Fecha nacimiento -->
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Fecha de nacimiento</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Fecha de nacimiento</label>
                     <input 
                         #fechaInput 
                         name="fechaNacimiento" 
-                        placeholder="Selecciona la fecha de nacimiento" 
+                        placeholder="AAAA-MM-DD" 
                         [(ngModel)]="fechaNacimiento"
                         required
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <!-- Sexo -->
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Sexo</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Sexo</label>
                     <mat-form-field appearance="outline" class="w-full">
                         <mat-select name="sexo" required placeholder="Seleccione el sexo" [(ngModel)]="sexo">
                             <mat-option [value]="Sexo.MASCULINO">Masculino</mat-option>
@@ -89,81 +89,81 @@
             </div>
 
             <!-- TUTOR -->
-            <div class="flex items-center">
-                <span class="mr-2 text-[#545454] font-bold text-lg">¿Tiene tutor?</span>
+            <div class="flex items-center mt-1 mb-6 sm:mt-0 sm:mb-6">
+                <span class="mr-2 text-[#545454] font-bold text-base sm:text-lg">¿Tiene tutor?</span>
                 <img [src]="tieneTutor ? 'assets/icons/on_switch.svg' : 'assets/icons/off_switch.svg'"
-                    class="w-14 h-10 cursor-pointer" (click)="toggleTutor()" />
+                    class="w-12 h-8 sm:w-14 sm:h-10 cursor-pointer" (click)="toggleTutor()" />
             </div>
 
             @if(tieneTutor) {
-            <label class="block text-lg font-semibold text-black mb-4 mt-4">Complete los datos del tutor</label>
-            <div class="grid grid-cols-2 gap-6 mt-4 mb-10">
+            <label class="block text-base sm:text-lg font-semibold text-black mb-4 mt-4">Complete los datos del tutor</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-4 mb-6 sm:mb-10">
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Nombre de Tutor</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Nombre de Tutor</label>
                     <input type="text" name="tutor_nombre" placeholder="Nombre tutor" required [(ngModel)]="tutor.nombre"
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Apellido Paterno Tutor</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Apellido Paterno Tutor</label>
                     <input type="text" name="tutor_apellido1" placeholder="Apellido1 tutor" required [(ngModel)]="tutor.apellido1"
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Apellido Materno Tutor</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Apellido Materno Tutor</label>
                     <input type="text" name="tutor_apellido2" placeholder="Apellido2 tutor" [(ngModel)]="tutor.apellido2"
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Teléfono Tutor</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Teléfono Tutor</label>
                     <input type="text" name="tutor_telefono" placeholder="Teléfono tutor" required [(ngModel)]="tutor.telefono"
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Correo Tutor</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Correo Tutor</label>
                     <input type="email" name="tutor_correo" placeholder="Correo tutor" [(ngModel)]="tutor.correo"
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Relación</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Relación</label>
                     <input type="text" name="tutor_relacion" placeholder="Relación" required [(ngModel)]="tutor.relacion"
                         autocomplete="off"
                         autocorrect="off"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
             </div>
             }
 
-            <div class="flex justify-end gap-4 mt-0">
+            <div class="flex flex-row justify-end gap-3 sm:gap-4 mt-0">
                 <button
-                    class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                    class="w-full sm:w-auto px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
                     (click)="cancelar()"
                 >
-                    <span class="text-center text-white text-lg font-semibold tracking-wider">Cancelar</span>
+                    <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Cancelar</span>
                 </button>
                 
                 <button
-                    class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                    class="w-full sm:w-auto px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                     
                     (click)="siguienteStep()"
                 >
-                    <span class="text-center text-white text-lg font-semibold tracking-wider">Siguiente</span>
+                    <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Siguiente</span>
                 </button>
             </div>
 
@@ -173,67 +173,67 @@
         <!-- STEP 2 -->
         @if(step === 2) {
         <form #pacienteStep2Form="ngForm">
-            <div class="grid grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Calle</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Calle</label>
                     <input type="text" name="d_calle" required placeholder="Ingresa la calle" [(ngModel)]="direccion.calle"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Número Exterior</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Número Exterior</label>
                     <input type="text" name="d_num_exterior" required placeholder="Número" [(ngModel)]="direccion.num_exterior"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Colonia</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Colonia</label>
                     <input type="text" name="d_colonia" required placeholder="Colonia" [(ngModel)]="direccion.colonia"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Código Postal</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Código Postal</label>
                     <input type="text" name="d_cp" required placeholder="CP" [(ngModel)]="direccion.cp"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Entidad Federativa</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Entidad Federativa</label>
                     <input type="text" name="d_entidadfed" required placeholder="Entidad" [(ngModel)]="direccion.entidadfed"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Municipio</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Municipio</label>
                     <input type="text" name="d_municipio" required placeholder="Municipio" [(ngModel)]="direccion.municipio"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
                 <div>
-                    <label class="block text-base font-medium text-[#545454] mb-1">Localidad</label>
+                    <label class="block text-sm sm:text-base font-medium text-[#545454] mb-1">Localidad</label>
                     <input type="text" name="d_localidad" required placeholder="Localidad" [(ngModel)]="direccion.localidad"
-                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3" />
+                        class="w-full h-12 border border-teal-600 bg-zinc-300/30 rounded-lg p-2 pl-3 focus:ring-2 focus:ring-[#545454] focus:outline-none text-sm sm:text-base" />
                 </div>
 
             </div>
 
-            <div class="flex justify-end gap-4 mt-6">
+            <div class="flex flex-row justify-end gap-3 sm:gap-4 mt-6">
                 <button
-                    class="px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
+                    class="w-full sm:w-auto px-6 py-2 bg-neutral-600 rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#9C9898]"
                     (click)="volverStep()"
                 >
-                    <span class="text-center text-white text-lg font-semibold tracking-wider">Volver</span>
+                    <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Volver</span>
                 </button>
 
                 <button
-                    class="px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
+                    class="w-full sm:w-auto px-6 py-2 bg-[#1D8E92] rounded-lg inline-flex justify-center items-center cursor-pointer hover:bg-[#105053]"
                     [ngClass]="pacienteStep2Form.valid ? 'bg-[#1D8E92] hover:bg-[#105053]' : 'bg-gray-400'"
                     [disabled]="loading"
                     (click)="guardar()"
                 >
-                    <span class="text-center text-white text-lg font-semibold tracking-wider">Registrar</span>
+                    <span class="text-center text-white text-base sm:text-lg font-semibold tracking-wider">Registrar</span>
                 </button>
             </div>
         </form>

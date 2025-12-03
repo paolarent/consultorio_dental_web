@@ -1,113 +1,113 @@
-<section class="w-full max-w-8xl mx-auto px-8 py-6 md:py-10">
-    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
+<section class="w-full max-w-8xl mx-auto px-4 sm:px-6 xl:px-8 py-4 sm:py-6 xl:py-10">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 xl:gap-6">
         
         <!-- TITULO -->
         <div>
-            <h1 class="text-[#1D8F93] text-4xl lg:text-5xl font-extrabold leading-none">
+            <h1 class="text-[#1D8F93] text-3xl sm:text-4xl xl:text-5xl font-extrabold leading-none">
                 Finanzas
             </h1>
 
-            <p class="text-black text-2xl lg:text-3xl font-light mt-2">
+            <p class="text-black text-lg sm:text-xl md:text-2xl xl:text-3xl font-light mt-2">
                 Control de ingresos y gastos del consultorio
             </p>
         </div>
 
         <!-- BOTONES -->
-        <button
-            (click)="clickCaja()"
-            class="flex items-center gap-4 bg-[#C3F2F3] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition">
+<button
+    (click)="clickCaja()"
+    class="flex items-center gap-3 xl:gap-4 bg-[#C3F2F3] text-[#545454] text-base sm:text-lg xl:text-2xl font-semibold tracking-wider px-6 xl:px-8 py-3 xl:py-4 rounded-xl shadow hover:scale-105 transition justify-center md:justify-start whitespace-nowrap overflow-hidden">
 
-            <img 
-                [src]="corteAbierto ? 'assets/icons/cerrarcaja.svg' : 'assets/icons/abrircaja.svg'" 
-                alt="Caja" class="w-8 h-8">
+    <img 
+        [src]="corteAbierto ? 'assets/icons/cerrarcaja.svg' : 'assets/icons/abrircaja.svg'" 
+        alt="Caja" class="w-7 xl:w-8 h-7 xl:h-8 shrink-0">
 
-            {{ btnCajaTexto }}
-        </button>
+    <span class="truncate">{{ btnCajaTexto }}</span>
+</button>
 
-        <button
-            (click)="abrirModalIngreso()"
-            [disabled]="ingresoDisabled"
-            class="flex items-center gap-4 bg-[#CAFFCF] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition
-                    disabled:opacity-40 disabled:cursor-not-allowed">
-            <img src="assets/icons/agregar.svg" alt="Agregar Ingreso" class="w-8 h-8">
-            Ingreso
-        </button>
+<button
+    (click)="abrirModalIngreso()"
+    [disabled]="ingresoDisabled"
+    class="flex items-center gap-3 xl:gap-4 bg-[#CAFFCF] text-[#545454] text-base sm:text-lg xl:text-2xl font-semibold tracking-wider px-6 xl:px-8 py-3 xl:py-4 rounded-xl shadow hover:scale-105 transition justify-center md:justify-start whitespace-nowrap overflow-hidden
+            disabled:opacity-40 disabled:cursor-not-allowed">
+    <img src="assets/icons/agregar.svg" alt="Agregar Ingreso" class="w-7 xl:w-8 h-7 xl:h-8 shrink-0">
+    <span class="truncate">Ingreso</span>
+</button>
 
-        <button (click)="abrirModalGasto()"
-            [disabled]="egresoDisabled"
-            class="flex items-center gap-4 bg-[#FFC8C8] text-[#545454] text-lg md:text-2xl font-semibold tracking-wider px-8 py-4 rounded-xl shadow hover:scale-105 transition
-                    disabled:opacity-40 disabled:cursor-not-allowed">
-            <img src="assets/icons/agregar.svg" alt="Agregar Gasto" class="w-8 h-8">
-            Gasto
-        </button>
+<button (click)="abrirModalGasto()"
+    [disabled]="egresoDisabled"
+    class="flex items-center gap-3 xl:gap-4 bg-[#FFC8C8] text-[#545454] text-base sm:text-lg xl:text-2xl font-semibold tracking-wider px-6 xl:px-8 py-3 xl:py-4 rounded-xl shadow hover:scale-105 transition justify-center md:justify-start whitespace-nowrap overflow-hidden
+            disabled:opacity-40 disabled:cursor-not-allowed">
+    <img src="assets/icons/agregar.svg" alt="Agregar Gasto" class="w-7 xl:w-8 h-7 xl:h-8 shrink-0">
+    <span class="truncate">Gasto</span>
+</button>
     </div>
 
     <!-- DASHBOARD CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 xl:gap-6 mt-4 xl:mt-4">
 
         <!-- Tarjeta Ingresos -->
         <div class="bg-white rounded-xl shadow-md p-4 flex justify-between items-center">
-            <div class="flex flex-col gap-6">
-                <span class="text-black text-2xl font-semibold">Ingresos Totales</span>
-                <span class="text-[#094309] text-2xl font-bold">${{ totalIngresos | number:'1.2-2' }}</span>
+            <div class="flex flex-col gap-4 xl:gap-6">
+                <span class="text-black text-xl xl:text-2xl font-semibold">Ingresos Totales</span>
+                <span class="text-[#094309] text-xl xl:text-2xl font-bold">${{ totalIngresos | number:'1.2-2' }}</span>
             </div>
-            <div class="bg-green-200 w-24 h-24 rounded-full flex justify-center items-center">
-                <img src="assets/icons/ingreso.svg" alt="Ingresos" class="w-14 h-14">
+            <div class="bg-green-200 w-20 xl:w-24 h-20 xl:h-24 rounded-full flex justify-center items-center shrink-0">
+                <img src="assets/icons/ingreso.svg" alt="Ingresos" class="w-12 xl:w-14 h-12 xl:h-14">
             </div>
         </div>
 
         <!-- Tarjeta Gastos -->
         <div class="bg-white rounded-xl shadow-md p-4 flex justify-between items-center">
-            <div class="flex flex-col gap-6">
-                <span class="text-black text-2xl font-semibold">Gastos Totales</span>
-                <span class="text-[#530E0E] text-2xl font-bold">${{ totalGastos | number:'1.2-2' }}</span>
+            <div class="flex flex-col gap-4 xl:gap-6">
+                <span class="text-black text-xl xl:text-2xl font-semibold">Gastos Totales</span>
+                <span class="text-[#530E0E] text-xl xl:text-2xl font-bold">${{ totalGastos | number:'1.2-2' }}</span>
             </div>
-            <div class="bg-red-200 w-24 h-24 rounded-full flex justify-center items-center">
-                <img src="assets/icons/egreso.svg" alt="Gastos" class="w-14 h-14">
+            <div class="bg-red-200 w-20 xl:w-24 h-20 xl:h-24 rounded-full flex justify-center items-center shrink-0">
+                <img src="assets/icons/egreso.svg" alt="Gastos" class="w-12 xl:w-14 h-12 xl:h-14">
             </div>
         </div>
 
         <!-- Tarjeta Ganancia Neta -->
         <div class="bg-white rounded-xl shadow-md p-4 flex justify-between items-center">
-            <div class="flex flex-col gap-6">
-                <span class="text-black text-2xl font-semibold">Ganancia Neta</span>
-                <span class="text-[#105053] text-2xl font-bold">${{ gananciaTotal | number:'1.2-2' }}</span>
+            <div class="flex flex-col gap-4 xl:gap-6">
+                <span class="text-black text-xl xl:text-2xl font-semibold">Ganancia Neta</span>
+                <span class="text-[#105053] text-xl xl:text-2xl font-bold">${{ gananciaTotal | number:'1.2-2' }}</span>
             </div>
-            <div class="bg-[#B4DBDD] w-24 h-24 rounded-full flex justify-center items-center">
-                <img src="assets/icons/ganancia-neta.svg" alt="Ganancia" class="w-12 h-12">
+            <div class="bg-[#B4DBDD] w-20 xl:w-24 h-20 xl:h-24 rounded-full flex justify-center items-center shrink-0">
+                <img src="assets/icons/ganancia-neta.svg" alt="Ganancia" class="w-10 xl:w-12 h-10 xl:h-12">
             </div>
         </div>
 
         <!-- Tarjeta Este Mes -->
         <div class="bg-white rounded-xl shadow-md p-4 flex justify-between items-center">
-            <div class="flex flex-col gap-4">
-                <span class="text-black text-2xl font-semibold">Este Mes</span>
-                <span class="text-[#0B184B] text-2xl font-bold">${{ gananciaMes | number:'1.2-2' }}</span>
-                <span class="text-black text-base font-semibold">
+            <div class="flex flex-col gap-3 xl:gap-4">
+                <span class="text-black text-xl xl:text-2xl font-semibold">Este Mes</span>
+                <span class="text-[#0B184B] text-xl xl:text-2xl font-bold">${{ gananciaMes | number:'1.2-2' }}</span>
+                <span class="text-black text-sm xl:text-base font-semibold">
                     Ing: ${{ totalIngresosMes | number:'1.2-2' }} | Gas: ${{ totalGastosMes | number:'1.2-2' }}
                 </span>
 
             </div>
-            <div class="bg-[#C3F2F3] w-24 h-24 rounded-full flex justify-center items-center">
-                <img src="assets/icons/ganancia-mensual.svg" alt="Mes" class="w-14 h-14">
+            <div class="bg-[#C3F2F3] w-20 xl:w-24 h-20 xl:h-24 rounded-full flex justify-center items-center shrink-0">
+                <img src="assets/icons/ganancia-mensual.svg" alt="Mes" class="w-12 xl:w-14 h-12 xl:h-14">
             </div>
         </div>
 
     </div>
 </section>
 
-<section class="w-full max-w-8xl mx-auto px-6 py-8">
+<section class="w-full max-w-8xl mx-auto px-4 sm:px-6 xl:px-6 py-6 xl:py-8">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-10">
         <!-- ===================== HISTORIAL ===================== -->
-        <div class="bg-zinc-300/30 rounded-lg shadow-lg flex flex-col h-[600px] overflow-hidden">
+        <div class="bg-zinc-300/30 rounded-lg shadow-lg flex flex-col h-[500px] xl:h-[600px] overflow-hidden">
             
             <!-- Título -->
-            <h2 class="text-teal-900 text-4xl font-bold px-4 py-2 mt-4">Historial</h2>
+            <h2 class="text-teal-900 text-3xl xl:text-4xl font-bold px-4 py-2 xl:py-2 mt-3 xl:mt-4">Historial</h2>
 
             <!-- Barra de búsqueda y filtro -->
             <div class="px-4 mb-4 w-full flex justify-center">
-                <div class="flex items-center gap-4 w-full max-w-3xl">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 xl:gap-4 w-full max-w-3xl">
 
                     <!-- BUSCADOR -->
                     <div class="relative flex-1">
@@ -116,15 +116,15 @@
                             [(ngModel)]="busqueda"
                             (input)="aplicarFiltros()"
                             placeholder="Buscar..."
-                            class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 shadow-sm text-base 
+                            class="w-full pl-10 xl:pl-12 pr-4 py-2.5 xl:py-3 rounded-xl border border-gray-300 shadow-sm text-sm xl:text-base 
                                 focus:outline-none focus:ring-2 focus:ring-teal-600"
                         />
                         <img src="assets/icons/buscar.svg"
-                            class="w-6 h-6 absolute left-4 top-2.5 opacity-70" />
+                            class="w-5 xl:w-6 h-5 xl:h-6 absolute left-3 xl:left-4 top-2.5 xl:top-2.5 opacity-70" />
                     </div>
 
                     <!-- FILTRO -->
-                    <div class="w-44 flex items-center translate-y-[12px]">
+                    <div class="w-full sm:w-44 flex items-center sm:translate-y-[12px]">
                         <mat-form-field appearance="outline" class="w-full filtro-finanzas custom-select-height">
                             <mat-select [(ngModel)]="filtroTipo" placeholder="Filtrar" (selectionChange)="aplicarFiltros()">
                                 <mat-option value="todos">Todos</mat-option>
@@ -138,54 +138,54 @@
             </div>
 
             <!-- Lista de transacciones -->
-            <div class="flex-1 overflow-y-auto px-4 space-y-4">
+            <div class="flex-1 overflow-y-auto px-4 space-y-3 xl:space-y-4">
 
             @for (item of historialFiltrado; track $index) {
                 <!-- INGRESO -->
                 @if (item.tipo === 'ingreso') {
-                <div class="bg-white rounded-lg border-l-8 border-green-800 p-4 flex justify-between items-center shadow">
+                <div class="bg-white rounded-lg border-l-6 xl:border-l-8 border-green-800 p-3 xl:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2 xl:gap-0 shadow">
                     <div>
-                    <div class="text-[#545454] text-xl font-bold">
-                        {{ item.titulo }}
-                    </div>
-                    <div class="text-[#545454] text-base mt-1">
-                        {{ item.subtitulo }}
-                    </div>
-                    <div class="text-[#545454] text-sm mt-1">
-                        {{ item.fecha | date:'dd MMM yyyy' }}
-                    </div>
+                        <div class="text-[#545454] text-lg xl:text-xl font-bold">
+                            {{ item.titulo }}
+                        </div>
+                        <div class="text-[#545454] text-sm xl:text-base mt-1">
+                            {{ item.subtitulo }}
+                        </div>
+                        <div class="text-[#545454] text-xs xl:text-sm mt-1">
+                            {{ item.fecha | date:'dd MMM yyyy' }}
+                        </div>
                     </div>
 
                     <div class="text-center">
-                    <div class="bg-green-300 rounded-lg px-2 py-1 text-green-950 font-bold text-base mb-1">Ingreso</div>
-                    <div class="text-green-950 text-2xl font-bold">
-                        +${{ item.monto | number:'1.2-2' }}
-                    </div>
+                        <div class="bg-green-300 rounded-lg px-2 py-1 text-green-950 font-bold text-sm xl:text-base mb-1">Ingreso</div>
+                        <div class="text-green-950 text-xl xl:text-2xl font-bold">
+                            +${{ item.monto | number:'1.2-2' }}
+                        </div>
                     </div>
                 </div>
                 }
 
                 <!-- EGRESO -->
                 @if (item.tipo === 'egreso') {
-                <div class="bg-white rounded-lg border-l-8 border-red-700 p-4 flex justify-between items-center shadow">
+                <div class="bg-white rounded-lg border-l-6 xl:border-l-8 border-red-700 p-3 xl:p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2 xl:gap-0 shadow">
                     <div>
-                        <div class="text-neutral-600 text-xl font-bold">
+                        <div class="text-neutral-600 text-lg xl:text-xl font-bold">
                             {{ item.subtitulo }}
                         </div>
 
-                        <div class="text-neutral-600 text-base mt-1">
+                        <div class="text-neutral-600 text-sm xl:text-base mt-1">
                             {{ item.titulo }}
                         </div>
 
-                        <div class="text-neutral-600 text-sm mt-1">
+                        <div class="text-neutral-600 text-xs xl:text-sm mt-1">
                             {{ item.fecha | date:'dd MMM yyyy' }}
                         </div>
                     </div>
 
                     <div class="text-center">
-                        <div class="bg-red-200 rounded-lg px-2 py-1 text-red-950 font-bold text-md mb-1">Gasto</div>
+                        <div class="bg-red-200 rounded-lg px-2 py-1 text-red-950 font-bold text-sm xl:text-base mb-1">Gasto</div>
 
-                        <div class="text-red-950 text-2xl font-bold">
+                        <div class="text-red-950 text-xl xl:text-2xl font-bold">
                             -${{ item.monto | number:'1.2-2' }}
                         </div>
                     </div>
@@ -196,41 +196,41 @@
         </div>
 
         <!-- ===================== SALDOS PENDIENTES ===================== -->
-        <div class="bg-zinc-300/30 rounded-lg shadow-lg flex flex-col h-[600px] overflow-hidden">
+        <div class="bg-zinc-300/30 rounded-lg shadow-lg flex flex-col h-[500px] xl:h-[600px] overflow-hidden">
 
             <!-- Título -->
-            <h2 class="text-teal-900 text-4xl font-bold px-4 py-4 mt-2">Saldos pendientes</h2>
+            <h2 class="text-teal-900 text-3xl xl:text-4xl font-bold px-4 py-3 xl:py-4 mt-2">Saldos pendientes</h2>
 
             <!-- Barra de búsqueda -->
-            <div class="px-4 mb-8 w-full flex justify-center">
+            <div class="px-4 mb-6 xl:mb-8 w-full flex justify-center">
                 <div class="relative flex-1 max-w-3xl">
                     <input
                         type="text"
                         [(ngModel)]="busquedaPendientes"
                         (input)="filtrarPendientes()"
                         placeholder="Buscar..."
-                        class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 shadow-sm text-base 
+                        class="w-full pl-10 xl:pl-12 pr-4 py-2.5 xl:py-3 rounded-xl border border-gray-300 shadow-sm text-sm xl:text-base 
                             focus:outline-none focus:ring-2 focus:ring-teal-600"
                     />
                     <img
                         src="assets/icons/buscar.svg"
-                        class="w-6 h-6 absolute left-4 top-2.5 opacity-70"
+                        class="w-5 xl:w-6 h-5 xl:h-6 absolute left-3 xl:left-4 top-2.5 xl:top-2.5 opacity-70"
                     />
                 </div>
             </div>
 
 
             <!-- Lista de pacientes / ingresos pendientes -->
-            <div class="flex-1 overflow-y-auto px-4 space-y-4">
+            <div class="flex-1 overflow-y-auto px-4 space-y-3 xl:space-y-4">
 
                 @for (ingreso of ingresosPendientesFiltrados; track $index) {
-                    <div class="bg-white rounded-lg border-l-8 border-amber-400 p-4 shadow">
+                    <div class="bg-white rounded-lg border-l-6 xl:border-l-8 border-amber-400 p-3 xl:p-4 shadow">
 
                         <!-- Encabezado: nombre + botón a la derecha -->
-                        <div class="flex justify-between items-start gap-4 w-full">
+                        <div class="flex flex-col sm:flex-row justify-between items-start gap-3 xl:gap-4 w-full">
 
                             <!-- Nombre del paciente -->
-                            <div class="text-[#545454] text-2xl font-bold flex-1 break-words">
+                            <div class="text-[#545454] text-xl xl:text-2xl font-bold flex-1 break-words">
                                 {{ ingreso.paciente }}
                             </div>
 
@@ -238,46 +238,46 @@
                             <button
                                 (click)="abrirModalAbono(ingreso)"
                                 [disabled]="!corteAbierto"
-                                class="bg-[#1D8E92] text-white text-base font-semibold px-4 py-2 rounded-xl shadow flex items-center gap-2 shrink-0
-                                    shadow hover:scale-105 transition disabled:opacity-40 disabled:cursor-not-allowed">
-                                <img src="assets/icons/abono.svg" alt="Abono" class="w-6 h-6">
+                                class="w-full sm:w-auto bg-[#1D8E92] text-white text-sm xl:text-base font-semibold px-3 xl:px-4 py-2 rounded-xl shadow flex items-center justify-center gap-2 shrink-0
+                                    hover:scale-105 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                <img src="assets/icons/abono.svg" alt="Abono" class="w-5 xl:w-6 h-5 xl:h-6">
                                 Registrar Abono
                             </button>
                         </div>
 
                         <!-- Servicio -->
-                        <div class="text-[#545454] text-base mt-1">
+                        <div class="text-[#545454] text-sm xl:text-base mt-1">
                             {{ ingreso.servicio }}
                         </div>
 
                         <!-- Fecha -->
-                        <div class="text-[#545454] text-sm mt-1">
+                        <div class="text-[#545454] text-xs xl:text-sm mt-1">
                             {{ ingreso.fecha }}
                         </div>
 
                         <!-- Totales -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-3 text-neutral-700">
+                        <div class="grid grid-cols-3 gap-4 xl:gap-6 mt-3 text-neutral-700">
 
                             <!-- Total -->
                             <div class="flex flex-col">
-                                <span class="text-md font-semibold text-[#545454]">Total</span>
-                                <span class="text-lg font-bold text-neutral-800">
+                                <span class="text-sm xl:text-base font-semibold text-[#545454]">Total</span>
+                                <span class="text-base xl:text-lg font-bold text-neutral-800">
                                 ${{ ingreso.monto_total | number:'1.2-2' }}
                                 </span>
                             </div>
 
                             <!-- Pagado -->
                             <div class="flex flex-col">
-                                <span class="text-md font-semibold text-[#545454]">Pagado</span>
-                                <span class="text-lg font-bold text-[#094309]">
+                                <span class="text-sm xl:text-base font-semibold text-[#545454]">Pagado</span>
+                                <span class="text-base xl:text-lg font-bold text-[#094309]">
                                 ${{ ingreso.totalPagado | number:'1.2-2' }}
                                 </span>
                             </div>
 
                             <!-- Pendiente -->
                             <div class="flex flex-col">
-                                <span class="text-md font-semibold text-[#545454]">Pendiente</span>
-                                <span class="text-lg font-bold text-[#530E0E]">
+                                <span class="text-sm xl:text-base font-semibold text-[#545454]">Pendiente</span>
+                                <span class="text-base xl:text-lg font-bold text-[#530E0E]">
                                 ${{ ingreso.saldoPendiente | number:'1.2-2' }}
                                 </span>
                             </div>
@@ -290,7 +290,7 @@
 
 
                 @if (ingresosPendientes.length === 0) {
-                    <p class="text-center text-neutral-600 mt-4 font-semibold">No hay saldos pendientes.</p>
+                    <p class="text-center text-neutral-600 mt-4 text-sm xl:text-base font-semibold">No hay saldos pendientes.</p>
                 }
                 
             </div>

@@ -286,7 +286,6 @@ export class Calendario implements OnInit {
 
   }
 
-
   // ============================================
   // HELPERS PARA PROCESAR CITAS
   // ============================================
