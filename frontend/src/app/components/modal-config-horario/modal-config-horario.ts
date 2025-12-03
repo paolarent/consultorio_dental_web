@@ -17,6 +17,7 @@ export class ModalConfigHorario {
   @Output() cerrar = new EventEmitter<void>();
 
   private horarioSrv = inject(HorarioService);
+  loading = signal(false);
 
   diasSemana = signal<any[]>([]);
   tp1: any;
@@ -119,6 +120,10 @@ export class ModalConfigHorario {
   }
 
   guardarCambios() {
+    if (this.loading()) return; // evita multiclick
+
+    this.loading.set(true);
+
     const payload: any[] = [];
 
     for (const dia of this.diasSemana()) {
@@ -181,11 +186,13 @@ export class ModalConfigHorario {
     this.horarioSrv.updateHorario(payload).subscribe({
       next: () => {
         this.notify.success('Horario actualizado correctamente');
+        this.loading.set(false);
         this.cerrar.emit();
       },
       error: (err) => {
         console.error(err);
         this.notify.error(err.error.message || 'Error al actualizar horario');
+        this.loading.set(false);
       }
     });
   }
