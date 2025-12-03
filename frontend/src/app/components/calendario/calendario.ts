@@ -82,9 +82,6 @@ export class Calendario implements OnInit {
     
     if (usuario?.rol) {
       this.rolUsuario = usuario.rol as 'dentista' | 'paciente';
-      console.log("Usuario autenticado:", {
-        rol: this.rolUsuario,
-      });
     } else {
       console.error("No se pudo obtener el rol del usuario");
     }
@@ -96,7 +93,6 @@ export class Calendario implements OnInit {
   // CARGAR HORARIO
   cargarHorario() {
     this.horarioService.obtenerHorario().subscribe(horarios => {
-      console.log("Horarios recibidos:", horarios);
 
       if (!horarios || horarios.length === 0) {
         console.warn("No hay horarios disponibles");
@@ -140,7 +136,7 @@ export class Calendario implements OnInit {
 
   // CARGAR CITAS DE LA SEMANA/MES VISIBLE
   onViewChange(info: any) {
-    console.log("Vista cambiada:", info.view.type);
+    //console.log("Vista cambiada:", info.view.type);
   }
 
 
@@ -288,7 +284,6 @@ export class Calendario implements OnInit {
       events: [...eventosBase, ...eventos]
     };
 
-    console.log("Total de eventos visibles:", eventos.length);
   }
 
 
