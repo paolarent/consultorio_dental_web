@@ -19,4 +19,4 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf.template
 RUN apk add --no-cache bash
 
 # Reemplaza $PORT y arranca Nginx
-CMD ["sh", "-c", "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
