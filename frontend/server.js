@@ -11,11 +11,12 @@ const distPath = path.join(__dirname, 'dist', 'frontend');
 app.use(express.static(distPath));
 
 // Redirección para rutas internas del SPA
-app.get('*', (req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
+app.use((req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Iniciar servidor
 app.listen(PORT, () => {
-    console.log('Frontend running on port ' + PORT);
+  console.log('Frontend running on port ' + PORT);
 });
+
