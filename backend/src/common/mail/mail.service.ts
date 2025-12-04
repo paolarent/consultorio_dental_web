@@ -13,10 +13,18 @@ export class MailerService {
         host: SMTP_HOST,
         port: Number(SMTP_PORT) || 587,
         secure: false, // TLS se negociará si es necesario
+        requireTLS: true,
         auth: {
             user: SMTP_USER,
             pass: SMTP_PASS,
         },
+            tls: {
+            // Gmail rechaza handshake desde Railway sin esto
+            rejectUnauthorized: false,
+            ciphers: 'SSLv3',
+        },
+            connectionTimeout: 20000, // 20 segundos
+            greetingTimeout: 20000,
         });
     }
 
