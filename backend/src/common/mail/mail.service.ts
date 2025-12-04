@@ -9,22 +9,23 @@ export class MailerService {
     private logger = new Logger(MailerService.name);
 
     constructor() {
-        this.transporter = nodemailer.createTransport({
+        /*this.transporter = nodemailer.createTransport({
         host: SMTP_HOST,
         port: Number(SMTP_PORT) || 587,
         secure: false, // TLS se negociará si es necesario
-        requireTLS: true,
         auth: {
             user: SMTP_USER,
             pass: SMTP_PASS,
         },
-            tls: {
-            // Gmail rechaza handshake desde Railway sin esto
-            rejectUnauthorized: false,
-            ciphers: 'SSLv3',
-        },
-            connectionTimeout: 20000, // 20 segundos
-            greetingTimeout: 20000,
+        });*/
+        this.transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT),
+            secure: false,
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
+            },
         });
     }
 
