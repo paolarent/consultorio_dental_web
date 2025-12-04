@@ -1,5 +1,4 @@
 //ENUMS Q USO EN LA BD PARA CLASIFICACIONES O DATOS ESTATICOS
-
 export enum ClasificacionACM {
   NINGUNA = "ninguna",
   ALERGIA = "alergia",

@@ -86,14 +86,15 @@ export class UsuarioController {
     @Query('token') token: string,
     @Res() res: Response,
     ) {
+        const FRONT_URL = 'https://consultoriodentalweb-production-60c0.up.railway.app/';
         try {
             await this.usuarioService.confirmCorreoUpdate(token);
 
             //Redirige a /home/mi-perfil
-            return res.redirect('http://localhost:4200/home/mi-perfil?confirm=success');
+            return res.redirect(`${FRONT_URL}/home/mi-perfil?confirm=success`);
         } catch (error) {
             // Si falla, redirige con un indicador de error
-            return res.redirect('http://localhost:4200/home/mi-perfil?confirm=error');
+            return res.redirect(`${FRONT_URL}/home/mi-perfil?confirm=error`);
         }
     }
 

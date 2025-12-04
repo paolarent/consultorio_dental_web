@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
