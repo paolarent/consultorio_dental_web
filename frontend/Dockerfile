@@ -2,11 +2,9 @@
 FROM node:22-alpine AS build
 WORKDIR /app
 
-# Instala dependencias
 COPY package*.json ./
 RUN npm ci
 
-# Copia el resto del código y hace el build
 COPY . .
 RUN npm run build -- --configuration production --output-path dist/frontend
 
@@ -16,10 +14,11 @@ FROM nginx:alpine
 # Copia la build generada
 COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
-# Configuración para Angular SPA
-RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d/
+# Copia el nginx.conf template
+COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
-EXPOSE 3000
-CMD ["nginx", "-g", "daemon off;"]
+# Usa envsubst para reemplazar $PORT automáticamente
+RUN apk add --no-cache bash
+CMD ["sh", "-c", "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+
 
