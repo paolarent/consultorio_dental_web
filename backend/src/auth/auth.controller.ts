@@ -38,7 +38,7 @@ export class AuthController {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: (Number(process.env.ACCESS_TOKEN_EXP_MINUTES || 10) * 60 * 1000),
-            sameSite: 'lax',
+            sameSite: 'none',
             path: '/', // asegurarse que reemplace la cookie correctamente
         });
 
@@ -47,7 +47,7 @@ export class AuthController {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: (parseInt(process.env.REFRESH_TOKEN_EXP_DAYS || '7') * 24 * 60 * 60 * 1000),
-            sameSite: 'lax',
+            sameSite: 'none',
             path: '/', // asegurarse que reemplace la cookie correctamente
         });
 
@@ -94,7 +94,7 @@ export class AuthController {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: Number(process.env.ACCESS_TOKEN_EXP_MINUTES || 10) * 60 * 1000,
-                sameSite: 'lax',
+                sameSite: 'none',
                 path: '/',
             });
 
@@ -102,7 +102,7 @@ export class AuthController {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: (parseInt(process.env.REFRESH_TOKEN_EXP_DAYS || '7', 10) * 24 * 60 * 60 * 1000),
-                sameSite: 'lax',
+                sameSite: 'none',
                 path: '/',
             });
 
