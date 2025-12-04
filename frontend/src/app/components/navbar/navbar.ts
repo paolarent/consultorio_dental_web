@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Rol } from '../../../../../backend/src/common/enums';
+import { Rol } from '../../shared/enums';
 
 @Component({
   selector: 'app-navbar',

@@ -1,4 +1,4 @@
-import { Severidad } from "../../../../backend/src/common/enums";
+import { Severidad } from "../shared/enums";
 
 export interface Alergia {
     id_alergia: number;

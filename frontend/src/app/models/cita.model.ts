@@ -1,4 +1,4 @@
-import { FrecuenciaServicio } from "../../../../backend/src/common/enums";
+import { FrecuenciaServicio } from "../shared/enums";
 
 export interface CrearCitaDto {
     id_paciente: number;

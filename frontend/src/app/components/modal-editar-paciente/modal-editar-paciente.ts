@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, OnInit, AfterViewInit, inject } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
+import { Sexo, SiONo } from '../../shared/enums';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Paciente, UpdatePaciente } from '../../models/paciente.model';

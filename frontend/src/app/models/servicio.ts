@@ -1,4 +1,4 @@
-import { TipoCobro } from "../../../../backend/src/common/enums";
+import { TipoCobro } from "../shared/enums";
 
 export interface Servicio {
     id_servicio?: number;

@@ -1,4 +1,4 @@
-import { SiONo } from "../../../../backend/src/common/enums";
+import { SiONo } from "../shared/enums";
 
 export interface CondicionMedica {
     id_condicion_medica: number;

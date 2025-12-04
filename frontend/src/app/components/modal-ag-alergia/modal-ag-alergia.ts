@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import { Severidad } from '../../../../../backend/src/common/enums';
+import { Severidad } from '../../shared/enums';
 import { AlergiasService } from '../../services/alergia.service';
 
 @Component({

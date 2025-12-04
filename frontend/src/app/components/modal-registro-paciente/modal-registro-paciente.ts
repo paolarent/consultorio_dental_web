@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NotificationService } from '../../services/notification.service';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Sexo, SiONo } from '../../../../../backend/src/common/enums';
+import { Sexo, SiONo } from '../../shared/enums';
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
 import { MatFormFieldModule } from '@angular/material/form-field';

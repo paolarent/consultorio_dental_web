@@ -1,4 +1,4 @@
-import { StatusArchivo } from "../../../../backend/src/common/enums";
+import { StatusArchivo } from "../shared/enums";
 
 export interface Archivo {
     id_archivo: number;

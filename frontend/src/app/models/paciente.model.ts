@@ -1,4 +1,4 @@
-import { Sexo, SiONo, Status } from '../../../../backend/src/common/enums/index';
+import { Sexo, SiONo, Status } from '../shared/enums';
 
 export interface Paciente {
     id_paciente: number;

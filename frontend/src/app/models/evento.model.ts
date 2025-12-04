@@ -1,4 +1,4 @@
-import { SiONo } from "../../../../backend/src/common/enums";
+import { SiONo } from "../shared/enums";
 
 export interface TipoEvento {
     id_tipo_evento: number;

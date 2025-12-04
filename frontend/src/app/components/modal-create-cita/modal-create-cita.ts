@@ -9,7 +9,7 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
 import { ServicioService } from '../../services/servicio.service';
 import { PacienteService } from '../../services/paciente.service';
 import { NotificationService } from '../../services/notification.service';
-import { FrecuenciaServicio } from '../../../../../backend/src/common/enums';
+import { FrecuenciaServicio } from '../../shared/enums';
 import { CitaService } from '../../services/cita.service';
 
 @Component({

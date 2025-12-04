@@ -8,7 +8,7 @@ import { NgxMaterialTimepickerComponent, NgxMaterialTimepickerModule } from 'ngx
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es.js';
 import { CreateEventoDto, Evento } from '../../models/evento.model';
-import { SiONo } from '../../../../../backend/src/common/enums';
+import { SiONo } from '../../shared/enums';
 import { NotificationService } from '../../services/notification.service';
 
 @Component({

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
-import { SiONo } from '../../../../../backend/src/common/enums';
+import { SiONo } from '../../shared/enums';
 import { CondicionesMedicasService } from '../../services/cond-med.service';
 import { NotificationService } from '../../services/notification.service';
 

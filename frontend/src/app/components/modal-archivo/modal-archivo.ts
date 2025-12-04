@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { Archivo } from '../../models/archivo.model';
 import { ArchivoService } from '../../services/archivo.service';
-import { StatusArchivo } from '../../../../../backend/src/common/enums';
+import { StatusArchivo } from '../../shared/enums';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification.service';
 
