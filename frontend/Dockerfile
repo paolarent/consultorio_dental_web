@@ -17,8 +17,8 @@ RUN npm run build -- --configuration production
 FROM nginx:alpine
 
 # Copia los archivos generados a Nginx
-# Como tu dist/frontend/browser está en la raíz, se copia así:
-COPY dist/frontend/browser /usr/share/nginx/html
+COPY dist/frontend /usr/share/nginx/html
+
 
 # Opcional: agrega config de Nginx para Angular SPA
 COPY nginx.conf /etc/nginx/conf.d/default.conf
