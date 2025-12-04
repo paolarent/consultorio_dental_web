@@ -1,4 +1,4 @@
-# Etapa 1: Build del proyecto Angular
+# Etapa 1: Compilar Angular
 FROM node:22-alpine AS build
 WORKDIR /app
 
@@ -8,15 +8,17 @@ RUN npm ci
 COPY . .
 RUN npm run build -- --configuration production --output-path dist/frontend
 
-# Etapa 2: Servir con Nginx
-FROM nginx:alpine
-COPY --from=build /app/dist/frontend /usr/share/nginx/html
+# Etapa 2: Servir con Node + Express
+FROM node:22-alpine
+WORKDIR /app
 
-# Copia el nginx.conf template
-COPY nginx.conf /etc/nginx/conf.d/default.conf.template
+COPY package*.json ./
+RUN npm ci
 
-# Instala bash para usar envsubst
-RUN apk add --no-cache bash
+COPY --from=build /app/dist ./dist
+COPY server.js .
 
-# Reemplaza $PORT y arranca Nginx
-CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+EXPOSE 3000
+
+CMD ["node", "server.js"]
+

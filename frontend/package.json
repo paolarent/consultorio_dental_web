@@ -35,6 +35,7 @@
     "@fullcalendar/daygrid": "^6.1.19",
     "@fullcalendar/interaction": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
+    "express": "^5.2.1",
     "flatpickr": "^4.6.13",
     "ng-gallery": "^12.0.0",
     "ngx-material-timepicker": "^13.1.1",
