@@ -15,12 +15,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copia el build exacto
-COPY --from=build /app/dist/frontend ./dist/frontend
+# Copiamos SOLO lo generado
+COPY --from=build /app/dist/frontend ./dist
 COPY server.js .
 
 EXPOSE 3000
 
 CMD ["node", "server.js"]
-
 
