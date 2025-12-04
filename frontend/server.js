@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Ruta absoluta a dist/frontend
-const distPath = path.join(__dirname, 'dist');
+const distPath = path.join(__dirname, 'dist', 'frontend', 'browser');
 
 // Servir archivos estáticos
 app.use(express.static(distPath));
