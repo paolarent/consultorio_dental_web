@@ -3,13 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private http = inject(HttpClient);
 
-    private baseUrl = 'http://localhost:3000/auth';
-    private urlPasswRec = 'http://localhost:3000/usuario';
+    //private baseUrl = 'http://localhost:3000/auth';
+    private baseUrl = `${environment.backendUrl}/auth`;
+    //private urlPasswRec = 'http://localhost:3000/usuario';
+    private urlPasswRec = `${environment.backendUrl}/usuario`;
 
     // --- Estado reactivo del usuario usando Signals ---
     private _usuario = signal<any | null>(null);
