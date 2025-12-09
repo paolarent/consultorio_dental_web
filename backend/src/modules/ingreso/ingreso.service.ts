@@ -405,7 +405,7 @@ export class IngresoService {
         const formateados = [
             ...ingresos.map(i => ({
                 tipo: "ingreso",
-                fecha: formatFechaLocal(i.fecha),
+                fecha: i.fecha,
                 monto: i.monto_total,
                 titulo: `${i.detalle_ingreso[0]?.servicio.nombre || "Servicio"} - ${i.paciente.nombre} ${i.paciente.apellido1}`,
                 subtitulo: i.notas || ""
@@ -413,7 +413,7 @@ export class IngresoService {
 
             ...egresos.map(e => ({
                 tipo: "egreso",
-                fecha: formatFechaLocal(e.fecha),
+                fecha: e.fecha,
                 monto: e.monto,
                 titulo: e.descripcion,
                 subtitulo: e.tipo_egreso.nombre
