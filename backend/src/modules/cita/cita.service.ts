@@ -536,8 +536,10 @@ export class CitaService {
                     hora_original: cita.hora_inicio,
                     hora_fin_original: cita.hora_fin,
                     nueva_fecha: new Date(dto.nueva_fecha),
-                    nueva_hora: this.convertirHoraADateTime(dto.nueva_fecha, dto.nueva_hora),
-                    nueva_hora_fin: this.convertirHoraADateTime(dto.nueva_fecha, nueva_hora_fin),
+                    //nueva_hora: this.convertirHoraADateTime(dto.nueva_fecha, dto.nueva_hora),
+                    //nueva_hora_fin: this.convertirHoraADateTime(dto.nueva_fecha, nueva_hora_fin),
+                    nueva_hora: this.sumarHoras(this.convertirHoraADateTime(dto.nueva_fecha, dto.nueva_hora), 7),
+                    nueva_hora_fin: this.sumarHoras(this.convertirHoraADateTime(dto.nueva_fecha, nueva_hora_fin), 7),
                     id_consultorio,
                     status: StatusCitaReprog.PENDIENTE
                 }
