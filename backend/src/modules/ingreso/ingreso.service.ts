@@ -405,7 +405,7 @@ export class IngresoService {
         const formateados = [
             ...ingresos.map(i => ({
                 tipo: "ingreso",
-                fecha: i.fecha,
+                fecha: i.fecha.toISOString().split('T')[0],
                 monto: i.monto_total,
                 titulo: `${i.detalle_ingreso[0]?.servicio.nombre || "Servicio"} - ${i.paciente.nombre} ${i.paciente.apellido1}`,
                 subtitulo: i.notas || ""
@@ -413,7 +413,7 @@ export class IngresoService {
 
             ...egresos.map(e => ({
                 tipo: "egreso",
-                fecha: e.fecha,
+                fecha: e.fecha.toISOString().split('T')[0],
                 monto: e.monto,
                 titulo: e.descripcion,
                 subtitulo: e.tipo_egreso.nombre
