@@ -39,6 +39,7 @@ export class Calendario implements OnInit {
     locales: [esLocale],
     locale: 'es',
     initialView: 'timeGridWeek',
+    timeZone: 'local',
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
     headerToolbar: {
       left: 'prev,next today',
@@ -151,8 +152,8 @@ export class Calendario implements OnInit {
 
           return {
             id: `cita-${cita.id_cita}`,
-            start: `${fecha}T${horaInicio}:00`,
-            end: `${fecha}T${horaFin}:00`,
+            start: cita.hora_inicio,   // YA ES ISO CORRECTO SE SUPONE!!!
+            end: cita.hora_fin,  
             display: 'block',
             color: '#b74545ff', // rojo ocupado
             classNames: ['cita-ocupada'],
