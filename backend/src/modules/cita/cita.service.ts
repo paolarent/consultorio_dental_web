@@ -1002,7 +1002,7 @@ async listarCitasCalendario(filtros: {
         if (c.status === 'reprogramada' && reprog) {
             return {
                 id_cita: c.id_cita,
-                fecha: reprog.nueva_fecha.toISOString().split('T')[0],
+                fecha: reprog.nueva_fecha.toLocaleDateString('en-CA'),
                 hora_inicio: reprog.nueva_hora,
                 hora_fin: reprog.nueva_hora_fin,
                 status: c.status,
@@ -1015,7 +1015,7 @@ async listarCitasCalendario(filtros: {
         // Cita normal
         return {
             id_cita: c.id_cita,
-            fecha: c.fecha.toISOString().split('T')[0],
+            fecha: c.fecha.toLocaleDateString('en-CA'),
             hora_inicio: c.hora_inicio,
             hora_fin: c.hora_fin,
             status: c.status,
@@ -1125,7 +1125,7 @@ async listarCitas(filtros: {
                     id_reprogramacion: reprog.id_reprogramacion,
                     paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
                     servicio: c.servicio?.nombre ?? 'Sin servicio',
-                    fecha: reprog.nueva_fecha.toISOString().split('T')[0],
+                    fecha: reprog.nueva_fecha.toLocaleDateString('en-CA'),
                     hora_inicio: reprog.nueva_hora,
                     hora_fin: reprog.nueva_hora_fin,
                     notas: c.notas ?? '',
@@ -1139,7 +1139,7 @@ async listarCitas(filtros: {
                 id_cita: c.id_cita,
                 paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
                 servicio: c.servicio?.nombre ?? 'Sin servicio',
-                fecha: c.fecha.toISOString().split('T')[0],
+                fecha: c.fecha.toLocaleDateString('en-CA'),
                 hora_inicio: c.hora_inicio,
                 hora_fin: c.hora_fin,
                 notas: c.notas ?? '',

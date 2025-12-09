@@ -152,8 +152,8 @@ export class Calendario implements OnInit {
 
           return {
             id: `cita-${cita.id_cita}`,
-            start: cita.hora_inicio,   // YA ES ISO CORRECTO SE SUPONE!!!
-            end: cita.hora_fin,  
+            start: `${fecha}T${horaInicio}:00`,
+            end: `${fecha}T${horaFin}:00`,
             display: 'block',
             color: '#b74545ff', // rojo ocupado
             classNames: ['cita-ocupada'],
