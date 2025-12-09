@@ -308,10 +308,11 @@ export class CitaService {
         const horaInicioStr = `${horaInicioAjustada.getHours()}`.padStart(2,'0') + ':' + `${horaInicioAjustada.getMinutes()}`.padStart(2,'0');
         const horaFinStr = `${horaFinAjustada.getHours()}`.padStart(2,'0') + ':' + `${horaFinAjustada.getMinutes()}`.padStart(2,'0');
 
-        this.validarFechaHoraFutura(dto.fecha, horaInicioStr, 60);
+         // Validar disponibilidad
+        this.validarFechaHoraFutura(dto.fecha, dto.hora_inicio, 60);
         await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
         await this.validarEventos(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
-        await this.validarDisponibilidad(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
+        await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
 
         // Crear cita con status "pendiente" (solicitud)
         const cita = await this.prisma.cita.create({
