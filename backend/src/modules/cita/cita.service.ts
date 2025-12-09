@@ -217,19 +217,18 @@ export class CitaService {
         await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
 
         // Fecha sin hora
-        const fechaLocal = new Date(`${dto.fecha}T00:00:00`);
-        fechaLocal.setMinutes(fechaLocal.getMinutes() + fechaLocal.getTimezoneOffset());
+        const fechaUTC = new Date(`${dto.fecha}T00:00:00Z`);
+        //const fechaLocal = new Date(`${dto.fecha}T00:00:00`);
+        //fechaLocal.setMinutes(fechaLocal.getMinutes() + fechaLocal.getTimezoneOffset());
 
         // Crear cita con status "programada" directamente
         const cita = await this.prisma.cita.create({
             data: {
                 id_paciente: dto.id_paciente,
                 id_servicio: dto.id_servicio,
-                fecha: fechaLocal,
-                //hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
-                hora_inicio: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7),
-                hora_fin: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7),
-                //hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
+                fecha: fechaUTC,
+                hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
+                hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
                 frecuencia: dto.frecuencia || 'unica',
                 notas: dto.notas,
                 id_consultorio,
@@ -309,10 +308,8 @@ export class CitaService {
                 id_motivo: dto.id_motivo,
                 id_servicio: motivo.id_servicio, 
                 fecha: new Date(dto.fecha),
-                //hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
-                //hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
-                hora_inicio: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7),
-                hora_fin: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7),
+                hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
+                hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
                 frecuencia: 'unica', //defecto (paciente no sabe se supone ps)
                 notas: dto.notas,
                 id_consultorio,
@@ -536,10 +533,8 @@ export class CitaService {
                     hora_original: cita.hora_inicio,
                     hora_fin_original: cita.hora_fin,
                     nueva_fecha: new Date(dto.nueva_fecha),
-                    //nueva_hora: this.convertirHoraADateTime(dto.nueva_fecha, dto.nueva_hora),
-                    //nueva_hora_fin: this.convertirHoraADateTime(dto.nueva_fecha, nueva_hora_fin),
-                    nueva_hora: this.sumarHoras(this.convertirHoraADateTime(dto.nueva_fecha, dto.nueva_hora), 7),
-                    nueva_hora_fin: this.sumarHoras(this.convertirHoraADateTime(dto.nueva_fecha, nueva_hora_fin), 7),
+                    nueva_hora: this.convertirHoraADateTime(dto.nueva_fecha, dto.nueva_hora),
+                    nueva_hora_fin: this.convertirHoraADateTime(dto.nueva_fecha, nueva_hora_fin),
                     id_consultorio,
                     status: StatusCitaReprog.PENDIENTE
                 }
@@ -695,22 +690,23 @@ export class CitaService {
         });
     }
 
-    //Validar que la hora esté dentro del horario activo del consultorio
     private async validarHorarioConsultorio(
         fecha: string, 
         hora_inicio: string,
         hora_fin: string,
         id_consultorio: number
     ) {
+        // Día de la semana
         const fechaDate = this.convertirFechaSoloDia(fecha);
         const dia = fechaDate.getDay();
         const diaSemana = dia === 0 ? 7 : dia; // 1=Lunes, 7=Domingo
 
+        // Traer horarios activos del consultorio
         const horariosDelDia = await this.prisma.horario.findMany({
             where: {
-            id_consultorio,
-            dia: diaSemana,
-            status: 'activo'
+                id_consultorio,
+                dia: diaSemana,
+                status: 'activo'
             }
         });
 
@@ -718,15 +714,17 @@ export class CitaService {
             throw new BadRequestException('El consultorio no tiene horario activo para este día');
         }
 
+        // Convertir la hora de la cita a Date UTC
+        const citaInicioUTC = this.convertirHoraADateTime(fecha, hora_inicio);
+        const citaFinUTC = this.convertirHoraADateTime(fecha, hora_fin);
+
         // Verificar si la cita cae dentro de algún horario activo
         const dentroDeHorario = horariosDelDia.some(horario => {
-            // La hora de inicio debe estar dentro del horario
-            const inicioValido = this.horaEnRango(hora_inicio, horario.hora_inicio, horario.hora_fin);
-            // La hora de fin también debe estar dentro del horario (o justo al final)
-            const finValido = this.horaEnRango(hora_fin, horario.hora_inicio, horario.hora_fin) ||
-                            hora_fin === this.convertir12hA24h(horario.hora_fin);
-            
-            return inicioValido && finValido;
+            const horarioInicioUTC = this.convertirHoraADateTime(fecha, horario.hora_inicio);
+            const horarioFinUTC = this.convertirHoraADateTime(fecha, horario.hora_fin);
+
+            // La cita debe iniciar después o igual que el inicio y terminar antes o igual que el fin
+            return citaInicioUTC >= horarioInicioUTC && citaFinUTC <= horarioFinUTC;
         });
 
         if (!dentroDeHorario) {
@@ -736,6 +734,7 @@ export class CitaService {
             );
         }
     }
+
 
     // CONSULTAS Y LISTADOS
     // CONSULTAR DISPONIBILIDAD (PACIENTE)
@@ -1489,158 +1488,82 @@ async listarCitas(filtros: {
         id_consultorio: number,
         id_cita_excluir?: number
     ) {
-        // Convertir a DateTime completos
+        // Convertir a DateTime completos en UTC
         const horaInicioDate = this.convertirHoraADateTime(fecha, hora_inicio);
         const horaFinDate = this.convertirHoraADateTime(fecha, hora_fin);
 
         const citasConflicto = await this.prisma.cita.findFirst({
             where: {
-            id_consultorio,
-            fecha: this.convertirFechaSoloDia(fecha),
-            status: { 
-                in: [StatusCitas.PROGRAMADA, ] 
-            },
-            ...(id_cita_excluir && { id_cita: { not: id_cita_excluir } }),
-            OR: [
-                // Caso 1: La nueva cita inicia durante una cita existente
-                {
+                id_consultorio,
+                fecha: this.convertirFechaSoloDia(fecha),
+                status: { in: [StatusCitas.PROGRAMADA] },
+                ...(id_cita_excluir && { id_cita: { not: id_cita_excluir } }),
                 AND: [
-                    { hora_inicio: { lte: horaInicioDate } },
-                    { hora_fin: { gt: horaInicioDate } }
+                    { hora_inicio: { lt: horaFinDate } },  // La cita existente inicia antes de que termine la nueva
+                    { hora_fin: { gt: horaInicioDate } }   // La cita existente termina después de que empieza la nueva
                 ]
-                },
-                // Caso 2: La nueva cita termina durante una cita existente
-                {
-                AND: [
-                    { hora_inicio: { lt: horaFinDate } },
-                    { hora_fin: { gte: horaFinDate } }
-                ]
-                },
-                // Caso 3: La nueva cita envuelve completamente una cita existente
-                {
-                AND: [
-                    { hora_inicio: { gte: horaInicioDate } },
-                    { hora_fin: { lte: horaFinDate } }
-                ]
-                }
-            ]
             }
         });
 
         if (citasConflicto) {
-            throw new ConflictException(`Ya existe una cita programada en ese horario.`);   //(${this.formatearHoraDB(citasConflicto.hora_inicio)} - ${this.formatearHoraDB(citasConflicto.hora_fin)})
+            throw new ConflictException(
+                `Ya existe una cita programada en ese horario.` //(${this.formatearHoraDB(citasConflicto.hora_inicio)} - ${this.formatearHoraDB(citasConflicto.hora_fin)})
+            );
         }
     }
 
-    //Valida que no haya eventos bloqueando el horario
+
+    // Valida que no haya eventos bloqueando el horario
     private async validarEventos(
         fecha: string,
         hora_inicio: string,
         hora_fin: string,
         id_consultorio: number
     ) {
-        const fechaLocal = this.convertirFechaSoloDia(fecha);
-        
+        // Convertir la fecha de la cita a UTC
+        const fechaCita = new Date(`${fecha}T00:00:00Z`);
+
         // Buscar eventos que intersectan con la fecha de la cita
         const eventosDelDia = await this.prisma.evento.findMany({
             where: {
                 id_consultorio,
-                // El evento debe abarcar la fecha de la cita
-                fecha_inicio: { lte: fechaLocal },
-                fecha_fin: { gte: fechaLocal },
+                fecha_inicio: { lte: fechaCita },
+                fecha_fin: { gte: fechaCita },
                 status: StatusEvento.ACTIVO
             },
-            include: {
-                tipo_evento: true
-            }
+            include: { tipo_evento: true }
         });
 
-        // Si no hay eventos, no hay bloqueos
-        if (eventosDelDia.length === 0) {
-            return;
-        }
+        if (eventosDelDia.length === 0) return;
 
         for (const evento of eventosDelDia) {
-            // CASO 1: Evento de todo el día
+            // Caso 1: Evento de todo el día
             if (evento.evento_todo_el_dia === 'si') {
                 throw new BadRequestException(
-                    `No se pueden agendar citas debido al evento programado de todo el día: "${evento.titulo}"`
+                    `No se pueden agendar citas debido al evento de todo el día: "${evento.titulo}"`
                 );
             }
 
-            // CASO 2: Evento con horario específico
+            // Caso 2: Evento con horario específico
             if (evento.hora_inicio && evento.hora_fin) {
-                const fechaCita = this.convertirFechaSoloDia(fecha);
-                const fechaInicioEvento = new Date(evento.fecha_inicio);
-                const fechaFinEvento = new Date(evento.fecha_fin);
+                const eventoInicioUTC = this.convertirHoraADateTime(fecha, evento.hora_inicio);
+                const eventoFinUTC = this.convertirHoraADateTime(fecha, evento.hora_fin);
 
-                // Normalizar fechas a medianoche para comparación
-                fechaCita.setHours(0, 0, 0, 0);
-                fechaInicioEvento.setHours(0, 0, 0, 0);
-                fechaFinEvento.setHours(0, 0, 0, 0);
+                const citaInicioUTC = this.convertirHoraADateTime(fecha, hora_inicio);
+                const citaFinUTC = this.convertirHoraADateTime(fecha, hora_fin);
 
-                const esPrimerDia = fechaCita.getTime() === fechaInicioEvento.getTime();
-                const esUltimoDia = fechaCita.getTime() === fechaFinEvento.getTime();
-                const esDiaIntermedio = fechaCita > fechaInicioEvento && fechaCita < fechaFinEvento;
+                // Verificar traslape directamente con Date
+                const hayTraslape = citaInicioUTC < eventoFinUTC && citaFinUTC > eventoInicioUTC;
 
-                // CASO 2A: Día intermedio del evento (bloquea todo)
-                if (esDiaIntermedio) {
+                if (hayTraslape) {
                     throw new BadRequestException(
-                        `No se pueden agendar citas hay un evento programado`
+                        `El horario está bloqueado por un evento: "${evento.titulo}"`
                     );
-                }
-
-                // CASO 2B: Primer día del evento (bloquea desde hora_inicio en adelante)
-                if (esPrimerDia) {
-                    const citaInicio24 = this.convertirA24h(hora_inicio);
-                    const citaFin24 = this.convertirA24h(hora_fin);
-                    const eventoInicio24 = this.convertirA24h(evento.hora_inicio);
-
-                    // Si la cita empieza antes de que termine el evento
-                    if (citaInicio24 >= eventoInicio24 || citaFin24 > eventoInicio24) {
-                        throw new BadRequestException(
-                            `El horario está bloqueado por un evento`
-                        );
-                    }
-                }
-
-                // CASO 2C: Último día del evento (bloquea hasta hora_fin)
-                if (esUltimoDia) {
-                    const citaInicio24 = this.convertirA24h(hora_inicio);
-                    const citaFin24 = this.convertirA24h(hora_fin);
-                    const eventoFin24 = this.convertirA24h(evento.hora_fin);
-
-                    // Si la cita termina después de que empiece el último día
-                    if (citaFin24 <= eventoFin24 || citaInicio24 < eventoFin24) {
-                        throw new BadRequestException(
-                            `El horario está bloqueado por un evento`
-                        );
-                    }
-                }
-
-                // CASO 2D: Evento de un solo día con horario específico
-                if (esPrimerDia && esUltimoDia) {
-                    const citaInicio24 = this.convertirA24h(hora_inicio);
-                    const citaFin24 = this.convertirA24h(hora_fin);
-                    const eventoInicio24 = this.convertirA24h(evento.hora_inicio);
-                    const eventoFin24 = this.convertirA24h(evento.hora_fin);
-
-                    const hayTraslape = this.verificarTraslapeHorarios(
-                        citaInicio24,
-                        citaFin24,
-                        eventoInicio24,
-                        eventoFin24
-                    );
-
-                    if (hayTraslape) {
-                        throw new BadRequestException(
-                            `El horario está bloqueado por un evento`
-                        );
-                    }
                 }
             }
         }
     }
+
 
     private validarTransicionEstado(estadoActual: string, nuevoEstado: StatusCitas) {
         const transicionesPermitidas = this.TRANSICIONES_VALIDAS[estadoActual];
@@ -1772,5 +1695,6 @@ async listarCitas(filtros: {
         nueva.setHours(nueva.getHours() + horas);
         return nueva;
     }
+
 
 }
