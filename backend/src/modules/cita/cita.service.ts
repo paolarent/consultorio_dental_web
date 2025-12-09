@@ -203,23 +203,26 @@ export class CitaService {
             dto.hora_inicio
         );
 
-        // --- AJUSTAR HORAS +7 ---
-        const horaInicioAjustada = this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7);
-        const horaFinAjustada = this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7);
+        // --- AJUSTE DE HORAS PARA DB (+7) ---
+        const horaInicioDB = this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7);
+        const horaFinDB = this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7);
 
-        // Convertir a string HH:mm para las validaciones
-        const horaInicioStr = `${horaInicioAjustada.getHours()}`.padStart(2, '0') + ':' + `${horaInicioAjustada.getMinutes()}`.padStart(2, '0');
-        const horaFinStr = `${horaFinAjustada.getHours()}`.padStart(2, '0') + ':' + `${horaFinAjustada.getMinutes()}`.padStart(2, '0');
-
-        // VALIDACIONES EN ORDEN:
-        //Validar que no sea en el pasado (mínimo 60 min de anticipación)
-        this.validarFechaHoraFutura(dto.fecha, horaInicioStr, 60);
-         //Validar que esté dentro del horario del consultorio
-        await this.validarHorarioConsultorio(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
-        //Validar que no haya eventos bloqueando
-        await this.validarEventos(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
-        //Validar que no haya conflictos con otras citas
-        await this.validarDisponibilidad(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
+        // --- VALIDACIONES ---
+        // Validar hora futura
+        this.validarFechaHoraFutura(dto.fecha, dto.hora_inicio, 60);
+        // Validar horario del consultorio (sin +7)
+        await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+        // Validar eventos y disponibilidad (con +7)
+        await this.validarEventos(dto.fecha, 
+            `${horaInicioDB.getHours()}`.padStart(2,'0') + ':' + `${horaInicioDB.getMinutes()}`.padStart(2,'0'),
+            `${horaFinDB.getHours()}`.padStart(2,'0') + ':' + `${horaFinDB.getMinutes()}`.padStart(2,'0'),
+            id_consultorio
+        );
+        await this.validarDisponibilidad(dto.fecha, 
+            `${horaInicioDB.getHours()}`.padStart(2,'0') + ':' + `${horaInicioDB.getMinutes()}`.padStart(2,'0'),
+            `${horaFinDB.getHours()}`.padStart(2,'0') + ':' + `${horaFinDB.getMinutes()}`.padStart(2,'0'),
+            id_consultorio
+        );
 
         // Fecha sin hora
         const fechaLocal = new Date(`${dto.fecha}T00:00:00`);
@@ -232,8 +235,8 @@ export class CitaService {
                 id_servicio: dto.id_servicio,
                 fecha: fechaLocal,
                 //hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
-                hora_inicio: horaInicioAjustada,
-                hora_fin: horaFinAjustada,
+                hora_inicio: horaInicioDB,
+                hora_fin: horaFinDB,
                 //hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
                 frecuencia: dto.frecuencia || 'unica',
                 notas: dto.notas,
@@ -301,11 +304,17 @@ export class CitaService {
             dto.hora_inicio
         );
 
-         // Validar disponibilidad
-        this.validarFechaHoraFutura(dto.fecha, dto.hora_inicio, 60);
-        await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
-        await this.validarEventos(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
-        await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+        const horaInicioAjustada = this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7);
+        const horaFinAjustada = this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7);
+
+        // Para validaciones
+        const horaInicioStr = `${horaInicioAjustada.getHours()}`.padStart(2,'0') + ':' + `${horaInicioAjustada.getMinutes()}`.padStart(2,'0');
+        const horaFinStr = `${horaFinAjustada.getHours()}`.padStart(2,'0') + ':' + `${horaFinAjustada.getMinutes()}`.padStart(2,'0');
+
+        this.validarFechaHoraFutura(dto.fecha, horaInicioStr, 60);
+        await this.validarHorarioConsultorio(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
+        await this.validarEventos(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
+        await this.validarDisponibilidad(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
 
         // Crear cita con status "pendiente" (solicitud)
         const cita = await this.prisma.cita.create({
@@ -316,8 +325,8 @@ export class CitaService {
                 fecha: new Date(dto.fecha),
                 //hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
                 //hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
-                hora_inicio: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7),
-                hora_fin: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7),
+                hora_inicio: horaInicioAjustada,
+                hora_fin: horaFinAjustada,
                 frecuencia: 'unica', //defecto (paciente no sabe se supone ps)
                 notas: dto.notas,
                 id_consultorio,
