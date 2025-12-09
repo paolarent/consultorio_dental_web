@@ -226,8 +226,10 @@ export class CitaService {
                 id_paciente: dto.id_paciente,
                 id_servicio: dto.id_servicio,
                 fecha: fechaLocal,
-                hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
-                hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
+                //hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
+                hora_inicio: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7),
+                hora_fin: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7),
+                //hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
                 frecuencia: dto.frecuencia || 'unica',
                 notas: dto.notas,
                 id_consultorio,
@@ -307,8 +309,10 @@ export class CitaService {
                 id_motivo: dto.id_motivo,
                 id_servicio: motivo.id_servicio, 
                 fecha: new Date(dto.fecha),
-                hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
-                hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
+                //hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
+                //hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
+                hora_inicio: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7),
+                hora_fin: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7),
                 frecuencia: 'unica', //defecto (paciente no sabe se supone ps)
                 notas: dto.notas,
                 id_consultorio,
@@ -1002,7 +1006,7 @@ async listarCitasCalendario(filtros: {
         if (c.status === 'reprogramada' && reprog) {
             return {
                 id_cita: c.id_cita,
-                fecha: reprog.nueva_fecha.toLocaleDateString('en-CA'),
+                fecha: reprog.nueva_fecha.toISOString().split('T')[0],
                 hora_inicio: reprog.nueva_hora,
                 hora_fin: reprog.nueva_hora_fin,
                 status: c.status,
@@ -1015,7 +1019,7 @@ async listarCitasCalendario(filtros: {
         // Cita normal
         return {
             id_cita: c.id_cita,
-            fecha: c.fecha.toLocaleDateString('en-CA'),
+            fecha: c.fecha.toISOString().split('T')[0],
             hora_inicio: c.hora_inicio,
             hora_fin: c.hora_fin,
             status: c.status,
@@ -1125,7 +1129,7 @@ async listarCitas(filtros: {
                     id_reprogramacion: reprog.id_reprogramacion,
                     paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
                     servicio: c.servicio?.nombre ?? 'Sin servicio',
-                    fecha: reprog.nueva_fecha.toLocaleDateString('en-CA'),
+                    fecha: reprog.nueva_fecha.toISOString().split('T')[0],
                     hora_inicio: reprog.nueva_hora,
                     hora_fin: reprog.nueva_hora_fin,
                     notas: c.notas ?? '',
@@ -1139,7 +1143,7 @@ async listarCitas(filtros: {
                 id_cita: c.id_cita,
                 paciente: `${c.paciente.nombre} ${c.paciente.apellido1} ${c.paciente.apellido2 ?? ''}`.trim(),
                 servicio: c.servicio?.nombre ?? 'Sin servicio',
-                fecha: c.fecha.toLocaleDateString('en-CA'),
+                fecha: c.fecha.toISOString().split('T')[0],
                 hora_inicio: c.hora_inicio,
                 hora_fin: c.hora_fin,
                 notas: c.notas ?? '',
@@ -1759,6 +1763,12 @@ async listarCitas(filtros: {
             this.logger.error(`Error al enviar correo: ${error.message}`);
             // No lanzar error para no bloquear operación principal
         }
+    }
+
+    private sumarHoras(date: Date, horas: number): Date {
+        const nueva = new Date(date);
+        nueva.setHours(nueva.getHours() + horas);
+        return nueva;
     }
 
 }

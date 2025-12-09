@@ -39,7 +39,6 @@ export class Calendario implements OnInit {
     locales: [esLocale],
     locale: 'es',
     initialView: 'timeGridWeek',
-    timeZone: 'local',
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
     headerToolbar: {
       left: 'prev,next today',
