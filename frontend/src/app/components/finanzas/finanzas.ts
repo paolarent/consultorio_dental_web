@@ -15,7 +15,7 @@ import { AbonarIngresoDto } from '../../models/abono.model';
 
 @Component({
   selector: 'app-finanzas',
-  imports: [FormsModule, ModalAgGasto, DecimalPipe, ModalMontoInicial, ModalAgIngreso, DatePipe, MatFormFieldModule, MatSelectModule, MatOptionModule, ModalAgAbono],
+  imports: [FormsModule, ModalAgGasto, DecimalPipe, DatePipe, ModalMontoInicial, ModalAgIngreso, MatFormFieldModule, MatSelectModule, MatOptionModule, ModalAgAbono],
   templateUrl: './finanzas.html',
   styleUrl: './finanzas.css'
 })
