@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 
-const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM } = process.env;
+const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM, SENDGRID_API_KEY } = process.env;
 
 @Injectable()
 export class MailerService {
@@ -9,15 +10,19 @@ export class MailerService {
     private logger = new Logger(MailerService.name);
 
     constructor() {
-        this.transporter = nodemailer.createTransport({
-        host: SMTP_HOST,
-        port: Number(SMTP_PORT) || 587,
-        secure: false, // TLS se negociará si es necesario
-        auth: {
-            user: SMTP_USER,
-            pass: SMTP_PASS,
-        },
-        });
+        /*this.transporter = nodemailer.createTransport({
+            host: SMTP_HOST,
+            port: Number(SMTP_PORT) || 587,
+            secure: false, 
+            auth: {
+                user: SMTP_USER,
+                pass: SMTP_PASS,
+            },
+        });*/
+        if (!SENDGRID_API_KEY) {
+            throw new Error("Falta la variable SENDGRID_API_KEY en el entorno");
+        }
+        sgMail.setApiKey(SENDGRID_API_KEY);
     }
 
     async sendVerificationEmail(to: string, token: string, tipo: 'registro' | 'actualizacion', logoUrl: string, nombreDoc: string) {
@@ -86,12 +91,19 @@ export class MailerService {
             </div>
             `;
 
-        await this.transporter.sendMail({
+        /*await this.transporter.sendMail({
             from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
             to,
             subject: asunto,
             html
+        });*/
+        await sgMail.send({
+            to,
+            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
+            subject: asunto,
+            html,
         });
+
     } 
 
     //METODO PARA RESTABLECER CONTRASEÑA
@@ -137,12 +149,19 @@ export class MailerService {
         </div>
         `;
 
-        await this.transporter.sendMail({
+        /*await this.transporter.sendMail({
             from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`, //el nombre del doctor sera dinamico al mandar el correo
             to,
             subject: 'Recuperación de contraseña',
             html,
+        });*/
+        await sgMail.send({
+            to,
+            from: `Dr. ${nombreDoc} <${EMAIL_FROM}>`,
+            subject: 'Recuperación de contraseña',
+            html,
         });
+
     }
 
     //--------------------------------------------------------------------------------------------------------------------------------------------
@@ -202,11 +221,17 @@ export class MailerService {
         </div>
         `;
 
-        await this.transporter.sendMail({
+        /*await this.transporter.sendMail({
             from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
             to,
             subject: asunto,
             html
+        });*/
+        await sgMail.send({
+            to,
+            from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
+            subject: asunto,
+            html,
         });
 
         this.logger.log(`Notificación de cita enviada a ${to}: ${tipo}`);
@@ -268,12 +293,19 @@ export class MailerService {
         </div>
         `;
 
-        await this.transporter.sendMail({
+        /*await this.transporter.sendMail({
             from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
             to,
             subject: asunto,
             html
+        });*/
+        await sgMail.send({
+            to,
+            from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
+            subject: asunto,
+            html,
         });
+
 
         this.logger.log(`Notificación de reprogramación enviada a ${to}: ${tipo}`);
     }
@@ -321,11 +353,17 @@ export class MailerService {
         </div>
         `;
 
-        await this.transporter.sendMail({
+        /*await this.transporter.sendMail({
             from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
             to,
             subject: 'Recordatorio: Tienes una cita con tu dentista mañana',
             html
+        });*/
+        await sgMail.send({
+            to,
+            from: `Dr. ${nombreDoc ?? 'Odontix 🦷'} <${EMAIL_FROM}>`,
+            subject: 'Recordatorio: Tienes una cita con tu dentista mañana',
+            html,
         });
 
         this.logger.log(`Recordatorio de cita enviado a ${to}`);
