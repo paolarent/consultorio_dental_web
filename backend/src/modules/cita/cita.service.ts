@@ -215,7 +215,7 @@ export class CitaService {
         //Validar que no sea en el pasado (mínimo 60 min de anticipación)
         this.validarFechaHoraFutura(dto.fecha, horaInicioStr, 60);
          //Validar que esté dentro del horario del consultorio
-        await this.validarHorarioConsultorio(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
+        await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
         //Validar que no haya eventos bloqueando
         await this.validarEventos(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
         //Validar que no haya conflictos con otras citas
