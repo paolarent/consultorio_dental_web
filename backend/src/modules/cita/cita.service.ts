@@ -203,18 +203,23 @@ export class CitaService {
             dto.hora_inicio
         );
 
+        // --- AJUSTAR HORAS +7 ---
+        const horaInicioAjustada = this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7);
+        const horaFinAjustada = this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7);
+
+        // Convertir a string HH:mm para las validaciones
+        const horaInicioStr = `${horaInicioAjustada.getHours()}`.padStart(2, '0') + ':' + `${horaInicioAjustada.getMinutes()}`.padStart(2, '0');
+        const horaFinStr = `${horaFinAjustada.getHours()}`.padStart(2, '0') + ':' + `${horaFinAjustada.getMinutes()}`.padStart(2, '0');
+
         // VALIDACIONES EN ORDEN:
         //Validar que no sea en el pasado (mínimo 60 min de anticipación)
-        this.validarFechaHoraFutura(dto.fecha, dto.hora_inicio, 60);
-
-        //Validar que esté dentro del horario del consultorio
-        await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
-        
+        this.validarFechaHoraFutura(dto.fecha, horaInicioStr, 60);
+         //Validar que esté dentro del horario del consultorio
+        await this.validarHorarioConsultorio(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
         //Validar que no haya eventos bloqueando
-        await this.validarEventos(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
-        
+        await this.validarEventos(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
         //Validar que no haya conflictos con otras citas
-        await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+        await this.validarDisponibilidad(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
 
         // Fecha sin hora
         const fechaLocal = new Date(`${dto.fecha}T00:00:00`);
@@ -227,8 +232,8 @@ export class CitaService {
                 id_servicio: dto.id_servicio,
                 fecha: fechaLocal,
                 //hora_inicio: this.convertirHoraADateTime(dto.fecha, dto.hora_inicio),
-                hora_inicio: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, dto.hora_inicio), 7),
-                hora_fin: this.sumarHoras(this.convertirHoraADateTime(dto.fecha, hora_fin), 7),
+                hora_inicio: horaInicioAjustada,
+                hora_fin: horaFinAjustada,
                 //hora_fin: this.convertirHoraADateTime(dto.fecha, hora_fin),
                 frecuencia: dto.frecuencia || 'unica',
                 notas: dto.notas,
