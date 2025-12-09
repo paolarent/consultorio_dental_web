@@ -310,7 +310,7 @@ export class CitaService {
 
          // Validar disponibilidad
         this.validarFechaHoraFutura(dto.fecha, dto.hora_inicio, 60);
-        await this.validarHorarioConsultorio(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
+        await this.validarHorarioConsultorio(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
         await this.validarEventos(dto.fecha, horaInicioStr, horaFinStr, id_consultorio);
         await this.validarDisponibilidad(dto.fecha, dto.hora_inicio, hora_fin, id_consultorio);
 
